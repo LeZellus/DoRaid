@@ -22,6 +22,9 @@ class RaidParticipant
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private Character $character;
 
+    #[ORM\Column(type: 'string', enumType: RaidParticipantStatus::class, length: 10)]
+    private RaidParticipantStatus $status = RaidParticipantStatus::Pending;
+
     #[ORM\Column]
     private \DateTimeImmutable $joinedAt;
 
@@ -37,6 +40,9 @@ class RaidParticipant
 
     public function getCharacter(): Character { return $this->character; }
     public function setCharacter(Character $character): static { $this->character = $character; return $this; }
+
+    public function getStatus(): RaidParticipantStatus { return $this->status; }
+    public function setStatus(RaidParticipantStatus $status): static { $this->status = $status; return $this; }
 
     public function getJoinedAt(): \DateTimeImmutable { return $this->joinedAt; }
 }

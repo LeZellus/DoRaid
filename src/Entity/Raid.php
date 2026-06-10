@@ -78,11 +78,25 @@ class Raid
 
     public function getParticipants(): Collection { return $this->participants; }
 
+    public function getAcceptedParticipants(): Collection
+    {
+        return $this->participants->filter(
+            fn(RaidParticipant $p) => $p->getStatus() === RaidParticipantStatus::Accepted
+        );
+    }
+
+    public function getPendingParticipants(): Collection
+    {
+        return $this->participants->filter(
+            fn(RaidParticipant $p) => $p->getStatus() === RaidParticipantStatus::Pending
+        );
+    }
+
     public function getEnigmes(): Collection { return $this->enigmes; }
 
     public function isFull(): bool
     {
-        return $this->participants->count() >= $this->raidTemplate->getMaxParticipants();
+        return $this->getAcceptedParticipants()->count() >= $this->raidTemplate->getMaxParticipants();
     }
 
     public function isParticipant(Character $character): bool

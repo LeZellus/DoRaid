@@ -6,6 +6,7 @@ use App\Entity\Enigme;
 use App\Entity\MemberStatus;
 use App\Entity\Raid;
 use App\Entity\RaidParticipant;
+use App\Entity\RaidParticipantStatus;
 use App\Entity\RaidStatus;
 use App\Form\RaidType;
 use App\Repository\CharacterRepository;
@@ -68,7 +69,7 @@ class RaidController extends AbstractController
 
             $raid->setGuild($guild)->setCreator($character)->setRaidTemplate($template);
             $em->persist($raid);
-            $em->persist((new RaidParticipant())->setRaid($raid)->setCharacter($character));
+            $em->persist((new RaidParticipant())->setRaid($raid)->setCharacter($character)->setStatus(RaidParticipantStatus::Accepted));
 
             // Auto-create enigmas from the template definitions
             foreach ($enigmeTemplateRepo->findByTemplate($template) as $enigmeTemplate) {
@@ -101,9 +102,14 @@ class RaidController extends AbstractController
         $isCreator = (int) $raid->getCreator()->getUser()->getId() === $userId;
 
         $participantCharacter = null;
+        $pendingApplication   = null;
         foreach ($raid->getParticipants() as $p) {
             if ((int) $p->getCharacter()->getUser()->getId() === $userId) {
-                $participantCharacter = $p->getCharacter();
+                if ($p->getStatus() === RaidParticipantStatus::Accepted) {
+                    $participantCharacter = $p->getCharacter();
+                } else {
+                    $pendingApplication = $p;
+                }
                 break;
             }
         }
@@ -113,23 +119,19 @@ class RaidController extends AbstractController
             'eligible'             => $eligible,
             'isCreator'            => $isCreator,
             'participantCharacter' => $participantCharacter,
+            'pendingApplication'   => $pendingApplication,
         ]);
     }
 
-    #[Route('/{id}/join', name: 'app_raid_join', methods: ['POST'])]
-    public function join(Raid $raid, Request $request, CharacterRepository $charRepo, EntityManagerInterface $em): Response
+    #[Route('/{id}/apply', name: 'app_raid_apply', methods: ['POST'])]
+    public function apply(Raid $raid, Request $request, CharacterRepository $charRepo, EntityManagerInterface $em): Response
     {
-        if (!$this->isCsrfTokenValid('join_raid_' . $raid->getId(), $request->request->get('_token'))) {
+        if (!$this->isCsrfTokenValid('apply_raid_' . $raid->getId(), $request->request->get('_token'))) {
             throw $this->createAccessDeniedException();
         }
 
         if ($raid->getStatus() !== RaidStatus::Open) {
             $this->addFlash('error', 'Ce raid est terminé.');
-            return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
-        }
-
-        if ($raid->isFull()) {
-            $this->addFlash('error', 'Ce raid est complet (' . $raid->getRaidTemplate()->getMaxParticipants() . ' participants max).');
             return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
         }
 
@@ -146,14 +148,34 @@ class RaidController extends AbstractController
         }
 
         if ($raid->isParticipant($character)) {
-            $this->addFlash('error', 'Ce personnage participe déjà à ce raid.');
+            $this->addFlash('error', 'Ce personnage a déjà candidaté à ce raid.');
             return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
         }
 
         $em->persist((new RaidParticipant())->setRaid($raid)->setCharacter($character));
         $em->flush();
 
-        $this->addFlash('success', $character->getName() . ' a rejoint le raid !');
+        $this->addFlash('success', 'Candidature de ' . $character->getName() . ' envoyée ! Le créateur du raid validera votre participation.');
+        return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
+    }
+
+    #[Route('/participants/{id}/accept', name: 'app_raid_accept', methods: ['POST'])]
+    public function accept(RaidParticipant $participant, Request $request, EntityManagerInterface $em): Response
+    {
+        $raid = $participant->getRaid();
+
+        if (!$this->isCsrfTokenValid('accept_' . $participant->getId(), $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException();
+        }
+
+        if ($raid->getCreator()->getUser() !== $this->getUser()) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $participant->setStatus(RaidParticipantStatus::Accepted);
+        $em->flush();
+
+        $this->addFlash('success', $participant->getCharacter()->getName() . ' a été accepté dans le raid !');
         return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
     }
 
