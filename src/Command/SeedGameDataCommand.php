@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Entity\GameClass;
+use App\Entity\RaidTemplate;
 use App\Entity\Server;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -18,6 +19,11 @@ class SeedGameDataCommand extends Command
         'Cra', 'Ecaflip', 'Eniripsa', 'Enutrof', 'Feca', 'Iop',
         'Osamodas', 'Pandawa', 'Roublard', 'Sacrieur', 'Sadida',
         'Sram', 'Xelor', 'Zobal', 'Steamer', 'Eliotrope', 'Huppermage', 'Ouginak',
+    ];
+
+    private const RAID_TEMPLATES = [
+        ['name' => 'Belladone',  'min' => 8,  'max' => 12],
+        ['name' => 'Gigalodon', 'min' => 12, 'max' => 16],
     ];
 
     private const SERVERS = [
@@ -53,6 +59,15 @@ class SeedGameDataCommand extends Command
             if (!$serverRepo->findOneBy(['name' => $name])) {
                 $server = (new Server())->setName($name);
                 $this->em->persist($server);
+                $added++;
+            }
+        }
+
+        $templateRepo = $this->em->getRepository(RaidTemplate::class);
+        foreach (self::RAID_TEMPLATES as ['name' => $name, 'min' => $min, 'max' => $max]) {
+            if (!$templateRepo->findOneBy(['name' => $name])) {
+                $t = (new RaidTemplate())->setName($name)->setMinParticipants($min)->setMaxParticipants($max);
+                $this->em->persist($t);
                 $added++;
             }
         }

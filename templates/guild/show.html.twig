@@ -120,10 +120,12 @@
                         <input type="hidden" name="_token" value="{{ csrf_token('join_guild_' ~ guild.id) }}">
                         <div>
                             {{ ui.label('character_id', 'Personnage') }}
-                            {{ ui.select('character_id', 'character_id',
-                                eligible|map(c => {(c.id): c.name ~ ' — ' ~ c.gameClass.name})|reduce((carry, item) => carry|merge(item), {}),
-                                ''
-                            ) }}
+                            <select id="character_id" name="character_id"
+                                class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                {% for c in eligible %}
+                                    <option value="{{ c.id }}">{{ c.name }} — {{ c.gameClass.name }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                         {{ ui.button(
                             isOwner and not guild.hasLeader() ? '👑 Devenir meneur' : 'Envoyer une demande',
@@ -168,6 +170,60 @@
             </ul>
         </div>
     {% endif %}
+
+    {# ── Raids ── #}
+    <div class="mt-6 {{ ui.card_classes('overflow-hidden') }}">
+        <div class="{{ ui.card_header_classes('flex items-center justify-between') }}">
+            <h2 class="font-semibold text-white">Raids</h2>
+            {% if confirmedCharacters is not empty %}
+                {{ ui.link_button('+ Créer un raid', path('app_raid_new', {guild: guild.id}), 'primary', 'py-1.5 px-3 text-xs') }}
+            {% endif %}
+        </div>
+
+        {% if raids is empty %}
+            <div class="{{ ui.card_body_classes('py-8 text-center') }}">
+                <p class="text-gray-500 text-sm">Aucun raid pour l'instant.</p>
+                {% if confirmedCharacters is not empty %}
+                    <div class="mt-3">
+                        {{ ui.link_button('Créer le premier raid', path('app_raid_new', {guild: guild.id}), 'secondary') }}
+                    </div>
+                {% endif %}
+            </div>
+        {% else %}
+            <ul class="divide-y divide-gray-800/60">
+                {% for raid in raids %}
+                    <li>
+                        <a href="{{ path('app_raid_show', {id: raid.id}) }}"
+                           class="flex items-center justify-between px-6 py-4 hover:bg-gray-800/30 transition">
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-medium text-white truncate">{{ raid.raidTemplate.name }}</span>
+                                    {% if raid.status.value == 'open' %}
+                                        {{ ui.badge(raid.status.label(), 'success') }}
+                                    {% else %}
+                                        {{ ui.badge(raid.status.label(), 'default') }}
+                                    {% endif %}
+                                </div>
+                                <div class="text-xs text-gray-500 mt-0.5">
+                                    par {{ raid.creator.name }}
+                                    {% if raid.scheduledAt %}
+                                        · {{ raid.scheduledAt|date('d/m/Y') }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0 ml-4">
+                                <span class="text-sm text-gray-400">
+                                    {{ raid.participants|length }} / {{ raid.raidTemplate.maxParticipants }}
+                                    <span class="text-gray-600 ml-0.5">joueurs</span>
+                                </span>
+                                <span class="text-gray-600">→</span>
+                            </div>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
 
 </div>
 {% endblock %}

@@ -1,0 +1,169 @@
+{% extends 'base.html.twig' %}
+{% import 'components/_ui.html.twig' as ui %}
+
+{% block title %}{{ raid.raidTemplate.name }} – DoRaid{% endblock %}
+
+{% block body %}
+<div class="max-w-5xl mx-auto px-6 py-10">
+
+    <a href="{{ path('app_guild_show', {id: raid.guild.id}) }}"
+       class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-300 transition mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
+        </svg>
+        {{ raid.guild.name }}
+    </a>
+
+    {# ── Hero ── #}
+    <div class="rounded-2xl bg-gradient-to-br from-indigo-950/70 via-gray-900 to-gray-950 border border-indigo-900/30 px-8 py-7 mb-8">
+        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-2">
+                    {% if raid.status == constant('App\\Entity\\RaidStatus::Open') %}
+                        {{ ui.badge(raid.status.label(), 'success') }}
+                    {% else %}
+                        {{ ui.badge(raid.status.label(), 'default') }}
+                    {% endif %}
+                    <span class="text-xs text-gray-500">{{ raid.guild.server.name }}</span>
+                </div>
+                <h1 class="text-3xl font-bold text-white tracking-tight">{{ raid.raidTemplate.name }}</h1>
+                <p class="text-gray-400 text-sm mt-1">
+                    {{ raid.raidTemplate.minParticipants }} – {{ raid.raidTemplate.maxParticipants }} joueurs
+                    <span class="text-gray-700 mx-2">·</span>
+                    Créé par <span class="text-gray-200 font-medium">{{ raid.creator.name }}</span>
+                    <span class="text-gray-700 mx-2">·</span>
+                    {{ raid.createdAt|date('d/m/Y') }}
+                </p>
+                {% if raid.scheduledAt %}
+                    <p class="text-indigo-300 text-sm mt-1">
+                        📅 {{ raid.scheduledAt|date('d/m/Y à H:i') }}
+                    </p>
+                {% endif %}
+                {% if raid.description %}
+                    <p class="text-gray-300 text-sm mt-3 leading-relaxed">{{ raid.description }}</p>
+                {% endif %}
+            </div>
+
+            <div class="flex gap-6 shrink-0">
+                <div class="text-center">
+                    <div class="text-3xl font-bold {{ raid.isFull() ? 'text-red-400' : 'text-white' }}">
+                        {{ raid.participants|length }}
+                    </div>
+                    <div class="text-xs text-gray-500 uppercase tracking-wider mt-0.5">
+                        / {{ raid.raidTemplate.maxParticipants }}
+                    </div>
+                    <div class="text-xs text-gray-600 mt-0.5">
+                        min {{ raid.raidTemplate.minParticipants }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if isCreator %}
+            <div class="flex items-center gap-3 mt-6 pt-5 border-t border-indigo-900/30">
+                {% if raid.status == constant('App\\Entity\\RaidStatus::Open') %}
+                    <form method="post" action="{{ path('app_raid_close', {id: raid.id}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('close_raid_' ~ raid.id) }}">
+                        {{ ui.button('Marquer comme terminé', 'secondary', 'submit', 'py-1.5 px-3 text-xs') }}
+                    </form>
+                {% endif %}
+                <form method="post" action="{{ path('app_raid_delete', {id: raid.id}) }}"
+                      onsubmit="return confirm('Supprimer ce raid définitivement ?')">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete_raid_' ~ raid.id) }}">
+                    {{ ui.button('Supprimer', 'danger', 'submit', 'py-1.5 px-3 text-xs') }}
+                </form>
+            </div>
+        {% endif %}
+    </div>
+
+    {# ── Grille principale ── #}
+    <div class="grid gap-6 lg:grid-cols-5">
+
+        {# ── Participants ── #}
+        <div class="lg:col-span-3 {{ ui.card_classes('overflow-hidden') }}">
+            <div class="{{ ui.card_header_classes('flex items-center justify-between') }}">
+                <h2 class="font-semibold text-white">Participants</h2>
+                <span class="text-xs text-gray-500">
+                    {{ raid.participants|length }} / {{ raid.raidTemplate.maxParticipants }}
+                    {% if raid.isFull() %}<span class="text-red-400 ml-1">· Complet</span>{% endif %}
+                </span>
+            </div>
+
+            {% if raid.participants is empty %}
+                <div class="{{ ui.card_body_classes('py-10 text-center') }}">
+                    <p class="text-gray-500 text-sm">Aucun participant pour l'instant.</p>
+                </div>
+            {% else %}
+                <ul class="divide-y divide-gray-800/60">
+                    {% for p in raid.participants %}
+                        <li class="flex items-center gap-4 px-6 py-3.5 hover:bg-gray-800/30 transition">
+                            <div class="w-9 h-9 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center text-sm font-bold text-gray-300 shrink-0">
+                                {{ p.character.name|slice(0,1)|upper }}
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-medium text-white truncate">{{ p.character.name }}</span>
+                                    {% if p.character === raid.creator %}
+                                        <span title="Créateur" class="text-base leading-none">⭐</span>
+                                    {% endif %}
+                                </div>
+                                <div class="text-xs text-gray-400 mt-0.5">
+                                    {{ p.character.gameClass.name }}
+                                    {% if p.character.user == app.user %}
+                                        <span class="text-indigo-400 font-medium">· vous</span>
+                                    {% else %}
+                                        <span class="text-gray-600">· {{ p.character.user.username }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% if isCreator and p.character !== raid.creator %}
+                                <form method="post" action="{{ path('app_raid_kick', {id: p.id}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('kick_' ~ p.id) }}">
+                                    {{ ui.button('Retirer', 'danger', 'submit', 'py-1.5 px-3 text-xs') }}
+                                </form>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        {# ── Rejoindre ── #}
+        <div class="lg:col-span-2 {{ ui.card_classes('overflow-hidden') }}">
+            <div class="{{ ui.card_header_classes() }}">
+                <h2 class="font-semibold text-white">Rejoindre</h2>
+            </div>
+            <div class="{{ ui.card_body_classes() }}">
+                {% if raid.status != constant('App\\Entity\\RaidStatus::Open') %}
+                    <p class="text-sm text-gray-500">Ce raid est terminé.</p>
+                {% elseif raid.isFull() %}
+                    <p class="text-sm text-gray-500">
+                        Ce raid est complet ({{ raid.raidTemplate.maxParticipants }} participants max).
+                    </p>
+                {% elseif eligible is empty %}
+                    <p class="text-sm text-gray-500 leading-relaxed">
+                        Aucun personnage disponible.<br>
+                        Vous participez peut-être déjà, ou n'êtes pas membre confirmé de cette guilde.
+                    </p>
+                {% else %}
+                    <form method="post" action="{{ path('app_raid_join', {id: raid.id}) }}" class="space-y-4">
+                        <input type="hidden" name="_token" value="{{ csrf_token('join_raid_' ~ raid.id) }}">
+                        <div>
+                            {{ ui.label('character_id', 'Personnage') }}
+                            <select id="character_id" name="character_id"
+                                class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                {% for c in eligible %}
+                                    <option value="{{ c.id }}">{{ c.name }} — {{ c.gameClass.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {{ ui.button('Rejoindre le raid', 'primary', 'submit') }}
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

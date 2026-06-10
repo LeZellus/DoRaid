@@ -29,13 +29,17 @@ class Guild
     #[ORM\OneToMany(targetEntity: GuildMembership::class, mappedBy: 'guild', cascade: ['remove'])]
     private Collection $memberships;
 
+    #[ORM\OneToMany(targetEntity: Raid::class, mappedBy: 'guild', cascade: ['remove'])]
+    private Collection $raids;
+
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
     public function __construct()
     {
         $this->memberships = new ArrayCollection();
-        $this->createdAt = new \DateTimeImmutable();
+        $this->raids       = new ArrayCollection();
+        $this->createdAt   = new \DateTimeImmutable();
     }
 
     public function getId(): ?int { return $this->id; }
@@ -71,6 +75,8 @@ class Guild
             fn($_, GuildMembership $m) => $m->getStatus() === MemberStatus::Leader
         );
     }
+
+    public function getRaids(): Collection { return $this->raids; }
 
     public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
 

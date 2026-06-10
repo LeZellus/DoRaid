@@ -3,6 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Character;
+use App\Entity\Guild;
+use App\Entity\MemberStatus;
+use App\Entity\Raid;
+use App\Entity\RaidParticipant;
 use App\Entity\Server;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -19,12 +23,49 @@ class CharacterRepository extends ServiceEntityRepository
     public function findEligibleForGuild(User $user, Server $server): array
     {
         return $this->createQueryBuilder('c')
-            ->leftJoin('c.membership', 'm')
             ->where('c.user = :user')
             ->andWhere('c.server = :server')
-            ->andWhere('m.id IS NULL')
+            ->andWhere('NOT EXISTS (SELECT m FROM App\Entity\GuildMembership m WHERE m.character = c)')
             ->setParameter('user', $user)
             ->setParameter('server', $server)
+            ->orderBy('c.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /** Confirmed guild members of $user in $guild (non-Pending memberships) */
+    public function findConfirmedInGuild(User $user, Guild $guild): array
+    {
+        return $this->createQueryBuilder('c')
+            ->join('c.membership', 'm')
+            ->where('c.user = :user')
+            ->andWhere('m.guild = :guild')
+            ->andWhere('m.status != :pending')
+            ->setParameter('user', $user)
+            ->setParameter('guild', $guild)
+            ->setParameter('pending', MemberStatus::Pending)
+            ->orderBy('c.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /** Confirmed guild members of $user in the raid's guild that haven't joined the raid yet */
+    public function findEligibleForRaid(User $user, Raid $raid): array
+    {
+        return $this->createQueryBuilder('c')
+            ->join('c.membership', 'm')
+            ->leftJoin(
+                RaidParticipant::class, 'rp',
+                'WITH', 'rp.character = c AND rp.raid = :raid'
+            )
+            ->where('c.user = :user')
+            ->andWhere('m.guild = :guild')
+            ->andWhere('m.status != :pending')
+            ->andWhere('rp.id IS NULL')
+            ->setParameter('user', $user)
+            ->setParameter('raid', $raid)
+            ->setParameter('guild', $raid->getGuild())
+            ->setParameter('pending', MemberStatus::Pending)
             ->orderBy('c.name', 'ASC')
             ->getQuery()
             ->getResult();

@@ -7,7 +7,9 @@ use App\Entity\GuildMembership;
 use App\Entity\MemberStatus;
 use App\Form\GuildType;
 use App\Repository\CharacterRepository;
+use App\Repository\GuildMembershipRepository;
 use App\Repository\GuildRepository;
+use App\Repository\RaidRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -52,56 +54,81 @@ class GuildController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_guild_show')]
-    public function show(Guild $guild, CharacterRepository $charRepo): Response
+    public function show(Guild $guild, CharacterRepository $charRepo, RaidRepository $raidRepo, EntityManagerInterface $em): Response
     {
-        $eligible = $charRepo->findEligibleForGuild($this->getUser(), $guild->getServer());
-        $isOwner = $guild->getOwner() === $this->getUser();
+        $currentUser = $this->getUser();
+        $isOwner     = $guild->getOwner()->getId() === $currentUser->getId();
+
+        // Auto-approve pending memberships belonging to the guild owner
+        if ($isOwner) {
+            $changed = false;
+            foreach ($guild->getPending() as $membership) {
+                if ($membership->getCharacter()->getUser()->getId() === $currentUser->getId()) {
+                    $membership->setStatus(MemberStatus::Member);
+                    $changed = true;
+                }
+            }
+            if ($changed) {
+                $em->flush();
+            }
+        }
+
+        $eligible            = $charRepo->findEligibleForGuild($currentUser, $guild->getServer());
+        $confirmedCharacters = $charRepo->findConfirmedInGuild($currentUser, $guild);
+        $raids               = $raidRepo->findByGuild($guild);
 
         return $this->render('guild/show.html.twig', [
-            'guild'    => $guild,
-            'eligible' => $eligible,
-            'isOwner'  => $isOwner,
+            'guild'               => $guild,
+            'eligible'            => $eligible,
+            'confirmedCharacters' => $confirmedCharacters,
+            'isOwner'             => $isOwner,
+            'raids'               => $raids,
         ]);
     }
 
     #[Route('/{id}/join', name: 'app_guild_join', methods: ['POST'])]
-    public function join(Guild $guild, Request $request, CharacterRepository $charRepo, EntityManagerInterface $em): Response
+    public function join(Guild $guild, Request $request, CharacterRepository $charRepo, GuildMembershipRepository $membershipRepo, EntityManagerInterface $em): Response
     {
         if (!$this->isCsrfTokenValid('join_guild_' . $guild->getId(), $request->request->get('_token'))) {
-            throw $this->createAccessDeniedException();
+            $this->addFlash('error', 'Token de sécurité invalide. Rechargez la page et réessayez.');
+            return $this->redirectToRoute('app_guild_show', ['id' => $guild->getId()]);
         }
 
-        $character = $charRepo->find((int) $request->request->get('character_id'));
+        $currentUser = $this->getUser();
+        $characterId = (int) $request->request->get('character_id');
+        $character   = $characterId > 0 ? $charRepo->find($characterId) : null;
 
-        if (!$character || $character->getUser() !== $this->getUser()) {
-            throw $this->createAccessDeniedException();
+        if (!$character || (int) $character->getUser()->getId() !== (int) $currentUser->getId()) {
+            $this->addFlash('error', 'Personnage invalide.');
+            return $this->redirectToRoute('app_guild_show', ['id' => $guild->getId()]);
         }
 
-        if ($character->getServer() !== $guild->getServer()) {
+        if ((int) $character->getServer()->getId() !== (int) $guild->getServer()->getId()) {
             $this->addFlash('error', 'Ce personnage n\'est pas sur le même serveur que la guilde.');
             return $this->redirectToRoute('app_guild_show', ['id' => $guild->getId()]);
         }
 
-        if ($character->getMembership() !== null) {
+        if ($membershipRepo->findOneBy(['character' => $character]) !== null) {
             $this->addFlash('error', 'Ce personnage est déjà dans une guilde.');
             return $this->redirectToRoute('app_guild_show', ['id' => $guild->getId()]);
         }
 
-        // Owner of the guild always joins as leader; others are pending
-        $isOwner = $guild->getOwner() === $this->getUser();
-        $status = $isOwner && !$guild->hasLeader() ? MemberStatus::Leader : MemberStatus::Pending;
+        $isOwner = (int) $guild->getOwner()->getId() === (int) $currentUser->getId();
+        $status  = match(true) {
+            $isOwner && !$guild->hasLeader() => MemberStatus::Leader,
+            $isOwner                         => MemberStatus::Member,
+            default                          => MemberStatus::Pending,
+        };
 
-        $membership = (new GuildMembership())
-            ->setGuild($guild)
-            ->setCharacter($character)
-            ->setStatus($status);
-
+        $membership = (new GuildMembership())->setGuild($guild)->setCharacter($character)->setStatus($status);
         $em->persist($membership);
         $em->flush();
 
-        $msg = $status === MemberStatus::Leader
-            ? $character->getName() . ' est maintenant meneur de ' . $guild->getName() . ' !'
-            : $character->getName() . ' a demandé à rejoindre ' . $guild->getName() . '. En attente de validation.';
+        $msg = match($status) {
+            MemberStatus::Leader  => $character->getName() . ' est maintenant meneur de ' . $guild->getName() . ' !',
+            MemberStatus::Member  => $character->getName() . ' a rejoint ' . $guild->getName() . ' !',
+            MemberStatus::Pending => $character->getName() . ' a demandé à rejoindre ' . $guild->getName() . '. En attente de validation.',
+        };
 
         $this->addFlash('success', $msg);
         return $this->redirectToRoute('app_guild_show', ['id' => $guild->getId()]);

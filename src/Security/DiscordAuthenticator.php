@@ -78,7 +78,13 @@ class DiscordAuthenticator extends OAuth2Authenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        $request->getSession()->set('discord_auth_error', strtr($exception->getMessageKey(), $exception->getMessageData()));
+        $raw = strtr($exception->getMessageKey(), $exception->getMessageData());
+
+        $message = str_contains(strtolower($raw), 'rate')
+            ? 'Discord a temporairement bloqué les connexions (trop de tentatives). Patiente 1-2 minutes puis réessaie.'
+            : 'Connexion Discord échouée : ' . $raw;
+
+        $request->getSession()->getFlashBag()->add('error', $message);
         return new RedirectResponse($this->router->generate('app_login'));
     }
 }
