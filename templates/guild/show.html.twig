@@ -32,6 +32,11 @@
                     <span class="text-gray-700 mx-2">·</span>
                     {{ guild.createdAt|date('d/m/Y') }}
                 </p>
+                {% if guild.description %}
+                    <p class="text-gray-300 text-sm mt-3 leading-relaxed max-w-xl">{{ guild.description }}</p>
+                {% elseif isLeader %}
+                    <p class="text-gray-600 text-sm mt-3 italic">Aucune description — ajoutez-en une ci-dessous.</p>
+                {% endif %}
             </div>
             <div class="flex gap-8 shrink-0">
                 <div class="text-center">
@@ -45,6 +50,26 @@
             </div>
         </div>
     </div>
+
+    {# ── Description (meneur) ── #}
+    {% if isLeader %}
+        <div class="{{ ui.card_classes('overflow-hidden mb-6') }}">
+            <div class="{{ ui.card_header_classes() }}">
+                <h2 class="font-semibold text-white text-sm">Description de la guilde</h2>
+            </div>
+            <div class="{{ ui.card_body_classes() }}">
+                {{ form_start(descriptionForm) }}
+                {{ form_widget(descriptionForm.description, {
+                    attr: { class: 'w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder-gray-500 resize-y' }
+                }) }}
+                {{ form_errors(descriptionForm.description) }}
+                <div class="flex justify-end mt-3">
+                    {{ ui.button('Enregistrer', 'primary', 'submit', 'py-2 px-4 text-sm') }}
+                </div>
+                {{ form_end(descriptionForm) }}
+            </div>
+        </div>
+    {% endif %}
 
     {# ── Alerte sans meneur ── #}
     {% if isOwner and not guild.hasLeader() %}

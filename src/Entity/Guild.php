@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\GuildRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: GuildRepository::class)]
@@ -17,6 +18,9 @@ class Guild
 
     #[ORM\Column(length: 100)]
     private string $name;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $description = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
@@ -46,6 +50,9 @@ class Guild
 
     public function getName(): string { return $this->name; }
     public function setName(string $name): static { $this->name = $name; return $this; }
+
+    public function getDescription(): ?string { return $this->description; }
+    public function setDescription(?string $d): static { $this->description = $d; return $this; }
 
     public function getServer(): Server { return $this->server; }
     public function setServer(Server $server): static { $this->server = $server; return $this; }

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Guild;
 use App\Entity\GuildMembership;
 use App\Entity\MemberStatus;
+use App\Form\GuildDescriptionType;
 use App\Form\GuildType;
 use App\Repository\CharacterRepository;
 use App\Repository\GuildMembershipRepository;
@@ -73,6 +74,18 @@ class GuildController extends AbstractController
             }
         }
 
+        $isLeader = false;
+        foreach ($guild->getMemberships() as $m) {
+            if ($m->getStatus() === MemberStatus::Leader && $m->getCharacter()->getUser()->getId() === $currentUser->getId()) {
+                $isLeader = true;
+                break;
+            }
+        }
+
+        $descriptionForm = $this->createForm(GuildDescriptionType::class, $guild, [
+            'action' => $this->generateUrl('app_guild_description', ['id' => $guild->getId()]),
+        ]);
+
         $eligible            = $charRepo->findEligibleForGuild($currentUser, $guild->getServer());
         $confirmedCharacters = $charRepo->findConfirmedInGuild($currentUser, $guild);
         $raids               = $raidRepo->findByGuild($guild);
@@ -82,8 +95,37 @@ class GuildController extends AbstractController
             'eligible'            => $eligible,
             'confirmedCharacters' => $confirmedCharacters,
             'isOwner'             => $isOwner,
+            'isLeader'            => $isLeader,
             'raids'               => $raids,
+            'descriptionForm'     => $descriptionForm,
         ]);
+    }
+
+    #[Route('/{id}/description', name: 'app_guild_description', methods: ['POST'])]
+    public function updateDescription(Guild $guild, Request $request, EntityManagerInterface $em): Response
+    {
+        $currentUser = $this->getUser();
+        $isLeader = false;
+        foreach ($guild->getMemberships() as $m) {
+            if ($m->getStatus() === MemberStatus::Leader && $m->getCharacter()->getUser()->getId() === $currentUser->getId()) {
+                $isLeader = true;
+                break;
+            }
+        }
+
+        if (!$isLeader) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $form = $this->createForm(GuildDescriptionType::class, $guild);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->flush();
+            $this->addFlash('success', 'Description mise à jour.');
+        }
+
+        return $this->redirectToRoute('app_guild_show', ['id' => $guild->getId()]);
     }
 
     #[Route('/{id}/join', name: 'app_guild_join', methods: ['POST'])]
