@@ -115,12 +115,13 @@
                                         <span title="Créateur" class="text-base leading-none">⭐</span>
                                     {% endif %}
                                 </div>
-                                <div class="text-xs text-gray-400 mt-0.5">
-                                    {{ p.character.gameClass.name }}
+                                <div class="flex items-center gap-1.5 text-xs text-gray-400 mt-0.5 flex-wrap">
+                                    <span>{{ p.character.gameClass.name }}</span>
                                     {% if p.character.user == app.user %}
                                         <span class="text-indigo-400 font-medium">· vous</span>
                                     {% else %}
                                         <span class="text-gray-600">· {{ p.character.user.username }}</span>
+                                        {{ ui.whisper(p.character.name) }}
                                     {% endif %}
                                 </div>
                             </div>

@@ -87,6 +87,7 @@
                                         <span class="text-xs text-indigo-400 font-medium">· vous</span>
                                     {% else %}
                                         <span class="text-xs text-gray-600">· {{ m.character.user.username }}</span>
+                                        {{ ui.whisper(m.character.name) }}
                                     {% endif %}
                                 </div>
                             </div>
