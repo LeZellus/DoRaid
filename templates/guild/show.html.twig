@@ -83,7 +83,7 @@
                                 </div>
                                 <div class="flex items-center gap-1.5 mt-0.5">
                                     <span class="text-xs text-gray-400">{{ m.character.gameClass.name }}</span>
-                                    {% if m.character.user == app.user %}
+                                    {% if m.character.user.id == app.user.id %}
                                         <span class="text-xs text-indigo-400 font-medium">· vous</span>
                                     {% else %}
                                         <span class="text-xs text-gray-600">· {{ m.character.user.username }}</span>
