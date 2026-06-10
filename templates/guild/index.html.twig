@@ -39,11 +39,14 @@
                 >
             </div>
 
+            {% set preselectedServer = app.request.query.get('server', '') %}
             <select id="guild-server-filter"
                 class="bg-gray-900 border border-gray-700 text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                 <option value="">Tous les serveurs</option>
                 {% for serverName, guilds in byServer %}
-                    <option value="{{ serverName }}">{{ serverName }} ({{ guilds|length }})</option>
+                    <option value="{{ serverName }}" {{ serverName == preselectedServer ? 'selected' : '' }}>
+                        {{ serverName }} ({{ guilds|length }})
+                    </option>
                 {% endfor %}
             </select>
         </div>
@@ -134,6 +137,8 @@
 
     searchInput.addEventListener('input', applyFilters);
     serverSelect.addEventListener('change', applyFilters);
+
+    if (serverSelect.value) applyFilters();
 })();
 </script>
 {% endblock %}

@@ -46,7 +46,7 @@
                                                 {{ ui.badge('En attente', 'default') }}
                                             {% endif %}
                                         {% else %}
-                                            <a href="{{ path('app_guild_index') }}" class="text-xs text-gray-600 hover:text-gray-400 transition">
+                                            <a href="{{ path('app_guild_index', {server: character.server.name}) }}" class="text-xs text-gray-600 hover:text-gray-400 transition">
                                                 + Rejoindre une guilde
                                             </a>
                                         {% endif %}
