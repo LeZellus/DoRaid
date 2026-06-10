@@ -53,6 +53,9 @@
             "./bin/phpunit"
         ]
     },
+    "symfony/apache-pack": {
+        "version": "v1.0.1"
+    },
     "symfony/asset-mapper": {
         "version": "8.1",
         "recipe": {
