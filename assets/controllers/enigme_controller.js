@@ -5,10 +5,13 @@ export default class extends Controller {
     static values  = { id: Number, token: String, updatedAt: String, resolved: Number }
 
     connect() {
+        this.pasteHandler = this.handlePaste.bind(this)
+        document.addEventListener('paste', this.pasteHandler)
         this.pollTimer = setInterval(() => this._poll(), 3000)
     }
 
     disconnect() {
+        document.removeEventListener('paste', this.pasteHandler)
         clearInterval(this.pollTimer)
     }
 
@@ -18,13 +21,13 @@ export default class extends Controller {
     }
 
     handlePaste(event) {
+        const tag = event.target?.tagName
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return
+
         const items     = Array.from(event.clipboardData?.items ?? [])
         const imageItem = items.find(i => i.type.startsWith('image/'))
-        if (!imageItem) {
-            this._setPasteZone('⚠️ Aucune image dans le presse-papier')
-            setTimeout(() => this._resetPasteZone(), 2000)
-            return
-        }
+        if (!imageItem) return
+
         event.preventDefault()
 
         const blob = imageItem.getAsFile()
