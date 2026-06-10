@@ -1,0 +1,21 @@
+{% if enigme.comments is empty %}
+    <p class="text-xs text-gray-600 italic">Aucun commentaire.</p>
+{% else %}
+    <ul class="space-y-2.5 pr-1">
+        {% for comment in enigme.comments %}
+            <li class="flex gap-2.5">
+                <div class="w-6 h-6 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center
+                            text-xs font-bold text-gray-400 shrink-0 mt-0.5">
+                    {{ comment.author.name|slice(0,1)|upper }}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-baseline gap-1.5">
+                        <span class="text-xs font-medium text-gray-300">{{ comment.author.name }}</span>
+                        <span class="text-xs text-gray-600">{{ comment.createdAt|date('H:i') }}</span>
+                    </div>
+                    <p class="text-sm text-gray-400 mt-0.5 break-words">{{ comment.content }}</p>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}

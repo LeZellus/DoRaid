@@ -43,9 +43,14 @@ class Raid
     #[ORM\OneToMany(targetEntity: RaidParticipant::class, mappedBy: 'raid', cascade: ['remove'])]
     private Collection $participants;
 
+    #[ORM\OneToMany(targetEntity: Enigme::class, mappedBy: 'raid', cascade: ['remove'], orphanRemoval: true)]
+    #[ORM\OrderBy(['orderNumber' => 'ASC'])]
+    private Collection $enigmes;
+
     public function __construct()
     {
         $this->participants = new ArrayCollection();
+        $this->enigmes      = new ArrayCollection();
         $this->createdAt    = new \DateTimeImmutable();
     }
 
@@ -72,6 +77,8 @@ class Raid
     public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
 
     public function getParticipants(): Collection { return $this->participants; }
+
+    public function getEnigmes(): Collection { return $this->enigmes; }
 
     public function isFull(): bool
     {

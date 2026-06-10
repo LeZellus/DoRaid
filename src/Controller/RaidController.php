@@ -2,12 +2,14 @@
 
 namespace App\Controller;
 
+use App\Entity\Enigme;
 use App\Entity\MemberStatus;
 use App\Entity\Raid;
 use App\Entity\RaidParticipant;
 use App\Entity\RaidStatus;
 use App\Form\RaidType;
 use App\Repository\CharacterRepository;
+use App\Repository\EnigmeTemplateRepository;
 use App\Repository\GuildRepository;
 use App\Repository\RaidTemplateRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,7 +29,8 @@ class RaidController extends AbstractController
         EntityManagerInterface $em,
         GuildRepository $guildRepo,
         CharacterRepository $charRepo,
-        RaidTemplateRepository $templateRepo
+        RaidTemplateRepository $templateRepo,
+        EnigmeTemplateRepository $enigmeTemplateRepo
     ): Response {
         $guild = $guildRepo->find((int) $request->query->get('guild'));
 
@@ -66,6 +69,16 @@ class RaidController extends AbstractController
             $raid->setGuild($guild)->setCreator($character)->setRaidTemplate($template);
             $em->persist($raid);
             $em->persist((new RaidParticipant())->setRaid($raid)->setCharacter($character));
+
+            // Auto-create enigmas from the template definitions
+            foreach ($enigmeTemplateRepo->findByTemplate($template) as $enigmeTemplate) {
+                $em->persist((new Enigme())
+                    ->setRaid($raid)
+                    ->setTitle($enigmeTemplate->getTitle())
+                    ->setOrderNumber($enigmeTemplate->getOrderNumber())
+                );
+            }
+
             $em->flush();
 
             $this->addFlash('success', 'Raid ' . $template->getName() . ' créé !');
@@ -83,13 +96,23 @@ class RaidController extends AbstractController
     #[Route('/{id}', name: 'app_raid_show')]
     public function show(Raid $raid, CharacterRepository $charRepo): Response
     {
+        $userId    = (int) $this->getUser()->getId();
         $eligible  = $charRepo->findEligibleForRaid($this->getUser(), $raid);
-        $isCreator = $raid->getCreator()->getUser() === $this->getUser();
+        $isCreator = (int) $raid->getCreator()->getUser()->getId() === $userId;
+
+        $participantCharacter = null;
+        foreach ($raid->getParticipants() as $p) {
+            if ((int) $p->getCharacter()->getUser()->getId() === $userId) {
+                $participantCharacter = $p->getCharacter();
+                break;
+            }
+        }
 
         return $this->render('raid/show.html.twig', [
-            'raid'      => $raid,
-            'eligible'  => $eligible,
-            'isCreator' => $isCreator,
+            'raid'                 => $raid,
+            'eligible'             => $eligible,
+            'isCreator'            => $isCreator,
+            'participantCharacter' => $participantCharacter,
         ]);
     }
 
