@@ -8,6 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 
 class RaidType extends AbstractType
 {
@@ -20,10 +21,16 @@ class RaidType extends AbstractType
                 'attr'     => ['rows' => 4, 'placeholder' => 'Objectifs, niveau requis, composition souhaitée...'],
             ])
             ->add('scheduledAt', DateTimeType::class, [
-                'label'    => 'Date et heure prévues',
-                'required' => false,
-                'widget'   => 'single_text',
-                'input'    => 'datetime_immutable',
+                'label'       => 'Date et heure prévues',
+                'required'    => false,
+                'widget'      => 'single_text',
+                'input'       => 'datetime_immutable',
+                'constraints' => [
+                    new GreaterThanOrEqual(
+                        value:   new \DateTime(),
+                        message: 'La date du raid ne peut pas être dans le passé.'
+                    ),
+                ],
             ])
         ;
     }
