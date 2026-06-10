@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+{% import 'components/_ui.html.twig' as ui %}
+
+{% block title %}Mes personnages – DoRaid{% endblock %}
+
+{% block body %}
+<div class="max-w-4xl mx-auto px-6 py-12">
+
+    <div class="flex items-center justify-between mb-8">
+        <h1 class="text-3xl font-bold text-white">Mes personnages</h1>
+        {{ ui.link_button('+ Nouveau personnage', path('app_character_new'), 'primary') }}
+    </div>
+
+    {% if byServer is empty %}
+        <div class="{{ ui.card_classes('p-12 text-center') }}">
+            <p class="text-gray-400 text-lg mb-6">Vous n'avez pas encore de personnage.</p>
+            {{ ui.link_button('Créer mon premier personnage', path('app_character_new'), 'primary') }}
+        </div>
+    {% else %}
+        <div class="space-y-8">
+            {% for serverName, characters in byServer %}
+                <div class="{{ ui.card_classes() }}">
+                    <div class="{{ ui.card_header_classes() }}">
+                        <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                            <span class="text-indigo-400">⚔</span>
+                            {{ serverName }}
+                            {{ ui.badge(characters|length ~ ' personnage' ~ (characters|length > 1 ? 's' : ''), 'indigo') }}
+                        </h2>
+                    </div>
+                    <div class="{{ ui.card_body_classes() }}">
+                        <div class="divide-y divide-gray-800">
+                            {% for character in characters %}
+                                <div class="flex items-center justify-between py-3 first:pt-0 last:pb-0">
+                                    <div class="flex items-center gap-3 flex-wrap">
+                                        <span class="font-semibold text-white">{{ character.name }}</span>
+                                        {{ ui.badge(character.gameClass.name) }}
+                                        {% set m = character.membership %}
+                                        {% if m %}
+                                            <a href="{{ path('app_guild_show', {id: m.guild.id}) }}"
+                                               class="text-xs text-indigo-400 hover:text-indigo-300 transition">
+                                                🛡 {{ m.guild.name }}
+                                            </a>
+                                            {% if m.status.value == 'leader' %}
+                                                {{ ui.badge('Meneur', 'warning') }}
+                                            {% elseif m.status.value == 'pending' %}
+                                                {{ ui.badge('En attente', 'default') }}
+                                            {% endif %}
+                                        {% else %}
+                                            <a href="{{ path('app_guild_index') }}" class="text-xs text-gray-600 hover:text-gray-400 transition">
+                                                + Rejoindre une guilde
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        {% if m and m.status.value != 'leader' %}
+                                            <form method="post" action="{{ path('app_guild_leave', {id: m.id}) }}">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('leave_' ~ m.id) }}">
+                                                {{ ui.button('Quitter', 'ghost', 'submit', 'py-1 px-3 text-sm') }}
+                                            </form>
+                                        {% endif %}
+                                        <form method="post" action="{{ path('app_character_delete', {id: character.id}) }}"
+                                              onsubmit="return confirm('Supprimer {{ character.name }} ?')">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete_character_' ~ character.id) }}">
+                                            {{ ui.button('Supprimer', 'danger', 'submit', 'py-1 px-3 text-sm') }}
+                                        </form>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

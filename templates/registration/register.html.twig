@@ -1,4 +1,5 @@
 {% extends 'base.html.twig' %}
+{% import 'components/_ui.html.twig' as ui %}
 
 {% block title %}Inscription – DoRaid{% endblock %}
 
@@ -7,41 +8,18 @@
     <div class="w-full max-w-md">
         <h1 class="text-3xl font-bold text-white text-center mb-8">Créer un compte</h1>
 
-        {{ form_start(form, {'attr': {'class': 'space-y-5', 'novalidate': 'novalidate'}}) }}
+        {{ form_start(form, {attr: {class: 'space-y-5', novalidate: 'novalidate'}}) }}
+            {{ form_row(form.username) }}
+            {{ form_row(form.email) }}
+            {{ form_row(form.plainPassword) }}
+            {{ form_row(form.agreeTerms) }}
 
-        {% for field in ['username', 'email', 'plainPassword', 'agreeTerms'] %}
-            {% if field == 'agreeTerms' %}
-                <div class="flex items-start gap-3">
-                    {{ form_widget(form[field], {'attr': {'class': 'mt-1 w-4 h-4 rounded border-gray-600 bg-gray-700 text-indigo-500'}}) }}
-                    <div>
-                        {{ form_label(form[field], null, {'label_attr': {'class': 'text-sm text-gray-400'}}) }}
-                        {% if form[field].vars.errors|length > 0 %}
-                            <p class="text-red-400 text-xs mt-1">{{ form_errors(form[field]) }}</p>
-                        {% endif %}
-                    </div>
-                </div>
-            {% else %}
-                <div>
-                    {{ form_label(form[field], null, {'label_attr': {'class': 'block text-sm font-medium text-gray-300 mb-1'}}) }}
-                    {% if field == 'plainPassword' %}
-                        {{ form_widget(form[field].first, {'attr': {'class': 'w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder-gray-500 mb-2', 'placeholder': '••••••••'}}) }}
-                        {{ form_label(form[field].second, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-300 mb-1'}}) }}
-                        {{ form_widget(form[field].second, {'attr': {'class': 'w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder-gray-500', 'placeholder': '••••••••'}}) }}
-                    {% else %}
-                        {{ form_widget(form[field], {'attr': {'class': 'w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder-gray-500'}}) }}
-                    {% endif %}
-                    {% if form[field].vars.errors|length > 0 %}
-                        <p class="text-red-400 text-xs mt-1">{{ form_errors(form[field]) }}</p>
-                    {% endif %}
-                </div>
-            {% endif %}
-        {% endfor %}
-
-        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl transition">
-            Créer mon compte
-        </button>
-
+            {{ ui.button('Créer mon compte', 'primary', 'submit', 'w-full') }}
         {{ form_end(form) }}
+
+        {{ ui.divider('ou') }}
+
+        {{ ui.discord_button("S'inscrire avec Discord", path('app_discord_connect')) }}
 
         <p class="text-center text-sm text-gray-500 mt-6">
             Déjà un compte ?

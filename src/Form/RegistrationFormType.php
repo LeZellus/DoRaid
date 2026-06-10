@@ -23,13 +23,13 @@ class RegistrationFormType extends AbstractType
             ->add('username', TextType::class, [
                 'label' => 'Pseudo',
                 'constraints' => [
-                    new NotBlank(['message' => 'Entrez un pseudo.']),
-                    new Length(['min' => 3, 'max' => 50]),
+                    new NotBlank(message: 'Entrez un pseudo.'),
+                    new Length(min: 3, max: 50),
                 ],
             ])
             ->add('email', EmailType::class, [
                 'label' => 'Email',
-                'constraints' => [new NotBlank(['message' => 'Entrez un email.'])],
+                'constraints' => [new NotBlank(message: 'Entrez un email.')],
             ])
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
@@ -38,14 +38,14 @@ class RegistrationFormType extends AbstractType
                 'second_options' => ['label' => 'Confirmer le mot de passe'],
                 'invalid_message' => 'Les mots de passe ne correspondent pas.',
                 'constraints' => [
-                    new NotBlank(['message' => 'Entrez un mot de passe.']),
-                    new Length(['min' => 8, 'minMessage' => 'Minimum {{ limit }} caractères.']),
+                    new NotBlank(message: 'Entrez un mot de passe.'),
+                    new Length(min: 8, minMessage: 'Minimum {{ limit }} caractères.'),
                 ],
             ])
             ->add('agreeTerms', CheckboxType::class, [
                 'mapped' => false,
                 'label' => "J'accepte les conditions d'utilisation",
-                'constraints' => [new IsTrue(['message' => 'Vous devez accepter les conditions.'])],
+                'constraints' => [new IsTrue(message: 'Vous devez accepter les conditions.')],
             ]);
     }
 

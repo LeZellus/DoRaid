@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+{% import 'components/_ui.html.twig' as ui %}
+
+{% block title %}Guildes – DoRaid{% endblock %}
+
+{% block body %}
+<div class="max-w-4xl mx-auto px-6 py-12">
+
+    <div class="flex items-center justify-between mb-8">
+        <h1 class="text-3xl font-bold text-white">Guildes</h1>
+        {{ ui.link_button('+ Créer une guilde', path('app_guild_new'), 'primary') }}
+    </div>
+
+    {% if byServer is empty %}
+        <div class="{{ ui.card_classes('p-12 text-center') }}">
+            <p class="text-gray-400 text-lg mb-6">Aucune guilde pour l'instant.</p>
+            {{ ui.link_button('Créer la première guilde', path('app_guild_new'), 'primary') }}
+        </div>
+    {% else %}
+        <div class="space-y-8">
+            {% for serverName, guilds in byServer %}
+                <div>
+                    <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-widest mb-3">
+                        ⚔ {{ serverName }}
+                    </h2>
+                    <div class="grid gap-3">
+                        {% for guild in guilds %}
+                            <a href="{{ path('app_guild_show', {id: guild.id}) }}"
+                               class="{{ ui.card_classes('flex items-center justify-between px-5 py-4 hover:border-indigo-700 transition cursor-pointer') }}">
+                                <div>
+                                    <span class="font-semibold text-white">{{ guild.name }}</span>
+                                    <span class="ml-2 text-sm text-gray-500">par {{ guild.owner.username }}</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    {{ ui.badge(guild.confirmed|length ~ ' membre' ~ (guild.confirmed|length > 1 ? 's' : '')) }}
+                                    <span class="text-gray-600">→</span>
+                                </div>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

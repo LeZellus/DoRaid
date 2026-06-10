@@ -1,0 +1,85 @@
+{% use 'form_div_layout.html.twig' %}
+
+{# ── Inputs (text, email, password, number, url, tel, search, date…) ── #}
+{% block form_widget_simple %}
+    {% set input_class = 'w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder-gray-500' %}
+    {% set attr = attr|merge({class: input_class ~ (attr.class is defined ? ' ' ~ attr.class : '')}) %}
+    {{ parent() }}
+{% endblock %}
+
+{# ── Textarea ── #}
+{% block textarea_widget %}
+    {% set input_class = 'w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder-gray-500 resize-y' %}
+    {% set attr = attr|merge({class: input_class ~ (attr.class is defined ? ' ' ~ attr.class : '')}) %}
+    {{ parent() }}
+{% endblock %}
+
+{# ── Select ── #}
+{% block choice_widget_collapsed %}
+    {% set input_class = 'w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent' %}
+    {% set attr = attr|merge({class: input_class ~ (attr.class is defined ? ' ' ~ attr.class : '')}) %}
+    {{ parent() }}
+{% endblock %}
+
+{# ── Checkbox ── #}
+{% block checkbox_widget %}
+    {% set attr = attr|merge({class: 'w-4 h-4 rounded border-gray-600 bg-gray-700 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-gray-900' ~ (attr.class is defined ? ' ' ~ attr.class : '')}) %}
+    {{ parent() }}
+{% endblock %}
+
+{# ── Radio ── #}
+{% block radio_widget %}
+    {% set attr = attr|merge({class: 'w-4 h-4 border-gray-600 bg-gray-700 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-gray-900' ~ (attr.class is defined ? ' ' ~ attr.class : '')}) %}
+    {{ parent() }}
+{% endblock %}
+
+{# ── Submit button ── #}
+{% block submit_widget %}
+    {% set attr = attr|merge({class: 'w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl transition cursor-pointer' ~ (attr.class is defined ? ' ' ~ attr.class : '')}) %}
+    {{ parent() }}
+{% endblock %}
+
+{# ── Label ── #}
+{% block form_label %}
+    {% if label is not same as(false) %}
+        {% set label_attr = label_attr|merge({class: 'block text-sm font-medium text-gray-300 mb-1' ~ (label_attr.class is defined ? ' ' ~ label_attr.class : '')}) %}
+    {% endif %}
+    {{ parent() }}
+{% endblock %}
+
+{# ── Errors ── #}
+{% block form_errors %}
+    {% if errors|length > 0 %}
+        {% for error in errors %}
+            <p class="text-red-400 text-xs mt-1">{{ error.message }}</p>
+        {% endfor %}
+    {% endif %}
+{% endblock %}
+
+{# ── Row (label + widget + errors) ── #}
+{% block form_row %}
+    {% if compound is defined and compound %}
+        {# Fieldset-like rows (e.g. RepeatedType) — no outer label #}
+        <div>
+            {{- form_errors(form) -}}
+            {{- form_widget(form) -}}
+        </div>
+    {% else %}
+        <div>
+            {{- form_label(form) -}}
+            {{- form_widget(form) -}}
+            {{- form_errors(form) -}}
+        </div>
+    {% endif %}
+{% endblock %}
+
+{# ── Checkbox row (label inline, beside the box) ── #}
+{% block checkbox_row %}
+    <div class="flex items-start gap-3">
+        {{- form_widget(form) -}}
+        <div>
+            {{- form_label(form, null, {label_attr: {class: 'text-sm text-gray-400 cursor-pointer'}}) -}}
+            {{- form_errors(form) -}}
+        </div>
+    </div>
+{% endblock %}
