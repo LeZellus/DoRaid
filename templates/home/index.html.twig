@@ -1,23 +1,252 @@
 {% extends 'base.html.twig' %}
+{% import 'components/_ui.html.twig' as ui %}
 
 {% block title %}DoRaid – Accueil{% endblock %}
 
 {% block body %}
+
+{# ── Page non connectée ── #}
+{% if not app.user %}
 <div class="max-w-6xl mx-auto px-6 py-20 text-center">
     <h1 class="text-5xl font-bold text-white mb-6">Bienvenue sur <span class="text-indigo-400">DoRaid</span></h1>
     <p class="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">Organisez et gérez vos raids avec votre guilde.</p>
-
-    {% if app.user %}
-        <p class="text-gray-300 mb-6">Bonjour, <strong class="text-indigo-300">{{ app.user.username }}</strong> !</p>
-    {% else %}
-        <div class="flex items-center justify-center gap-4">
-            <a href="{{ path('app_register') }}" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-8 py-3 rounded-xl transition">
-                Créer un compte
-            </a>
-            <a href="{{ path('app_login') }}" class="border border-gray-600 hover:border-gray-400 text-gray-300 hover:text-white font-semibold px-8 py-3 rounded-xl transition">
-                Se connecter
-            </a>
-        </div>
-    {% endif %}
+    <div class="flex items-center justify-center gap-4">
+        <a href="{{ path('app_register') }}" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-8 py-3 rounded-xl transition">
+            Créer un compte
+        </a>
+        <a href="{{ path('app_login') }}" class="border border-gray-600 hover:border-gray-400 text-gray-300 hover:text-white font-semibold px-8 py-3 rounded-xl transition">
+            Se connecter
+        </a>
+    </div>
 </div>
+
+{% else %}
+
+{# ── Dashboard ── #}
+<div class="max-w-6xl mx-auto px-6 py-10">
+
+    {# ── Header ── #}
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-2xl font-bold text-white">
+                Bonjour, <span class="text-indigo-400">{{ app.user.username }}</span> 👋
+            </h1>
+            <p class="text-sm text-gray-500 mt-0.5">{{ "now"|date('l d MMMM Y')|capitalize }}</p>
+        </div>
+        {{ ui.link_button('Voir les guildes', path('app_guild_index'), 'secondary') }}
+    </div>
+
+    {# ── Stats ── #}
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="{{ ui.card_classes('p-5 text-center') }}">
+            <div class="text-3xl font-bold text-indigo-400">{{ activeRaids|length }}</div>
+            <div class="text-xs text-gray-500 uppercase tracking-wider mt-1">Raid{{ activeRaids|length > 1 ? 's' : '' }} actif{{ activeRaids|length > 1 ? 's' : '' }}</div>
+        </div>
+        <div class="{{ ui.card_classes('p-5 text-center') }}">
+            <div class="text-3xl font-bold text-green-400">{{ completedRaids|length }}</div>
+            <div class="text-xs text-gray-500 uppercase tracking-wider mt-1">Raid{{ completedRaids|length > 1 ? 's' : '' }} terminé{{ completedRaids|length > 1 ? 's' : '' }}</div>
+        </div>
+        <div class="{{ ui.card_classes('p-5 text-center') }}">
+            <div class="text-3xl font-bold text-yellow-400">{{ pendingRaids|length }}</div>
+            <div class="text-xs text-gray-500 uppercase tracking-wider mt-1">Candidature{{ pendingRaids|length > 1 ? 's' : '' }} raid</div>
+        </div>
+        <div class="{{ ui.card_classes('p-5 text-center') }}">
+            <div class="text-3xl font-bold text-white">{{ confirmedMemberships|length }}</div>
+            <div class="text-xs text-gray-500 uppercase tracking-wider mt-1">Guilde{{ confirmedMemberships|length > 1 ? 's' : '' }}</div>
+        </div>
+    </div>
+
+    {# ── Grille principale ── #}
+    <div class="grid gap-6 lg:grid-cols-2">
+
+        {# ── Mes guildes ── #}
+        <div class="space-y-4">
+            <div class="{{ ui.card_classes('overflow-hidden') }}">
+                <div class="{{ ui.card_header_classes('flex items-center justify-between') }}">
+                    <h2 class="font-semibold text-white">Mes guildes</h2>
+                    {{ ui.link_button('+ Créer', path('app_guild_new'), 'secondary') }}
+                </div>
+
+                {% if confirmedMemberships is empty and pendingMemberships is empty %}
+                    <div class="{{ ui.card_body_classes('py-8 text-center') }}">
+                        <p class="text-gray-500 text-sm mb-4">Vous n'êtes encore dans aucune guilde.</p>
+                        {{ ui.link_button('Rejoindre une guilde', path('app_guild_index'), 'primary') }}
+                    </div>
+                {% else %}
+                    {% if confirmedMemberships is not empty %}
+                        <ul class="divide-y divide-gray-800/60">
+                            {% for m in confirmedMemberships %}
+                                <li>
+                                    <a href="{{ path('app_guild_show', {id: m.guild.id}) }}"
+                                       class="flex items-center gap-4 px-5 py-3.5 hover:bg-gray-800/30 transition group">
+                                        <div class="w-9 h-9 rounded-lg bg-indigo-900/40 border border-indigo-800/40 flex items-center justify-center text-sm font-bold text-indigo-300 shrink-0">
+                                            {{ m.guild.name|slice(0,1)|upper }}
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="font-medium text-white text-sm truncate group-hover:text-indigo-300 transition">
+                                                {{ m.guild.name }}
+                                            </div>
+                                            <div class="text-xs text-gray-500 mt-0.5">
+                                                {{ m.character.name }}
+                                                <span class="mx-1 text-gray-700">·</span>
+                                                {{ m.guild.server.name }}
+                                            </div>
+                                        </div>
+                                        {% if m.status.value == 'leader' %}
+                                            <span class="text-xs font-medium bg-yellow-900/40 text-yellow-400 border border-yellow-800/40 rounded-full px-2 py-0.5 shrink-0">
+                                                ⭐ Meneur
+                                            </span>
+                                        {% else %}
+                                            <span class="text-xs text-gray-600 shrink-0">{{ m.status.label() }}</span>
+                                        {% endif %}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+
+                    {% if pendingMemberships is not empty %}
+                        <div class="border-t border-gray-800/60 bg-yellow-900/5">
+                            <div class="px-5 py-2.5">
+                                <p class="text-xs font-semibold text-yellow-500 uppercase tracking-wider">
+                                    En attente d'approbation ({{ pendingMemberships|length }})
+                                </p>
+                            </div>
+                            <ul class="divide-y divide-gray-800/40">
+                                {% for m in pendingMemberships %}
+                                    <li class="flex items-center gap-4 px-5 py-3 opacity-70">
+                                        <div class="w-9 h-9 rounded-lg bg-gray-800 border border-gray-700 flex items-center justify-center text-sm font-bold text-gray-400 shrink-0">
+                                            {{ m.guild.name|slice(0,1)|upper }}
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="font-medium text-white text-sm truncate">{{ m.guild.name }}</div>
+                                            <div class="text-xs text-gray-500 mt-0.5">
+                                                {{ m.character.name }}
+                                                <span class="mx-1 text-gray-700">·</span>
+                                                {{ m.guild.server.name }}
+                                            </div>
+                                        </div>
+                                        <span class="text-xs font-medium bg-yellow-900/40 text-yellow-500 border border-yellow-800/40 rounded-full px-2 py-0.5 shrink-0">
+                                            En attente
+                                        </span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+        {# ── Mes raids ── #}
+        <div class="space-y-4">
+
+            {# Raids actifs #}
+            <div class="{{ ui.card_classes('overflow-hidden') }}">
+                <div class="{{ ui.card_header_classes() }}">
+                    <h2 class="font-semibold text-white">Raids en cours</h2>
+                </div>
+
+                {% if activeRaids is empty %}
+                    <div class="{{ ui.card_body_classes('py-8 text-center') }}">
+                        <p class="text-gray-500 text-sm">Vous ne participez à aucun raid actif.</p>
+                    </div>
+                {% else %}
+                    <ul class="divide-y divide-gray-800/60">
+                        {% for p in activeRaids %}
+                            <li>
+                                <a href="{{ path('app_raid_show', {id: p.raid.id}) }}"
+                                   class="flex items-center gap-4 px-5 py-3.5 hover:bg-gray-800/30 transition group">
+                                    <div class="flex-1 min-w-0">
+                                        <div class="font-medium text-white text-sm truncate group-hover:text-indigo-300 transition">
+                                            {{ p.raid.raidTemplate.name }}
+                                        </div>
+                                        <div class="text-xs text-gray-500 mt-0.5">
+                                            {{ p.raid.guild.name }}
+                                            <span class="mx-1 text-gray-700">·</span>
+                                            {{ p.character.name }}
+                                            {% if p.raid.scheduledAt %}
+                                                <span class="mx-1 text-gray-700">·</span>
+                                                <span class="text-indigo-400">{{ p.raid.scheduledAt|date('d/m à H:i') }}</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="text-right shrink-0">
+                                        <div class="text-xs text-gray-500">
+                                            {{ p.raid.acceptedParticipants|length }}/{{ p.raid.raidTemplate.maxParticipants }}
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            {# Candidatures raid en attente #}
+            {% if pendingRaids is not empty %}
+                <div class="{{ ui.card_classes('overflow-hidden') }}">
+                    <div class="{{ ui.card_header_classes() }}">
+                        <h2 class="font-semibold text-yellow-400">Candidatures en attente</h2>
+                    </div>
+                    <ul class="divide-y divide-gray-800/60">
+                        {% for p in pendingRaids %}
+                            <li>
+                                <a href="{{ path('app_raid_show', {id: p.raid.id}) }}"
+                                   class="flex items-center gap-4 px-5 py-3.5 hover:bg-gray-800/30 transition group opacity-80">
+                                    <div class="flex-1 min-w-0">
+                                        <div class="font-medium text-white text-sm truncate group-hover:text-yellow-300 transition">
+                                            {{ p.raid.raidTemplate.name }}
+                                        </div>
+                                        <div class="text-xs text-gray-500 mt-0.5">
+                                            {{ p.raid.guild.name }}
+                                            <span class="mx-1 text-gray-700">·</span>
+                                            {{ p.character.name }}
+                                        </div>
+                                    </div>
+                                    <span class="text-xs font-medium bg-yellow-900/40 text-yellow-400 border border-yellow-800/40 rounded-full px-2 py-0.5 shrink-0">
+                                        En attente
+                                    </span>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            {# Raids terminés (5 derniers) #}
+            {% if completedRaids is not empty %}
+                <div class="{{ ui.card_classes('overflow-hidden') }}">
+                    <div class="{{ ui.card_header_classes('flex items-center justify-between') }}">
+                        <h2 class="font-semibold text-gray-400">Raids terminés</h2>
+                        <span class="text-xs text-gray-600">{{ completedRaids|length }} au total</span>
+                    </div>
+                    <ul class="divide-y divide-gray-800/40">
+                        {% for p in completedRaids|slice(0, 5) %}
+                            <li class="flex items-center gap-4 px-5 py-3 opacity-60">
+                                <div class="flex-1 min-w-0">
+                                    <div class="font-medium text-white text-sm truncate">
+                                        {{ p.raid.raidTemplate.name }}
+                                    </div>
+                                    <div class="text-xs text-gray-600 mt-0.5">
+                                        {{ p.raid.guild.name }}
+                                        <span class="mx-1 text-gray-700">·</span>
+                                        {{ p.character.name }}
+                                        <span class="mx-1 text-gray-700">·</span>
+                                        {{ p.raid.createdAt|date('d/m/Y') }}
+                                    </div>
+                                </div>
+                                <span class="text-xs text-gray-600 shrink-0">Terminé</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+</div>
+{% endif %}
+
 {% endblock %}
