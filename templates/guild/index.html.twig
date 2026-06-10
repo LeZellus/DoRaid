@@ -4,10 +4,16 @@
 {% block title %}Guildes – DoRaid{% endblock %}
 
 {% block body %}
-<div class="max-w-4xl mx-auto px-6 py-12">
+<div class="max-w-6xl mx-auto px-6 py-12">
 
+    {# ── En-tête ── #}
     <div class="flex items-center justify-between mb-8">
-        <h1 class="text-3xl font-bold text-white">Guildes</h1>
+        <div>
+            <h1 class="text-3xl font-bold text-white">Guildes</h1>
+            {% set total = 0 %}
+            {% for _, guilds in byServer %}{% set total = total + guilds|length %}{% endfor %}
+            <p class="text-sm text-gray-500 mt-1">{{ total }} guilde{{ total > 1 ? 's' : '' }}</p>
+        </div>
         {{ ui.link_button('+ Créer une guilde', path('app_guild_new'), 'primary') }}
     </div>
 
@@ -17,31 +23,141 @@
             {{ ui.link_button('Créer la première guilde', path('app_guild_new'), 'primary') }}
         </div>
     {% else %}
-        <div class="space-y-8">
+
+        {# ── Barre de recherche + filtres serveur ── #}
+        <div class="flex flex-col sm:flex-row gap-3 mb-6">
+            <div class="relative flex-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+                </svg>
+                <input
+                    id="guild-search"
+                    type="text"
+                    placeholder="Rechercher une guilde…"
+                    autocomplete="off"
+                    class="w-full bg-gray-900 border border-gray-700 text-white rounded-lg pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder-gray-600"
+                >
+            </div>
+
+            <div class="flex items-center gap-2 flex-wrap">
+                <button data-server="" class="server-filter px-3 py-2 rounded-lg text-xs font-medium border transition
+                    bg-indigo-600 border-indigo-500 text-white">
+                    Tous
+                </button>
+                {% for serverName, guilds in byServer %}
+                    <button data-server="{{ serverName }}" class="server-filter px-3 py-2 rounded-lg text-xs font-medium border transition
+                        bg-transparent border-gray-700 text-gray-400 hover:border-gray-500 hover:text-gray-200">
+                        {{ serverName }}
+                        <span class="ml-1 text-gray-600 server-count">{{ guilds|length }}</span>
+                    </button>
+                {% endfor %}
+            </div>
+        </div>
+
+        {# ── Grille des guildes ── #}
+        <div id="guild-grid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {% for serverName, guilds in byServer %}
-                <div>
-                    <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-widest mb-3">
-                        ⚔ {{ serverName }}
-                    </h2>
-                    <div class="grid gap-3">
-                        {% for guild in guilds %}
-                            <a href="{{ path('app_guild_show', {id: guild.id}) }}"
-                               class="{{ ui.card_classes('flex items-center justify-between px-5 py-4 hover:border-indigo-700 transition cursor-pointer') }}">
-                                <div>
-                                    <span class="font-semibold text-white">{{ guild.name }}</span>
-                                    <span class="ml-2 text-sm text-gray-500">par {{ guild.owner.username }}</span>
+                {% for guild in guilds %}
+                    {% set memberCount = guild.confirmed|length %}
+                    {% set raidCount   = guild.raids|length %}
+                    <a href="{{ path('app_guild_show', {id: guild.id}) }}"
+                       class="guild-card group block rounded-2xl bg-gray-900 border border-gray-800 hover:border-indigo-700/60 transition-all hover:shadow-lg hover:shadow-indigo-950/30"
+                       data-name="{{ guild.name|lower }}"
+                       data-server="{{ serverName }}">
+                        <div class="p-5">
+                            <div class="flex items-start gap-4">
+                                {# Avatar initiale #}
+                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-800 flex items-center justify-center text-lg font-bold text-white shrink-0 group-hover:from-indigo-500 group-hover:to-indigo-700 transition-all">
+                                    {{ guild.name|slice(0,1)|upper }}
                                 </div>
-                                <div class="flex items-center gap-3">
-                                    {{ ui.badge(guild.confirmed|length ~ ' membre' ~ (guild.confirmed|length > 1 ? 's' : '')) }}
-                                    <span class="text-gray-600">→</span>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="font-semibold text-white truncate group-hover:text-indigo-300 transition">
+                                            {{ guild.name }}
+                                        </span>
+                                    </div>
+                                    <div class="text-xs text-gray-500 mt-0.5">par {{ guild.owner.username }}</div>
+                                    <span class="inline-block mt-2 text-xs font-medium bg-gray-800 border border-gray-700 text-gray-400 rounded-full px-2 py-0.5">
+                                        ⚔ {{ serverName }}
+                                    </span>
                                 </div>
-                            </a>
-                        {% endfor %}
-                    </div>
-                </div>
+                            </div>
+
+                            <div class="flex items-center gap-4 mt-4 pt-4 border-t border-gray-800/60">
+                                <div class="flex items-center gap-1.5 text-xs text-gray-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                                    </svg>
+                                    <span>{{ memberCount }} membre{{ memberCount > 1 ? 's' : '' }}</span>
+                                </div>
+                                {% if raidCount > 0 %}
+                                    <div class="flex items-center gap-1.5 text-xs text-gray-400">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <span>{{ raidCount }} raid{{ raidCount > 1 ? 's' : '' }}</span>
+                                    </div>
+                                {% endif %}
+                                <div class="ml-auto text-xs text-gray-600">
+                                    {{ guild.createdAt|date('d/m/Y') }}
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
             {% endfor %}
         </div>
+
+        {# Message aucun résultat #}
+        <div id="no-results" class="hidden text-center py-16">
+            <p class="text-gray-500 text-sm">Aucune guilde ne correspond à votre recherche.</p>
+        </div>
+
     {% endif %}
 
 </div>
+
+<script>
+(function () {
+    const searchInput  = document.getElementById('guild-search');
+    const filterBtns   = document.querySelectorAll('.server-filter');
+    const cards        = document.querySelectorAll('.guild-card');
+    const noResults    = document.getElementById('no-results');
+    const grid         = document.getElementById('guild-grid');
+
+    let activeServer = '';
+    let searchTerm   = '';
+
+    function applyFilters() {
+        let visible = 0;
+        cards.forEach(card => {
+            const nameMatch   = card.dataset.name.includes(searchTerm);
+            const serverMatch = activeServer === '' || card.dataset.server === activeServer;
+            const show = nameMatch && serverMatch;
+            card.style.display = show ? '' : 'none';
+            if (show) visible++;
+        });
+        noResults.classList.toggle('hidden', visible > 0);
+        grid.classList.toggle('hidden', visible === 0);
+    }
+
+    searchInput.addEventListener('input', function () {
+        searchTerm = this.value.toLowerCase().trim();
+        applyFilters();
+    });
+
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function () {
+            activeServer = this.dataset.server;
+            filterBtns.forEach(b => {
+                b.classList.remove('bg-indigo-600', 'border-indigo-500', 'text-white');
+                b.classList.add('bg-transparent', 'border-gray-700', 'text-gray-400');
+            });
+            this.classList.remove('bg-transparent', 'border-gray-700', 'text-gray-400');
+            this.classList.add('bg-indigo-600', 'border-indigo-500', 'text-white');
+            applyFilters();
+        });
+    });
+})();
+</script>
 {% endblock %}
