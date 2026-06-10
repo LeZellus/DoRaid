@@ -17,7 +17,7 @@ class Character
     #[ORM\Column(length: 50)]
     private string $name;
 
-    #[ORM\ManyToOne(inversedBy: 'characters')]
+    #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
