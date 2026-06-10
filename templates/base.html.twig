@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}DoRaid{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚔️</text></svg>">
+        {% block stylesheets %}{% endblock %}
+        {% block javascripts %}
+            {% block importmap %}{{ importmap('app') }}{% endblock %}
+        {% endblock %}
+    </head>
+    <body class="min-h-screen bg-gray-950 text-gray-100 flex flex-col">
+        <nav class="bg-gray-900 border-b border-gray-800 px-6 py-4">
+            <div class="max-w-6xl mx-auto flex items-center justify-between">
+                <a href="{{ path('app_home') }}" class="text-xl font-bold text-indigo-400 hover:text-indigo-300">DoRaid</a>
+                <div class="flex items-center gap-4">
+                    {% if app.user %}
+                        <span class="text-sm text-gray-400">{{ app.user.username }}</span>
+                        <a href="{{ path('app_logout') }}" class="text-sm text-gray-300 hover:text-white transition">Déconnexion</a>
+                    {% else %}
+                        <a href="{{ path('app_login') }}" class="text-sm text-gray-300 hover:text-white transition">Connexion</a>
+                        <a href="{{ path('app_register') }}" class="text-sm bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg transition">Inscription</a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+
+        <main class="flex-1">
+            {% for type, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="max-w-6xl mx-auto mt-4 px-6">
+                        <div class="px-4 py-3 rounded-lg {% if type == 'success' %}bg-green-900 text-green-200{% elseif type == 'error' %}bg-red-900 text-red-200{% else %}bg-blue-900 text-blue-200{% endif %}">
+                            {{ message }}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+
+            {% block body %}{% endblock %}
+        </main>
+
+        <footer class="bg-gray-900 border-t border-gray-800 text-center py-4 text-sm text-gray-500">
+            DoRaid &copy; {{ "now"|date("Y") }}
+        </footer>
+    </body>
+</html>
