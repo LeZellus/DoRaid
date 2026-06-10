@@ -18,7 +18,8 @@
     <p class="text-gray-500 text-sm mb-8">Guilde <span class="text-gray-300">{{ guild.name }}</span> · {{ guild.server.name }}</p>
 
     {{ form_start(form) }}
-    <input type="hidden" name="raid_template_id" id="raid_template_id" value="">
+    <input type="hidden" name="raid_template_id" id="raid_template_id"
+           value="{{ app.request.request.get('raid_template_id') }}">
 
     {# ── Étape 1 : choisir le type de raid ── #}
     <p class="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-4">1. Choisir le raid</p>
@@ -36,7 +37,7 @@
     </div>
 
     {# ── Étape 2 : détails + confirmation ── #}
-    <div id="form-details" class="hidden space-y-6">
+    <div id="form-details" class="{{ not form.vars.valid ? '' : 'hidden' }} space-y-6">
 
         {{ ui.divider('Détails du raid') }}
 
@@ -74,5 +75,15 @@ function selectTemplate(el) {
     document.getElementById('form-details').classList.remove('hidden');
     document.getElementById('form-details').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
+
+(function () {
+    var selectedId = document.getElementById('raid_template_id').value;
+    if (selectedId) {
+        var card = document.querySelector('.template-card[data-id="' + selectedId + '"]');
+        if (card) {
+            card.classList.add('border-indigo-500', 'bg-indigo-950/20', 'ring-2', 'ring-indigo-500/30');
+        }
+    }
+})();
 </script>
 {% endblock %}
