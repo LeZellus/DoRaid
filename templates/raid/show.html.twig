@@ -32,7 +32,7 @@
             <div class="flex items-center gap-2">
                 <button type="button" id="share-btn"
                         class="inline-flex items-center justify-center gap-2 font-semibold rounded-xl transition bg-blue-600 hover:bg-blue-500 text-white py-1 px-3 text-xs">
-                    <span id="share-label">Copier le lien</span>
+                    <span id="share-label">Partager le raid</span>
                 </button>
                 {% if isCreator %}
                     {% if raid.status == constant('App\\Entity\\RaidStatus::Open') %}
@@ -309,7 +309,7 @@ document.getElementById('share-btn').addEventListener('click', async function ()
     try {
         await navigator.clipboard.writeText(url);
         label.textContent = 'Lien copié !';
-        setTimeout(() => label.textContent = 'Copier le lien', 2000);
+        setTimeout(() => label.textContent = 'Partager le raid', 2000);
     } catch {
         prompt('Copie ce lien :', url);
     }
