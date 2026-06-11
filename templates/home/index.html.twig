@@ -36,6 +36,58 @@
         {{ ui.link_button('Voir les guildes', path('app_guild_index'), 'secondary') }}
     </div>
 
+    {# ── Notifications en attente ── #}
+    {% if pendingGuildMembers is not empty or pendingRaidParticipants is not empty %}
+    <div class="mb-8 space-y-3">
+
+        {% if pendingGuildMembers is not empty %}
+        {% set byGuild = {} %}
+        {% for m in pendingGuildMembers %}
+            {% set key = m.guild.id %}
+            {% if byGuild[key] is not defined %}
+                {% set byGuild = byGuild|merge({(key): {guild: m.guild, count: 0}}) %}
+            {% endif %}
+            {% set byGuild = byGuild|merge({(key): {guild: m.guild, count: byGuild[key].count + 1}}) %}
+        {% endfor %}
+        {% for item in byGuild %}
+        <a href="{{ path('app_guild_members', {slug: item.guild.slug}) }}"
+           class="flex items-center gap-3 bg-yellow-900/10 border border-yellow-800/30 rounded-xl px-5 py-3.5 hover:bg-yellow-900/20 transition">
+            <span class="text-yellow-400 text-lg shrink-0">👥</span>
+            <p class="text-sm text-yellow-200 flex-1">
+                <span class="font-semibold">{{ item.count }} demande{{ item.count > 1 ? 's' : '' }}</span>
+                en attente dans la guilde <span class="font-semibold">{{ item.guild.name }}</span>
+            </p>
+            <span class="text-xs text-yellow-500 shrink-0">Voir →</span>
+        </a>
+        {% endfor %}
+        {% endif %}
+
+        {% if pendingRaidParticipants is not empty %}
+        {% set byRaid = {} %}
+        {% for p in pendingRaidParticipants %}
+            {% set key = p.raid.id %}
+            {% if byRaid[key] is not defined %}
+                {% set byRaid = byRaid|merge({(key): {raid: p.raid, count: 0}}) %}
+            {% endif %}
+            {% set byRaid = byRaid|merge({(key): {raid: p.raid, count: byRaid[key].count + 1}}) %}
+        {% endfor %}
+        {% for item in byRaid %}
+        <a href="{{ path('app_raid_show', {id: item.raid.id}) }}"
+           class="flex items-center gap-3 bg-indigo-900/10 border border-indigo-800/30 rounded-xl px-5 py-3.5 hover:bg-indigo-900/20 transition">
+            <span class="text-indigo-400 text-lg shrink-0">⚔</span>
+            <p class="text-sm text-indigo-200 flex-1">
+                <span class="font-semibold">{{ item.count }} candidature{{ item.count > 1 ? 's' : '' }}</span>
+                en attente sur le raid <span class="font-semibold">{{ item.raid.raidTemplate.name }}</span>
+                <span class="text-indigo-400/60">· {{ item.raid.guild.name }}</span>
+            </p>
+            <span class="text-xs text-indigo-500 shrink-0">Voir →</span>
+        </a>
+        {% endfor %}
+        {% endif %}
+
+    </div>
+    {% endif %}
+
     {# ── Stats ── #}
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div class="{{ ui.card_classes('p-5 text-center') }}">

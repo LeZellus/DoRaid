@@ -60,11 +60,13 @@ class HomeController extends AbstractController
         }
 
         return $this->render('home/index.html.twig', [
-            'activeRaids'          => $activeRaids,
-            'pendingRaids'         => $pendingRaids,
-            'completedRaids'       => $completedRaids,
-            'confirmedMemberships' => $confirmedMemberships,
-            'pendingMemberships'   => $pendingMemberships,
+            'activeRaids'              => $activeRaids,
+            'pendingRaids'             => $pendingRaids,
+            'completedRaids'           => $completedRaids,
+            'confirmedMemberships'     => $confirmedMemberships,
+            'pendingMemberships'       => $pendingMemberships,
+            'pendingGuildMembers'      => $membershipRepo->findPendingForLeader($user),
+            'pendingRaidParticipants'  => $participantRepo->findPendingForCreator($user),
         ]);
     }
 }
