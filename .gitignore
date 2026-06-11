@@ -17,3 +17,5 @@
 ###> symfony/asset-mapper ###
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+/public/uploads/
