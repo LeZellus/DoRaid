@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\String\Slugger\AsciiSlugger;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: GuildRepository::class)]
 class Guild
@@ -18,6 +19,12 @@ class Guild
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 2, max: 100)]
+    #[Assert\Regex(
+        pattern: '/^[\p{L} ]+$/u',
+        message: 'Le nom ne peut contenir que des lettres et des espaces.',
+    )]
     private string $name;
 
     #[ORM\Column(length: 160, unique: true)]

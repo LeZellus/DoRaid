@@ -10,8 +10,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotBlank;
 
 class GuildEditType extends AbstractType
 {
@@ -19,11 +17,7 @@ class GuildEditType extends AbstractType
     {
         $builder
             ->add('name', TextType::class, [
-                'label'       => 'Nom de la guilde',
-                'constraints' => [
-                    new NotBlank(),
-                    new Length(['min' => 2, 'max' => 100]),
-                ],
+                'label' => 'Nom de la guilde',
             ])
             ->add('description', TextareaType::class, [
                 'label'    => 'Description',
