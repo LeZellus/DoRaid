@@ -15,7 +15,7 @@
             Toutes les guildes
         </a>
         {% if isLeader %}
-            <form method="post" action="{{ path('app_guild_delete', {id: guild.id}) }}"
+            <form method="post" action="{{ path('app_guild_delete', {slug: guild.slug}) }}"
                   onsubmit="return confirm('Supprimer la guilde {{ guild.name }} ? Cette action est irréversible et supprime tous les raids et membres.')">
                 <input type="hidden" name="_token" value="{{ csrf_token('delete_guild_' ~ guild.id) }}">
                 {{ ui.button('Supprimer la guilde', 'danger', 'submit', 'py-1.5 px-3 text-xs') }}
@@ -95,7 +95,7 @@
             <div class="{{ ui.card_header_classes('flex items-center justify-between') }}">
                 <h2 class="font-semibold text-white">Membres</h2>
                 {% if isLeader and guild.pending|length > 0 %}
-                    <a href="{{ path('app_guild_members', {id: guild.id}) }}"
+                    <a href="{{ path('app_guild_members', {slug: guild.slug}) }}"
                        class="text-xs font-medium text-yellow-400 hover:text-yellow-300 transition">
                         {{ guild.pending|length }} en attente →
                     </a>
@@ -125,7 +125,7 @@
                             </div>
                         {% endif %}
                     </div>
-                    <a href="{{ path('app_guild_members', {id: guild.id}) }}"
+                    <a href="{{ path('app_guild_members', {slug: guild.slug}) }}"
                        class="inline-flex items-center gap-1.5 text-sm text-indigo-400 hover:text-indigo-300 transition font-medium">
                         Voir les {{ guild.confirmed|length }} membres
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
@@ -150,7 +150,7 @@
                     </p>
                     {{ ui.link_button('+ Créer un personnage', path('app_character_new'), 'secondary') }}
                 {% else %}
-                    <form method="post" action="{{ path('app_guild_join', {id: guild.id}) }}" class="space-y-4">
+                    <form method="post" action="{{ path('app_guild_join', {slug: guild.slug}) }}" class="space-y-4">
                         <input type="hidden" name="_token" value="{{ csrf_token('join_guild_' ~ guild.id) }}">
                         <div>
                             {{ ui.label('character_id', 'Personnage') }}

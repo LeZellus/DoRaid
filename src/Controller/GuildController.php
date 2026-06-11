@@ -48,13 +48,13 @@ class GuildController extends AbstractController
             $em->flush();
 
             $this->addFlash('success', 'Guilde créée ! Choisissez votre personnage meneur ci-dessous.');
-            return $this->redirectToRoute('app_guild_show', ['id' => $guild->getId()]);
+            return $this->redirectToRoute('app_guild_show', ['slug' => $guild->getSlug()]);
         }
 
         return $this->render('guild/new.html.twig', ['form' => $form]);
     }
 
-    #[Route('/{id}', name: 'app_guild_show')]
+    #[Route('/{slug}', name: 'app_guild_show')]
     public function show(Guild $guild, CharacterRepository $charRepo, RaidRepository $raidRepo, EntityManagerInterface $em): Response
     {
         $currentUser = $this->getUser();
@@ -83,7 +83,7 @@ class GuildController extends AbstractController
         }
 
         $descriptionForm = $this->createForm(GuildDescriptionType::class, $guild, [
-            'action' => $this->generateUrl('app_guild_description', ['id' => $guild->getId()]),
+            'action' => $this->generateUrl('app_guild_description', ['slug' => $guild->getSlug()]),
         ]);
 
         $eligible            = $charRepo->findEligibleForGuild($currentUser, $guild->getServer());
@@ -101,7 +101,7 @@ class GuildController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/membres', name: 'app_guild_members')]
+    #[Route('/{slug}/membres', name: 'app_guild_members')]
     public function members(Guild $guild): Response
     {
         $currentUser = $this->getUser();
@@ -122,7 +122,7 @@ class GuildController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/description', name: 'app_guild_description', methods: ['POST'])]
+    #[Route('/{slug}/description', name: 'app_guild_description', methods: ['POST'])]
     public function updateDescription(Guild $guild, Request $request, EntityManagerInterface $em): Response
     {
         $currentUser = $this->getUser();
@@ -146,15 +146,15 @@ class GuildController extends AbstractController
             $this->addFlash('success', 'Description mise à jour.');
         }
 
-        return $this->redirectToRoute('app_guild_show', ['id' => $guild->getId()]);
+        return $this->redirectToRoute('app_guild_show', ['slug' => $guild->getSlug()]);
     }
 
-    #[Route('/{id}/rejoindre', name: 'app_guild_join', methods: ['POST'])]
+    #[Route('/{slug}/rejoindre', name: 'app_guild_join', methods: ['POST'])]
     public function join(Guild $guild, Request $request, CharacterRepository $charRepo, GuildMembershipRepository $membershipRepo, EntityManagerInterface $em): Response
     {
         if (!$this->isCsrfTokenValid('join_guild_' . $guild->getId(), $request->request->get('_token'))) {
             $this->addFlash('error', 'Token de sécurité invalide. Rechargez la page et réessayez.');
-            return $this->redirectToRoute('app_guild_show', ['id' => $guild->getId()]);
+            return $this->redirectToRoute('app_guild_show', ['slug' => $guild->getSlug()]);
         }
 
         $currentUser = $this->getUser();
@@ -163,17 +163,17 @@ class GuildController extends AbstractController
 
         if (!$character || (int) $character->getUser()->getId() !== (int) $currentUser->getId()) {
             $this->addFlash('error', 'Personnage invalide.');
-            return $this->redirectToRoute('app_guild_show', ['id' => $guild->getId()]);
+            return $this->redirectToRoute('app_guild_show', ['slug' => $guild->getSlug()]);
         }
 
         if ((int) $character->getServer()->getId() !== (int) $guild->getServer()->getId()) {
             $this->addFlash('error', 'Ce personnage n\'est pas sur le même serveur que la guilde.');
-            return $this->redirectToRoute('app_guild_show', ['id' => $guild->getId()]);
+            return $this->redirectToRoute('app_guild_show', ['slug' => $guild->getSlug()]);
         }
 
         if ($membershipRepo->findOneBy(['character' => $character]) !== null) {
             $this->addFlash('error', 'Ce personnage est déjà dans une guilde.');
-            return $this->redirectToRoute('app_guild_show', ['id' => $guild->getId()]);
+            return $this->redirectToRoute('app_guild_show', ['slug' => $guild->getSlug()]);
         }
 
         $isOwner = (int) $guild->getOwner()->getId() === (int) $currentUser->getId();
@@ -194,7 +194,7 @@ class GuildController extends AbstractController
         };
 
         $this->addFlash('success', $msg);
-        return $this->redirectToRoute('app_guild_show', ['id' => $guild->getId()]);
+        return $this->redirectToRoute('app_guild_show', ['slug' => $guild->getSlug()]);
     }
 
     #[Route('/membres/{id}/approuver', name: 'app_guild_approve', methods: ['POST'])]
@@ -214,7 +214,7 @@ class GuildController extends AbstractController
         $em->flush();
 
         $this->addFlash('success', $membership->getCharacter()->getName() . ' est maintenant membre.');
-        return $this->redirectToRoute('app_guild_members', ['id' => $guild->getId()]);
+        return $this->redirectToRoute('app_guild_members', ['slug' => $guild->getSlug()]);
     }
 
     #[Route('/membres/{id}/refuser', name: 'app_guild_reject', methods: ['POST'])]
@@ -232,7 +232,7 @@ class GuildController extends AbstractController
 
         if ($membership->getStatus() === MemberStatus::Leader) {
             $this->addFlash('error', 'Le meneur ne peut pas être exclu.');
-            return $this->redirectToRoute('app_guild_members', ['id' => $guild->getId()]);
+            return $this->redirectToRoute('app_guild_members', ['slug' => $guild->getSlug()]);
         }
 
         $name = $membership->getCharacter()->getName();
@@ -240,10 +240,10 @@ class GuildController extends AbstractController
         $em->flush();
 
         $this->addFlash('success', $name . ' a été retiré de la guilde.');
-        return $this->redirectToRoute('app_guild_members', ['id' => $guild->getId()]);
+        return $this->redirectToRoute('app_guild_members', ['slug' => $guild->getSlug()]);
     }
 
-    #[Route('/{id}/supprimer', name: 'app_guild_delete', methods: ['POST'])]
+    #[Route('/{slug}/supprimer', name: 'app_guild_delete', methods: ['POST'])]
     public function delete(Guild $guild, Request $request, EntityManagerInterface $em): Response
     {
         if (!$this->isCsrfTokenValid('delete_guild_' . $guild->getId(), $request->request->get('_token'))) {
@@ -285,16 +285,16 @@ class GuildController extends AbstractController
 
         if ($membership->getStatus() === MemberStatus::Leader) {
             $this->addFlash('error', 'Le meneur ne peut pas quitter la guilde.');
-            return $this->redirectToRoute('app_guild_show', ['id' => $membership->getGuild()->getId()]);
+            return $this->redirectToRoute('app_guild_show', ['slug' => $membership->getGuild()->getSlug()]);
         }
 
-        $guildId = $membership->getGuild()->getId();
+        $guildSlug = $membership->getGuild()->getSlug();
         $em->remove($membership);
         $em->flush();
 
         $this->addFlash('success', 'Vous avez quitté la guilde.');
 
         $referer = $request->headers->get('referer');
-        return $referer ? $this->redirect($referer) : $this->redirectToRoute('app_guild_show', ['id' => $guildId]);
+        return $referer ? $this->redirect($referer) : $this->redirectToRoute('app_guild_show', ['slug' => $guildSlug]);
     }
 }

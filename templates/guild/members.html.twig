@@ -10,7 +10,7 @@
     <nav class="flex items-center gap-2 text-sm text-gray-500 mb-6">
         <a href="{{ path('app_guild_index') }}" class="hover:text-gray-300 transition">Guildes</a>
         <span class="text-gray-700">/</span>
-        <a href="{{ path('app_guild_show', {id: guild.id}) }}" class="hover:text-gray-300 transition">{{ guild.name }}</a>
+        <a href="{{ path('app_guild_show', {slug: guild.slug}) }}" class="hover:text-gray-300 transition">{{ guild.name }}</a>
         <span class="text-gray-700">/</span>
         <span class="text-gray-300">Membres</span>
     </nav>

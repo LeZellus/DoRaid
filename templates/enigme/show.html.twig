@@ -23,7 +23,7 @@
 
     {# ── Breadcrumb ── #}
     <nav class="flex items-center gap-2 text-sm text-gray-500 mb-6">
-        <a href="{{ path('app_guild_show', {id: enigme.raid.guild.id}) }}"
+        <a href="{{ path('app_guild_show', {slug: enigme.raid.guild.slug}) }}"
            class="hover:text-gray-300 transition">{{ enigme.raid.guild.name }}</a>
         <span class="text-gray-700">/</span>
         <a href="{{ path('app_raid_show', {id: enigme.raid.id}) }}"

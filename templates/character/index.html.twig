@@ -36,7 +36,7 @@
                                         {{ ui.badge(character.gameClass.name) }}
                                         {% set m = character.membership %}
                                         {% if m %}
-                                            <a href="{{ path('app_guild_show', {id: m.guild.id}) }}"
+                                            <a href="{{ path('app_guild_show', {slug: m.guild.slug}) }}"
                                                class="text-xs text-indigo-400 hover:text-indigo-300 transition">
                                                 🛡 {{ m.guild.name }}
                                             </a>

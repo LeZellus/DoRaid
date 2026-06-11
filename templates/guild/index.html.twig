@@ -57,7 +57,7 @@
                 {% for guild in guilds %}
                     {% set memberCount = guild.confirmed|length %}
                     {% set raidCount   = guild.raids|length %}
-                    <a href="{{ path('app_guild_show', {id: guild.id}) }}"
+                    <a href="{{ path('app_guild_show', {slug: guild.slug}) }}"
                        class="guild-card group block rounded-2xl bg-gray-900 border border-gray-800 hover:border-indigo-700/60 transition-all hover:shadow-lg hover:shadow-indigo-950/30"
                        data-name="{{ guild.name|lower }}"
                        data-server="{{ serverName }}">

@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 
 #[ORM\Entity(repositoryClass: GuildRepository::class)]
 class Guild
@@ -18,6 +19,9 @@ class Guild
 
     #[ORM\Column(length: 100)]
     private string $name;
+
+    #[ORM\Column(length: 160, unique: true)]
+    private string $slug;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
@@ -49,7 +53,14 @@ class Guild
     public function getId(): ?int { return $this->id; }
 
     public function getName(): string { return $this->name; }
-    public function setName(string $name): static { $this->name = $name; return $this; }
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+        $this->slug = (new AsciiSlugger('fr'))->slug($name)->lower()->toString();
+        return $this;
+    }
+
+    public function getSlug(): string { return $this->slug; }
 
     public function getDescription(): ?string { return $this->description; }
     public function setDescription(?string $d): static { $this->description = $d; return $this; }
