@@ -31,7 +31,7 @@
             <h1 class="text-2xl font-bold text-white">
                 Bonjour, <span class="text-indigo-400">{{ app.user.username }}</span> 👋
             </h1>
-            <p class="text-sm text-gray-500 mt-0.5">{{ "now"|date('l d MMMM Y')|capitalize }}</p>
+            <p class="text-sm text-gray-500 mt-0.5">{{ "now"|date_fr }}</p>
         </div>
         {{ ui.link_button('Voir les guildes', path('app_guild_index'), 'secondary') }}
     </div>
