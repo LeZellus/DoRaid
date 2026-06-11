@@ -29,7 +29,7 @@ class RaidCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('Raid')
             ->setEntityLabelInPlural('Raids')
             ->setDefaultSort(['createdAt' => 'DESC'])
-            ->setPageSize(50)
+            ->setPaginatorPageSize(50)
             ->showEntityActionsInlined();
     }
 

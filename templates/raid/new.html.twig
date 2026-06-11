@@ -29,7 +29,13 @@
                     data-id="{{ template.id }}"
                     onclick="selectTemplate(this)"
                     class="template-card flex flex-col items-center gap-2 px-5 py-6 rounded-2xl border-2 border-gray-700 bg-gray-900 hover:border-indigo-500 hover:bg-indigo-950/20 transition text-center cursor-pointer">
-                <span class="text-2xl">⚔</span>
+                {% if template.imagePath %}
+                    <img src="{{ asset('uploads/raid-templates/' ~ template.imagePath) }}"
+                         alt="{{ template.name }}"
+                         class="w-16 h-16 rounded-xl object-cover">
+                {% else %}
+                    <span class="text-2xl">⚔</span>
+                {% endif %}
                 <span class="font-semibold text-white text-lg">{{ template.name }}</span>
                 <span class="text-xs text-gray-400">{{ template.minParticipants }} – {{ template.maxParticipants }} joueurs</span>
             </button>

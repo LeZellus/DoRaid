@@ -24,7 +24,7 @@ class EnigmeTemplateCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('Énigme (template)')
             ->setEntityLabelInPlural('Énigmes des templates')
             ->setDefaultSort(['raidTemplate' => 'ASC', 'orderNumber' => 'ASC'])
-            ->setPageSize(50)
+            ->setPaginatorPageSize(50)
             ->showEntityActionsInlined();
     }
 

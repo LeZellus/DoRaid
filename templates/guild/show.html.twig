@@ -224,7 +224,15 @@
                 {% for raid in raids %}
                     <li>
                         <a href="{{ path('app_raid_show', {id: raid.id}) }}"
-                           class="flex items-center justify-between px-6 py-4 hover:bg-gray-800/30 transition">
+                           class="flex items-center gap-4 px-6 py-4 hover:bg-gray-800/30 transition">
+                            {% if raid.raidTemplate.imagePath %}
+                                <img src="{{ asset('uploads/raid-templates/' ~ raid.raidTemplate.imagePath) }}"
+                                     alt="{{ raid.raidTemplate.name }}"
+                                     class="w-10 h-10 rounded-lg object-cover shrink-0">
+                            {% else %}
+                                <span class="w-10 h-10 rounded-lg bg-indigo-900/40 border border-indigo-800/30 flex items-center justify-center text-lg shrink-0">⚔</span>
+                            {% endif %}
+                            <div class="flex-1 min-w-0 flex items-center justify-between">
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2">
                                     <span class="font-medium text-white truncate">{{ raid.raidTemplate.name }}</span>
@@ -247,6 +255,7 @@
                                     <span class="text-gray-500 ml-0.5">joueurs</span>
                                 </span>
                                 <span class="text-indigo-600">→</span>
+                            </div>
                             </div>
                         </a>
                     </li>
