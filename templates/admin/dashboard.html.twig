@@ -38,5 +38,16 @@
         </a>
     </div>
 
+    <div class="col-md-6 col-xl-4">
+        <a href="{{ ea_url().setController('App\\Controller\\Admin\\RaidCrudController').setAction('index') }}"
+           class="card text-decoration-none h-100">
+            <div class="card-body text-center py-4">
+                <div class="display-6 mb-2">⚔️</div>
+                <h5 class="card-title">Raids</h5>
+                <p class="card-text text-muted small">Supprimer des raids (cascade participants & énigmes)</p>
+            </div>
+        </a>
+    </div>
+
 </div>
 {% endblock %}
