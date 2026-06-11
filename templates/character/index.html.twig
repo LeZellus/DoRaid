@@ -4,7 +4,7 @@
 {% block title %}Mes personnages – DoRaid{% endblock %}
 
 {% block body %}
-<div class="max-w-4xl mx-auto px-6 py-12">
+<div class="max-w-5xl mx-auto px-6 py-12">
 
     <div class="flex items-center justify-between mb-8">
         <h1 class="text-3xl font-bold text-white">Mes personnages</h1>
@@ -17,68 +17,111 @@
             {{ ui.link_button('Créer mon premier personnage', path('app_character_new'), 'primary') }}
         </div>
     {% else %}
-        <div class="space-y-8">
+        <div class="space-y-10">
             {% for serverName, characters in byServer %}
-                <div class="{{ ui.card_classes() }}">
-                    <div class="{{ ui.card_header_classes() }}">
-                        <h2 class="text-lg font-semibold text-white flex items-center gap-2">
-                            <span class="text-indigo-400">⚔</span>
-                            {{ serverName }}
-                            {{ ui.badge(characters|length ~ ' personnage' ~ (characters|length > 1 ? 's' : ''), 'indigo') }}
-                        </h2>
+
+                {# ── En-tête serveur ── #}
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-indigo-400">⚔</span>
+                        <h2 class="text-lg font-semibold text-white">{{ serverName }}</h2>
+                        <span class="text-xs text-gray-500">{{ characters|length }} personnage{{ characters|length > 1 ? 's' : '' }}</span>
                     </div>
-                    <div class="{{ ui.card_body_classes() }}">
-                        <div class="divide-y divide-gray-800">
-                            {% for character in characters %}
-                                <div class="flex items-center justify-between py-3 first:pt-0 last:pb-0">
-                                    <div class="flex items-center gap-3 flex-wrap">
-                                        <img src="{{ asset('classes/' ~ character.gameClass.name|lower ~ '.png') }}"
-                                             alt="{{ character.gameClass.name }}"
-                                             class="w-7 h-7 rounded-full object-cover shrink-0">
-                                        <span class="font-semibold text-white">{{ character.name }}</span>
-                                        {{ ui.badge(character.gameClass.name) }}
-                                        {% if character.level %}
-                                            {{ ui.badge('Niv. ' ~ character.level, 'indigo') }}
-                                        {% endif %}
-                                        {% if character.optimizationLevel %}
-                                            {{ ui.badge(character.optimizationLevel.label(), character.optimizationLevel.color()) }}
-                                        {% endif %}
-                                        {% set m = character.membership %}
-                                        {% if m %}
-                                            <a href="{{ path('app_guild_show', {slug: m.guild.slug}) }}"
-                                               class="text-xs text-indigo-400 hover:text-indigo-300 transition">
-                                                🛡 {{ m.guild.name }}
-                                            </a>
-                                            {% if m.status.value == 'leader' %}
-                                                {{ ui.badge('Meneur', 'warning') }}
-                                            {% elseif m.status.value == 'pending' %}
-                                                {{ ui.badge('En attente', 'default') }}
-                                            {% endif %}
-                                        {% else %}
-                                            <a href="{{ path('app_guild_index', {server: character.server.name}) }}" class="text-xs text-gray-600 hover:text-gray-400 transition">
-                                                + Rejoindre une guilde
-                                            </a>
-                                        {% endif %}
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {% for character in characters %}
+                            {% set m = character.membership %}
+                            <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden flex flex-col hover:border-gray-700 transition">
+
+                                {# ── Avatar + identité ── #}
+                                <div class="flex items-center gap-4 px-5 pt-5 pb-4 border-b border-gray-800/60">
+                                    <img src="{{ asset('classes/' ~ character.gameClass.name|lower ~ '.png') }}"
+                                         alt="{{ character.gameClass.name }}"
+                                         class="w-14 h-14 rounded-xl object-cover shrink-0">
+                                    <div class="min-w-0">
+                                        <p class="font-bold text-white text-lg truncate leading-tight">{{ character.name }}</p>
+                                        <p class="text-sm text-gray-400 mt-0.5">{{ character.gameClass.name }}</p>
                                     </div>
-                                    <div class="flex items-center gap-2">
-                                        {{ ui.link_button('Modifier', path('app_character_edit', {id: character.id}), 'secondary', 'py-1 px-3 text-sm') }}
+                                </div>
+
+                                {# ── Stats ── #}
+                                <div class="px-5 py-4 flex items-center gap-4 border-b border-gray-800/60">
+                                    <div class="flex-1 text-center">
+                                        <p class="text-2xl font-bold {{ character.level ? 'text-indigo-400' : 'text-gray-700' }}">
+                                            {{ character.level ?? '—' }}
+                                        </p>
+                                        <p class="text-xs text-gray-500 uppercase tracking-wider mt-0.5">Niveau</p>
+                                    </div>
+                                    <div class="w-px h-10 bg-gray-800"></div>
+                                    <div class="flex-1 text-center">
+                                        {% if character.optimizationLevel %}
+                                            {% set optColor = {
+                                                'bas':   'text-gray-400',
+                                                'moyen': 'text-yellow-400',
+                                                'haute': 'text-green-400'
+                                            } %}
+                                            <p class="text-lg font-bold {{ optColor[character.optimizationLevel.value] ?? 'text-gray-400' }}">
+                                                {{ character.optimizationLevel.label() }}
+                                            </p>
+                                        {% else %}
+                                            <p class="text-lg font-bold text-gray-700">—</p>
+                                        {% endif %}
+                                        <p class="text-xs text-gray-500 uppercase tracking-wider mt-0.5">Optim.</p>
+                                    </div>
+                                </div>
+
+                                {# ── Actions ── #}
+                                <div class="px-5 py-3 flex items-center gap-2">
+                                    {{ ui.link_button('Modifier', path('app_character_edit', {id: character.id}), 'secondary', 'py-1.5 px-3 text-xs flex-1 text-center') }}
+                                    <form class="flex-1" method="post" action="{{ path('app_character_delete', {id: character.id}) }}"
+                                          onsubmit="return confirm('Supprimer {{ character.name }} ?')">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete_character_' ~ character.id) }}">
+                                        {{ ui.button('Supprimer', 'danger', 'submit', 'py-1.5 px-3 text-xs w-full') }}
+                                    </form>
+                                </div>
+
+                                {# ── Guilde ── #}
+                                <div class="px-5 pb-5 pt-3 border-t border-gray-800/60 flex flex-col flex-1">
+                                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Guilde</p>
+                                    {% if m %}
+                                        <a href="{{ path('app_guild_show', {slug: m.guild.slug}) }}"
+                                           class="flex items-center gap-2 text-sm text-indigo-400 hover:text-indigo-300 transition min-w-0">
+                                            {% if m.guild.imagePath %}
+                                                <img src="{{ asset('uploads/guildes/' ~ m.guild.slug ~ '/' ~ m.guild.imagePath) }}"
+                                                     alt="{{ m.guild.name }}"
+                                                     class="w-6 h-6 rounded object-cover shrink-0">
+                                            {% else %}
+                                                <span class="w-6 h-6 rounded bg-indigo-900/50 flex items-center justify-center text-xs font-bold shrink-0">
+                                                    {{ m.guild.name|slice(0,1)|upper }}
+                                                </span>
+                                            {% endif %}
+                                            <span class="truncate font-medium">{{ m.guild.name }}</span>
+                                            {% if m.status.value == 'leader' %}
+                                                <span class="ml-auto shrink-0 text-xs font-medium text-yellow-400">👑 Meneur</span>
+                                            {% elseif m.status.value == 'pending' %}
+                                                <span class="ml-auto shrink-0 text-xs text-gray-500">En attente</span>
+                                            {% endif %}
+                                        </a>
+                                    {% else %}
+                                        <p class="text-sm text-gray-600">Aucune guilde</p>
+                                    {% endif %}
+                                    <div class="mt-auto pt-3">
                                         {% if m and m.status.value != 'leader' %}
                                             <form method="post" action="{{ path('app_guild_leave', {id: m.id}) }}">
                                                 <input type="hidden" name="_token" value="{{ csrf_token('leave_' ~ m.id) }}">
-                                                {{ ui.button('Quitter', 'ghost', 'submit', 'py-1 px-3 text-sm') }}
+                                                {{ ui.button('Quitter la guilde', 'warning', 'submit', 'py-1.5 px-3 text-xs w-full') }}
                                             </form>
+                                        {% elseif not m %}
+                                            {{ ui.link_button('Rejoindre une guilde', path('app_guild_index', {server: character.server.name}), 'secondary', 'py-1.5 px-3 text-xs w-full text-center') }}
                                         {% endif %}
-                                        <form method="post" action="{{ path('app_character_delete', {id: character.id}) }}"
-                                              onsubmit="return confirm('Supprimer {{ character.name }} ?')">
-                                            <input type="hidden" name="_token" value="{{ csrf_token('delete_character_' ~ character.id) }}">
-                                            {{ ui.button('Supprimer', 'danger', 'submit', 'py-1 px-3 text-sm') }}
-                                        </form>
                                     </div>
                                 </div>
-                            {% endfor %}
-                        </div>
+
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
+
             {% endfor %}
         </div>
     {% endif %}
