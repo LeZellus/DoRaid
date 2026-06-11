@@ -19,23 +19,21 @@ class EnigmeTemplateCrudController extends AbstractCrudController
         return EnigmeTemplate::class;
     }
 
-    public function updateEntity(EntityManagerInterface $em, mixed $entityInstance): void
+    public function updateEntity(EntityManagerInterface $em, object $entityInstance): void
     {
         parent::updateEntity($em, $entityInstance);
 
         $em->getConnection()->executeStatement(
             'UPDATE enigme e
              JOIN raid r ON e.raid_id = r.id
-             SET e.title = :title
-             WHERE e.source_template_id = :templateId
-                OR (e.source_template_id IS NULL
-                    AND e.order_number = :orderNumber
-                    AND r.raid_template_id = :raidTemplateId)',
+             JOIN enigme_template et ON et.id = :templateId
+             SET e.title = :title,
+                 e.source_template_id = :templateId
+             WHERE et.raid_template_id = r.raid_template_id
+               AND e.order_number = et.order_number',
             [
-                'title'          => $entityInstance->getTitle(),
-                'templateId'     => $entityInstance->getId(),
-                'orderNumber'    => $entityInstance->getOrderNumber(),
-                'raidTemplateId' => $entityInstance->getRaidTemplate()->getId(),
+                'title'      => $entityInstance->getTitle(),
+                'templateId' => $entityInstance->getId(),
             ]
         );
     }
