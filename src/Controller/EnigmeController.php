@@ -7,6 +7,7 @@ use App\Entity\Enigme;
 use App\Entity\EnigmeComment;
 use App\Entity\EnigmeImage;
 use App\Entity\Raid;
+use App\Entity\RaidStatus;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -30,8 +31,9 @@ class EnigmeController extends AbstractController
         $this->ensureParticipant($enigme);
 
         return $this->render('enigme/show.html.twig', [
-            'enigme'    => $enigme,
-            'character' => $this->getParticipantCharacter($enigme->getRaid()),
+            'enigme'      => $enigme,
+            'character'   => $this->getParticipantCharacter($enigme->getRaid()),
+            'raidClosed'  => $enigme->getRaid()->getStatus() === RaidStatus::Closed,
         ]);
     }
 
@@ -39,6 +41,7 @@ class EnigmeController extends AbstractController
     public function uploadImage(Enigme $enigme, Request $request, EntityManagerInterface $em): JsonResponse
     {
         $this->ensureParticipant($enigme);
+        $this->ensureRaidOpen($enigme);
 
         if (!$this->isCsrfTokenValid('enigme_' . $enigme->getId(), $request->request->get('_token'))) {
             return new JsonResponse(['success' => false, 'error' => 'Token CSRF invalide'], 403);
@@ -92,6 +95,7 @@ class EnigmeController extends AbstractController
     public function addComment(Enigme $enigme, Request $request, EntityManagerInterface $em): JsonResponse
     {
         $this->ensureParticipant($enigme);
+        $this->ensureRaidOpen($enigme);
 
         if (!$this->isCsrfTokenValid('comment_enigme_' . $enigme->getId(), $request->request->get('_token'))) {
             return new JsonResponse(['success' => false, 'error' => 'Token CSRF invalide'], 403);
@@ -123,6 +127,7 @@ class EnigmeController extends AbstractController
     public function resolve(Enigme $enigme, Request $request, EntityManagerInterface $em): JsonResponse
     {
         $this->ensureParticipant($enigme);
+        $this->ensureRaidOpen($enigme);
 
         if (!$this->isCsrfTokenValid('enigme_' . $enigme->getId(), $request->request->get('_token'))) {
             return new JsonResponse(['success' => false, 'error' => 'Token CSRF invalide'], 403);
@@ -163,6 +168,13 @@ class EnigmeController extends AbstractController
     {
         if ($this->getParticipantCharacter($enigme->getRaid()) === null) {
             throw $this->createAccessDeniedException('Vous ne participez pas à ce raid.');
+        }
+    }
+
+    private function ensureRaidOpen(Enigme $enigme): void
+    {
+        if ($enigme->getRaid()->getStatus() === RaidStatus::Closed) {
+            throw $this->createAccessDeniedException('Ce raid est terminé, aucune modification n\'est possible.');
         }
     }
 

@@ -32,6 +32,14 @@
         <span class="text-gray-300">{{ enigme.title }}</span>
     </nav>
 
+    {# ── Bannière raid terminé ── #}
+    {% if raidClosed %}
+        <div class="mb-6 flex items-center gap-3 bg-gray-800/60 border border-gray-700/50 rounded-xl px-5 py-3 text-sm text-gray-400">
+            <span class="text-base">🔒</span>
+            Ce raid est <span class="text-white font-medium mx-1">terminé</span> — consultation en lecture seule.
+        </div>
+    {% endif %}
+
     {# ── Header ── #}
     <div class="flex items-center justify-between mb-8">
         <div class="flex items-center gap-3">
@@ -42,12 +50,14 @@
                 Résolue
             </span>
         </div>
-        <button data-action="click->enigme#resolve"
-                data-enigme-target="resolveBtn"
-                {{ enigme.resolved ? 'hidden' : '' }}
-                class="inline-flex items-center gap-2 text-sm font-medium bg-green-700 hover:bg-green-600 text-white rounded-lg px-4 py-2 transition">
-            Marquer comme résolue
-        </button>
+        {% if not raidClosed %}
+            <button data-action="click->enigme#resolve"
+                    data-enigme-target="resolveBtn"
+                    {{ enigme.resolved ? 'hidden' : '' }}
+                    class="inline-flex items-center gap-2 text-sm font-medium bg-green-700 hover:bg-green-600 text-white rounded-lg px-4 py-2 transition">
+                Marquer comme résolue
+            </button>
+        {% endif %}
     </div>
 
     {# ── Two-column layout ── #}
@@ -56,7 +66,8 @@
         {# ── Left: paste + images ── #}
         <div class="lg:col-span-2 space-y-4">
 
-            {# Paste zone — en premier #}
+            {# Paste zone — masquée si raid terminé #}
+            {% if not raidClosed %}
             <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
                 <div class="px-5 py-4 border-b border-gray-800">
                     <h2 class="font-semibold text-white text-sm">Ajouter une image</h2>
@@ -70,6 +81,7 @@
                     </div>
                 </div>
             </div>
+            {% endif %}
 
             {# Images grid — en dessous #}
             <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
@@ -99,6 +111,7 @@
                         {% include 'enigme/_comments.html.twig' with {enigme: enigme} only %}
                     </div>
 
+                    {% if not raidClosed %}
                     <form data-action="submit->enigme#submitComment" class="shrink-0 space-y-2">
                         <input type="hidden" name="_token" value="{{ csrf_token('comment_enigme_' ~ enigme.id) }}">
                         <textarea name="content"
@@ -113,6 +126,7 @@
                             Envoyer
                         </button>
                     </form>
+                    {% endif %}
                 </div>
             </div>
         </div>
