@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Raid;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -19,6 +20,10 @@ class RaidType extends AbstractType
                 'label'    => 'Description / consignes',
                 'required' => false,
                 'attr'     => ['rows' => 4, 'placeholder' => 'Objectifs, niveau requis, composition souhaitée...'],
+            ])
+            ->add('isPublic', CheckboxType::class, [
+                'label'    => 'Raid public',
+                'required' => false,
             ])
             ->add('scheduledAt', DateTimeType::class, [
                 'label'       => 'Date et heure prévues',

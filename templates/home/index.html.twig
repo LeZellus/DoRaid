@@ -326,6 +326,48 @@
         </div>
     </div>
 
+    {# ── Raids publics ── #}
+    {% if publicRaids is defined and publicRaids is not empty %}
+    <div class="mt-6 {{ ui.card_classes('overflow-hidden') }}">
+        <div class="{{ ui.card_header_classes() }}">
+            <h2 class="font-semibold text-white">🌐 Raids publics</h2>
+        </div>
+        <ul class="divide-y divide-gray-800/60 overflow-y-auto" style="max-height: 18rem">
+            {% for raid in publicRaids %}
+                <li>
+                    <a href="{{ path('app_raid_show', {id: raid.id}) }}"
+                       class="flex items-center gap-4 px-5 py-3.5 hover:bg-gray-800/30 transition group">
+                        {% if raid.raidTemplate.imagePath %}
+                            <img src="{{ asset('uploads/raid-templates/' ~ raid.raidTemplate.imagePath) }}"
+                                 alt="{{ raid.raidTemplate.name }}"
+                                 class="w-9 h-9 rounded-lg object-cover shrink-0">
+                        {% else %}
+                            <span class="w-9 h-9 rounded-lg bg-indigo-900/40 flex items-center justify-center text-lg shrink-0">⚔</span>
+                        {% endif %}
+                        <div class="flex-1 min-w-0">
+                            <div class="font-medium text-white text-sm truncate group-hover:text-indigo-300 transition">
+                                {{ raid.raidTemplate.name }}
+                            </div>
+                            <div class="text-xs text-gray-500 mt-0.5">
+                                {{ raid.guild.name }}
+                                <span class="mx-0.5 text-gray-700">·</span>
+                                {{ raid.guild.server.name }}
+                                {% if raid.scheduledAt %}
+                                    <span class="mx-0.5 text-gray-700">·</span>
+                                    <span class="text-indigo-400">{{ raid.scheduledAt|date('d/m à H:i') }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-500 shrink-0">
+                            {{ raid.acceptedParticipants|length }}/{{ raid.raidTemplate.maxParticipants }}
+                        </div>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
 </div>
 {% endif %}
 

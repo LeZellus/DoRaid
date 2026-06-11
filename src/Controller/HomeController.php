@@ -8,6 +8,7 @@ use App\Entity\RaidStatus;
 use App\Repository\CharacterRepository;
 use App\Repository\GuildMembershipRepository;
 use App\Repository\RaidParticipantRepository;
+use App\Repository\RaidRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -19,6 +20,7 @@ class HomeController extends AbstractController
         RaidParticipantRepository $participantRepo,
         GuildMembershipRepository $membershipRepo,
         CharacterRepository $characterRepo,
+        RaidRepository $raidRepo,
     ): Response {
         $user = $this->getUser();
 
@@ -73,6 +75,9 @@ class HomeController extends AbstractController
             $pendingByRaid[$id]['count']++;
         }
 
+        $userGuildIds = array_map(fn($m) => $m->getGuild()->getId(), $confirmedMemberships);
+        $publicRaids  = $raidRepo->findPublicOpen($userGuildIds);
+
         return $this->render('home/index.html.twig', [
             'activeRaids'          => $activeRaids,
             'pendingRaids'         => $pendingRaids,
@@ -81,6 +86,7 @@ class HomeController extends AbstractController
             'pendingMemberships'   => $pendingMemberships,
             'pendingByGuild'       => $pendingByGuild,
             'pendingByRaid'        => $pendingByRaid,
+            'publicRaids'          => $publicRaids,
         ]);
     }
 }

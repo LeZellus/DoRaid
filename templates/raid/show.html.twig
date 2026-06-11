@@ -25,6 +25,7 @@
                 {% else %}
                     {{ ui.badge(raid.status.label(), 'default') }}
                 {% endif %}
+                {{ ui.badge(raid.public ? '🌐 Public' : '🔒 Privé', raid.public ? 'default' : 'default') }}
                 <span class="text-xs text-gray-500 font-medium">{{ raid.guild.server.name }}</span>
                 <span class="text-gray-700">·</span>
                 <span class="text-xs text-gray-500">{{ raid.guild.name }}</span>

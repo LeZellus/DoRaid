@@ -37,6 +37,9 @@ class Raid
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $scheduledAt = null;
 
+    #[ORM\Column(options: ['default' => false])]
+    private bool $isPublic = false;
+
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
@@ -73,6 +76,9 @@ class Raid
 
     public function getScheduledAt(): ?\DateTimeImmutable { return $this->scheduledAt; }
     public function setScheduledAt(?\DateTimeImmutable $d): static { $this->scheduledAt = $d; return $this; }
+
+    public function isPublic(): bool { return $this->isPublic; }
+    public function setIsPublic(bool $isPublic): static { $this->isPublic = $isPublic; return $this; }
 
     public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
 

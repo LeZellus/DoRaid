@@ -105,6 +105,19 @@ class RaidController extends AbstractController
         EnigmeTemplateRepository $enigmeTemplateRepo,
         EntityManagerInterface $em,
     ): Response {
+        // Visibility check: private raids are guild-member only
+        if (!$raid->isPublic()) {
+            $viewer = $this->getUser();
+            if (!$viewer) {
+                $this->addFlash('error', 'Ce raid est privé. Connectez-vous pour y accéder.');
+                return $this->redirectToRoute('app_login');
+            }
+            $isMember = !empty($charRepo->findConfirmedInGuild($viewer, $raid->getGuild()));
+            if (!$isMember && $raid->getCreator()->getUser() !== $viewer) {
+                throw $this->createAccessDeniedException('Ce raid est privé.');
+            }
+        }
+
         // Sync: add any enigme templates added after the raid was created
         $existingIds = array_map(
             fn($e) => $e->getSourceTemplate()->getId(),

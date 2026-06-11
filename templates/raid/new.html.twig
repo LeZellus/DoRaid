@@ -60,6 +60,21 @@
 
         {{ form_row(form.description) }}
 
+        {# ── Visibilité ── #}
+        <div class="flex items-center justify-between bg-gray-800/40 border border-gray-700/50 rounded-xl px-4 py-3">
+            <div>
+                <p class="text-sm font-medium text-white">Raid public</p>
+                <p class="text-xs text-gray-500 mt-0.5">Visible par tous les membres du site</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+                {{ form_widget(form.isPublic, {attr: {class: 'sr-only peer', id: 'raid_isPublic'}}) }}
+                <div class="w-11 h-6 bg-gray-700 rounded-full peer peer-checked:bg-indigo-600
+                            after:content-[''] after:absolute after:top-[2px] after:left-[2px]
+                            after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all
+                            peer-checked:after:translate-x-5"></div>
+            </label>
+        </div>
+
         <div>
             {{ form_label(form.scheduledAt, null, {
                 label_attr: { class: 'block text-sm font-medium text-gray-300 mb-2' }
