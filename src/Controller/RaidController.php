@@ -219,6 +219,29 @@ class RaidController extends AbstractController
     }
 
     #[IsGranted('ROLE_USER')]
+    #[Route('/{id}/modifier', name: 'app_raid_edit', methods: ['GET', 'POST'])]
+    public function edit(Raid $raid, Request $request, EntityManagerInterface $em): Response
+    {
+        if ($raid->getCreator()->getUser() !== $this->getUser()) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $form = $this->createForm(RaidType::class, $raid);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->flush();
+            $this->addFlash('success', 'Raid mis à jour.');
+            return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
+        }
+
+        return $this->render('raid/edit.html.twig', [
+            'form' => $form,
+            'raid' => $raid,
+        ]);
+    }
+
+    #[IsGranted('ROLE_USER')]
     #[Route('/{id}/candidater', name: 'app_raid_apply', methods: ['POST'])]
     public function apply(Raid $raid, Request $request, CharacterRepository $charRepo, EntityManagerInterface $em): Response
     {

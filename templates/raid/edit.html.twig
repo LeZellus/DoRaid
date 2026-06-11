@@ -1,0 +1,88 @@
+{% extends 'base.html.twig' %}
+{% import 'components/_ui.html.twig' as ui %}
+
+{% block title %}Modifier {{ raid.raidTemplate.name }} – DoRaid{% endblock %}
+
+{% block body %}
+<div class="max-w-xl mx-auto px-6 py-12">
+
+    <a href="{{ path('app_raid_show', {id: raid.id}) }}"
+       class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-300 transition mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
+        </svg>
+        Retour au raid
+    </a>
+
+    {# En-tête avec image du template #}
+    <div class="flex items-center gap-4 mb-8">
+        {% if raid.raidTemplate.imagePath %}
+            <img src="{{ asset('uploads/raid-templates/' ~ raid.raidTemplate.imagePath) }}"
+                 alt="{{ raid.raidTemplate.name }}"
+                 class="w-12 h-12 rounded-xl object-cover shrink-0">
+        {% else %}
+            <span class="w-12 h-12 rounded-xl bg-indigo-900/40 border border-indigo-800/30 flex items-center justify-center text-2xl shrink-0">⚔</span>
+        {% endif %}
+        <div>
+            <h1 class="text-2xl font-bold text-white">Modifier le raid</h1>
+            <p class="text-sm text-gray-500 mt-0.5">{{ raid.raidTemplate.name }} · {{ raid.guild.name }}</p>
+        </div>
+    </div>
+
+    {{ form_start(form, {attr: {class: 'space-y-5'}}) }}
+
+        {{ form_row(form.description) }}
+
+        {# Date et heure #}
+        <div>
+            {{ form_label(form.scheduledAt, null, {
+                label_attr: { class: 'block text-sm font-medium text-gray-300 mb-2' }
+            }) }}
+            {{ form_widget(form.scheduledAt, {
+                attr: {
+                    class: 'w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent cursor-pointer',
+                    style: 'color-scheme: dark',
+                    id: 'scheduledAt'
+                }
+            }) }}
+            {{ form_errors(form.scheduledAt) }}
+        </div>
+
+        {# Visibilité #}
+        <div class="flex items-center justify-between bg-gray-800/40 border border-gray-700/50 rounded-xl px-4 py-3">
+            <div>
+                <p class="text-sm font-medium text-white">Raid public</p>
+                <p class="text-xs text-gray-500 mt-0.5">Visible par tous les membres du site</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+                {{ form_widget(form.isPublic, {attr: {class: 'sr-only peer', id: 'raid_isPublic'}}) }}
+                <div class="w-11 h-6 bg-gray-700 rounded-full peer peer-checked:bg-indigo-600
+                            after:content-[''] after:absolute after:top-[2px] after:left-[2px]
+                            after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all
+                            peer-checked:after:translate-x-5"></div>
+            </label>
+        </div>
+
+        <div class="flex items-center gap-3 pt-2">
+            {{ ui.button('Enregistrer', 'primary', 'submit', 'flex-1') }}
+            <a href="{{ path('app_raid_show', {id: raid.id}) }}"
+               class="flex-1 inline-flex items-center justify-center gap-2 font-semibold rounded-xl transition border border-gray-600 hover:border-gray-400 text-gray-300 hover:text-white py-2.5 px-5 text-sm">
+                Annuler
+            </a>
+        </div>
+
+    {{ form_end(form) }}
+
+</div>
+
+<script>
+(function () {
+    var dateInput = document.getElementById('scheduledAt');
+    if (dateInput) {
+        dateInput.addEventListener('click', function () {
+            try { this.showPicker(); } catch (e) {}
+        });
+    }
+})();
+</script>
+{% endblock %}

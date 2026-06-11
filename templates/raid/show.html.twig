@@ -36,6 +36,7 @@
                     <span id="share-label">Partager le raid</span>
                 </button>
                 {% if isCreator %}
+                    {{ ui.link_button('✏ Modifier', path('app_raid_edit', {id: raid.id}), 'secondary', 'py-1 px-3 text-xs') }}
                     {% if raid.status == constant('App\\Entity\\RaidStatus::Open') %}
                         <form method="post" action="{{ path('app_raid_close', {id: raid.id}) }}">
                             <input type="hidden" name="_token" value="{{ csrf_token('close_raid_' ~ raid.id) }}">
