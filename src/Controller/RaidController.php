@@ -33,6 +33,7 @@ class RaidController extends AbstractController
         RaidRepository $raidRepo,
         ServerRepository $serverRepo,
         GuildMembershipRepository $membershipRepo,
+        EntityManagerInterface $em,
     ): Response {
         $user       = $this->getUser();
         $serverName = $request->query->get('server');
@@ -49,10 +50,25 @@ class RaidController extends AbstractController
         $filterNotFull = (bool) $request->query->get('not_full');
         $filterSoon    = (bool) $request->query->get('soon');
 
+        $now     = new \DateTimeImmutable();
         $raids   = $raidRepo->findVisibleForUser($userGuildIds, $serverName ?: null);
         $servers = $serverRepo->findAll();
 
-        $now  = new \DateTimeImmutable();
+        // Auto-close raids whose scheduled duration has elapsed
+        $flush = false;
+        foreach ($raids as $r) {
+            if ($r->getStatus() === RaidStatus::Open) {
+                $end = $r->getExpectedEndTime();
+                if ($end !== null && $end <= $now) {
+                    $r->setStatus(RaidStatus::Closed);
+                    $flush = true;
+                }
+            }
+        }
+        if ($flush) {
+            $em->flush();
+        }
+
         $open = array_filter($raids, fn($r) => $r->getStatus() === RaidStatus::Open);
 
         // À venir : scheduledAt dans le futur

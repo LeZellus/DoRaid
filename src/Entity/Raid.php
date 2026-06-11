@@ -100,6 +100,14 @@ class Raid
 
     public function getEnigmes(): Collection { return $this->enigmes; }
 
+    public function getExpectedEndTime(): ?\DateTimeImmutable
+    {
+        if ($this->scheduledAt === null || $this->raidTemplate->getDuration() === null) {
+            return null;
+        }
+        return $this->scheduledAt->modify('+' . $this->raidTemplate->getDuration() . ' minutes');
+    }
+
     public function isFull(): bool
     {
         return $this->getAcceptedParticipants()->count() >= $this->raidTemplate->getMaxParticipants();
