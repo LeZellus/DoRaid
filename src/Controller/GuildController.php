@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\Guild;
 use App\Entity\GuildMembership;
 use App\Entity\MemberStatus;
-use App\Form\GuildDescriptionType;
+use App\Form\GuildEditType;
 use App\Form\GuildType;
 use App\Repository\CharacterRepository;
 use App\Repository\GuildMembershipRepository;
@@ -13,6 +13,7 @@ use App\Repository\GuildRepository;
 use App\Repository\RaidRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -82,10 +83,6 @@ class GuildController extends AbstractController
             }
         }
 
-        $descriptionForm = $this->createForm(GuildDescriptionType::class, $guild, [
-            'action' => $this->generateUrl('app_guild_description', ['slug' => $guild->getSlug()]),
-        ]);
-
         $eligible            = $charRepo->findEligibleForGuild($currentUser, $guild->getServer());
         $confirmedCharacters = $charRepo->findConfirmedInGuild($currentUser, $guild);
         $raids               = $raidRepo->findByGuild($guild);
@@ -97,7 +94,6 @@ class GuildController extends AbstractController
             'isOwner'             => $isOwner,
             'isLeader'            => $isLeader,
             'raids'               => $raids,
-            'descriptionForm'     => $descriptionForm,
         ]);
     }
 
@@ -120,33 +116,6 @@ class GuildController extends AbstractController
             'isOwner'  => $isOwner,
             'isLeader' => $isLeader,
         ]);
-    }
-
-    #[Route('/{slug}/description', name: 'app_guild_description', methods: ['POST'])]
-    public function updateDescription(Guild $guild, Request $request, EntityManagerInterface $em): Response
-    {
-        $currentUser = $this->getUser();
-        $isLeader = false;
-        foreach ($guild->getMemberships() as $m) {
-            if ($m->getStatus() === MemberStatus::Leader && $m->getCharacter()->getUser()->getId() === $currentUser->getId()) {
-                $isLeader = true;
-                break;
-            }
-        }
-
-        if (!$isLeader) {
-            throw $this->createAccessDeniedException();
-        }
-
-        $form = $this->createForm(GuildDescriptionType::class, $guild);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em->flush();
-            $this->addFlash('success', 'Description mise à jour.');
-        }
-
-        return $this->redirectToRoute('app_guild_show', ['slug' => $guild->getSlug()]);
     }
 
     #[Route('/{slug}/rejoindre', name: 'app_guild_join', methods: ['POST'])]
@@ -259,6 +228,59 @@ class GuildController extends AbstractController
 
         $this->addFlash('success', 'La guilde a été supprimée.');
         return $this->redirectToRoute('app_guild_index');
+    }
+
+    #[Route('/{slug}/modifier', name: 'app_guild_edit', methods: ['GET', 'POST'])]
+    public function edit(
+        Guild $guild,
+        Request $request,
+        EntityManagerInterface $em,
+        #[Autowire('%kernel.project_dir%')] string $projectDir,
+    ): Response {
+        if (!$this->isLeaderOf($guild)) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $oldSlug   = $guild->getSlug();
+        $uploadBase = $projectDir . '/public/uploads/guildes/';
+
+        $form = $this->createForm(GuildEditType::class, $guild);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $newSlug   = $guild->getSlug();
+            $uploadDir = $uploadBase . $newSlug;
+
+            // Rename upload directory if slug changed
+            if ($oldSlug !== $newSlug && is_dir($uploadBase . $oldSlug)) {
+                rename($uploadBase . $oldSlug, $uploadDir);
+            }
+
+            $imageFile = $form->get('imageFile')->getData();
+            if ($imageFile) {
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0775, true);
+                }
+                $ext      = $imageFile->guessExtension() ?? 'png';
+                $filename = 'cover.' . $ext;
+
+                if ($guild->getImagePath()) {
+                    $old = $uploadDir . '/' . $guild->getImagePath();
+                    if (file_exists($old)) {
+                        unlink($old);
+                    }
+                }
+
+                $imageFile->move($uploadDir, $filename);
+                $guild->setImagePath($filename);
+            }
+
+            $em->flush();
+            $this->addFlash('success', 'Guilde mise à jour.');
+            return $this->redirectToRoute('app_guild_show', ['slug' => $guild->getSlug()]);
+        }
+
+        return $this->render('guild/edit.html.twig', ['guild' => $guild, 'form' => $form]);
     }
 
     private function isLeaderOf(Guild $guild): bool

@@ -26,6 +26,9 @@ class Guild
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $imagePath = null;
+
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private Server $server;
@@ -64,6 +67,9 @@ class Guild
 
     public function getDescription(): ?string { return $this->description; }
     public function setDescription(?string $d): static { $this->description = $d; return $this; }
+
+    public function getImagePath(): ?string { return $this->imagePath; }
+    public function setImagePath(?string $imagePath): static { $this->imagePath = $imagePath; return $this; }
 
     public function getServer(): Server { return $this->server; }
     public function setServer(Server $server): static { $this->server = $server; return $this; }
