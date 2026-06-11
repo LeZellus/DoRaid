@@ -35,6 +35,21 @@ class GuildMembershipRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /** @return GuildMembership[] Confirmed memberships for $user (not pending) */
+    public function findConfirmedForUser(User $user): array
+    {
+        return $this->createQueryBuilder('m')
+            ->join('m.character', 'c')
+            ->join('m.guild', 'g')
+            ->where('c.user = :user')
+            ->andWhere('m.status != :pending')
+            ->setParameter('user', $user)
+            ->setParameter('pending', MemberStatus::Pending)
+            ->orderBy('g.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     /** @return GuildMembership[] */
     public function findByUser(User $user): array
     {

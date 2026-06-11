@@ -15,6 +15,33 @@ class RaidRepository extends ServiceEntityRepository
         parent::__construct($registry, Raid::class);
     }
 
+    /** @return Raid[] Raids visibles par un utilisateur (publics + guildes de l'utilisateur), filtrés par serveur */
+    public function findVisibleForUser(array $userGuildIds = [], ?string $serverName = null): array
+    {
+        $qb = $this->createQueryBuilder('r')
+            ->join('r.guild', 'g')
+            ->join('g.server', 's')
+            ->orderBy('r.createdAt', 'DESC');
+
+        if (!empty($userGuildIds)) {
+            $qb->where(
+                $qb->expr()->orX(
+                    'r.isPublic = true',
+                    $qb->expr()->in('g', ':guildIds')
+                )
+            )->setParameter('guildIds', $userGuildIds);
+        } else {
+            $qb->where('r.isPublic = true');
+        }
+
+        if ($serverName) {
+            $qb->andWhere('s.name = :server')
+               ->setParameter('server', $serverName);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
     /** @return Raid[] */
     public function findPublicOpen(array $excludeGuildIds = []): array
     {

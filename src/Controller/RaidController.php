@@ -11,8 +11,11 @@ use App\Entity\RaidStatus;
 use App\Form\RaidType;
 use App\Repository\CharacterRepository;
 use App\Repository\EnigmeTemplateRepository;
+use App\Repository\GuildMembershipRepository;
 use App\Repository\GuildRepository;
+use App\Repository\RaidRepository;
 use App\Repository\RaidTemplateRepository;
+use App\Repository\ServerRepository;
 use App\Service\DiscordNotifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,6 +27,40 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/raids')]
 class RaidController extends AbstractController
 {
+    #[Route('', name: 'app_raid_index')]
+    public function index(
+        Request $request,
+        RaidRepository $raidRepo,
+        ServerRepository $serverRepo,
+        GuildMembershipRepository $membershipRepo,
+    ): Response {
+        $user       = $this->getUser();
+        $serverName = $request->query->get('server');
+
+        $userGuildIds = [];
+        $userGuilds   = [];
+        if ($user) {
+            foreach ($membershipRepo->findConfirmedForUser($user) as $m) {
+                $userGuildIds[] = $m->getGuild()->getId();
+                $userGuilds[$m->getGuild()->getId()] = $m->getGuild();
+            }
+        }
+
+        $raids   = $raidRepo->findVisibleForUser($userGuildIds, $serverName ?: null);
+        $servers = $serverRepo->findAll();
+
+        $activeRaids = array_values(array_filter($raids, fn($r) => $r->getStatus() === RaidStatus::Open));
+        $closedRaids = array_values(array_filter($raids, fn($r) => $r->getStatus() === RaidStatus::Closed));
+
+        return $this->render('raid/index.html.twig', [
+            'activeRaids'  => $activeRaids,
+            'closedRaids'  => $closedRaids,
+            'servers'      => $servers,
+            'currentServer' => $serverName,
+            'userGuildIds' => $userGuildIds,
+        ]);
+    }
+
     #[IsGranted('ROLE_USER')]
     #[Route('/creer', name: 'app_raid_new', methods: ['GET', 'POST'])]
     public function new(

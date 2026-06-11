@@ -39,6 +39,11 @@
                     {% else %}
                         <a href="{{ path('app_guild_index') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition text-gray-400 hover:text-white hover:bg-gray-800/60">Guildes</a>
                     {% endif %}
+                    {% if route starts with 'app_raid' %}
+                        <a href="{{ path('app_raid_index') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition text-white bg-gray-800">Raids</a>
+                    {% else %}
+                        <a href="{{ path('app_raid_index') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition text-gray-400 hover:text-white hover:bg-gray-800/60">Raids</a>
+                    {% endif %}
                 </div>
 
                 {% if app.user %}
