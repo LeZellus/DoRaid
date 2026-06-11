@@ -75,7 +75,6 @@ class RaidController extends AbstractController
             foreach ($enigmeTemplateRepo->findByTemplate($template) as $enigmeTemplate) {
                 $em->persist((new Enigme())
                     ->setRaid($raid)
-                    ->setTitle($enigmeTemplate->getTitle())
                     ->setOrderNumber($enigmeTemplate->getOrderNumber())
                     ->setSourceTemplate($enigmeTemplate)
                 );

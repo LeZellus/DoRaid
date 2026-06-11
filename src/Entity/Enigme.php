@@ -20,11 +20,8 @@ class Enigme
     private Raid $raid;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
-    private ?EnigmeTemplate $sourceTemplate = null;
-
-    #[ORM\Column(length: 50)]
-    private string $title;
+    #[ORM\JoinColumn(nullable: false)]
+    private EnigmeTemplate $sourceTemplate;
 
     #[ORM\Column]
     private int $orderNumber;
@@ -64,11 +61,10 @@ class Enigme
     public function getRaid(): Raid { return $this->raid; }
     public function setRaid(Raid $raid): static { $this->raid = $raid; return $this; }
 
-    public function getSourceTemplate(): ?EnigmeTemplate { return $this->sourceTemplate; }
-    public function setSourceTemplate(?EnigmeTemplate $t): static { $this->sourceTemplate = $t; return $this; }
+    public function getSourceTemplate(): EnigmeTemplate { return $this->sourceTemplate; }
+    public function setSourceTemplate(EnigmeTemplate $t): static { $this->sourceTemplate = $t; return $this; }
 
-    public function getTitle(): string { return $this->title; }
-    public function setTitle(string $title): static { $this->title = $title; return $this; }
+    public function getTitle(): string { return $this->sourceTemplate->getTitle(); }
 
     public function getOrderNumber(): int { return $this->orderNumber; }
     public function setOrderNumber(int $n): static { $this->orderNumber = $n; return $this; }
@@ -82,5 +78,5 @@ class Enigme
     public function getImages(): Collection { return $this->images; }
     public function getComments(): Collection { return $this->comments; }
 
-    public function __toString(): string { return $this->title; }
+    public function __toString(): string { return $this->sourceTemplate->getTitle(); }
 }
