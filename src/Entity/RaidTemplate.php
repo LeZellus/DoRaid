@@ -28,6 +28,9 @@ class RaidTemplate
     #[Assert\GreaterThanOrEqual(propertyPath: 'minParticipants', message: 'Le maximum doit être supérieur ou égal au minimum.')]
     private int $maxParticipants;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $duration = null; // in minutes
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $imagePath = null;
 
@@ -41,6 +44,18 @@ class RaidTemplate
 
     public function getMaxParticipants(): int { return $this->maxParticipants; }
     public function setMaxParticipants(int $max): static { $this->maxParticipants = $max; return $this; }
+
+    public function getDuration(): ?int { return $this->duration; }
+    public function setDuration(?int $duration): static { $this->duration = $duration; return $this; }
+
+    public function getFormattedDuration(): ?string
+    {
+        if ($this->duration === null) return null;
+        $h = intdiv($this->duration, 60);
+        $m = $this->duration % 60;
+        if ($h === 0) return $m . 'min';
+        return $h . 'h' . ($m > 0 ? str_pad($m, 2, '0', STR_PAD_LEFT) : '');
+    }
 
     public function getImagePath(): ?string { return $this->imagePath; }
     public function setImagePath(?string $imagePath): static { $this->imagePath = $imagePath; return $this; }
