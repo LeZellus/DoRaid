@@ -63,10 +63,16 @@
                        data-server="{{ serverName }}">
                         <div class="p-5">
                             <div class="flex items-start gap-4">
-                                {# Avatar initiale #}
-                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-800 flex items-center justify-center text-lg font-bold text-white shrink-0 group-hover:from-indigo-500 group-hover:to-indigo-700 transition-all">
-                                    {{ guild.name|slice(0,1)|upper }}
-                                </div>
+                                {# Avatar #}
+                                {% if guild.imagePath %}
+                                    <img src="{{ asset('uploads/guildes/' ~ guild.slug ~ '/' ~ guild.imagePath) }}"
+                                         alt="{{ guild.name }}"
+                                         class="w-12 h-12 rounded-full object-cover border border-indigo-800/40 shrink-0">
+                                {% else %}
+                                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-600 to-indigo-800 flex items-center justify-center text-lg font-bold text-white shrink-0 group-hover:from-indigo-500 group-hover:to-indigo-700 transition-all">
+                                        {{ guild.name|slice(0,1)|upper }}
+                                    </div>
+                                {% endif %}
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center gap-2 flex-wrap">
                                         <span class="font-semibold text-white truncate group-hover:text-indigo-300 transition">

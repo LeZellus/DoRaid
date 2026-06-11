@@ -41,11 +41,11 @@
             </div>
             <div class="px-6 py-5">
                 {% if guild.imagePath %}
-                    <div class="mb-4">
+                    <div class="mb-4 flex items-center gap-4">
                         <img src="{{ asset('uploads/guildes/' ~ guild.slug ~ '/' ~ guild.imagePath) }}"
                              alt="Image actuelle"
-                             class="h-32 w-full object-cover rounded-xl border border-gray-700">
-                        <p class="text-xs text-gray-500 mt-1">Image actuelle — sélectionnez un nouveau fichier pour la remplacer.</p>
+                             class="w-20 h-20 rounded-full object-cover border-2 border-indigo-700/50">
+                        <p class="text-xs text-gray-500">Image actuelle — sélectionnez un nouveau fichier pour la remplacer.</p>
                     </div>
                 {% endif %}
                 <label class="block">
