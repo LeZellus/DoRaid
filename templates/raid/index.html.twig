@@ -99,14 +99,17 @@
                         {% if hasDate and not isFull %}
                             <div class="text-center min-w-[3rem]">
                                 {% if diffHours < 1 %}
-                                    <div class="text-base font-bold text-orange-400 leading-none">– 1h</div>
+                                    <div class="text-base font-bold text-orange-400 leading-none">–1h</div>
                                     <div class="text-xs text-orange-600 mt-0.5">imminent</div>
                                 {% elseif diffHours < 24 %}
                                     <div class="text-base font-bold text-yellow-400 leading-none">{{ diffHours }}h</div>
                                     <div class="text-xs text-yellow-600 mt-0.5">restantes</div>
-                                {% elseif diffDays < 8 %}
+                                {% elseif diffDays == 1 %}
+                                    <div class="text-base font-bold text-yellow-400 leading-none">J-1</div>
+                                    <div class="text-xs text-yellow-600 mt-0.5">demain</div>
+                                {% else %}
                                     <div class="text-base font-bold text-yellow-400 leading-none">J-{{ diffDays }}</div>
-                                    <div class="text-xs text-yellow-600 mt-0.5">{{ diffDays == 1 ? 'demain' : 'jours' }}</div>
+                                    <div class="text-xs text-yellow-600 mt-0.5">jours</div>
                                 {% endif %}
                             </div>
                         {% endif %}
