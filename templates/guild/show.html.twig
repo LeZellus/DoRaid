@@ -49,11 +49,11 @@
             </div>
             <div class="flex gap-8 shrink-0">
                 <div class="text-center">
-                    <div class="text-3xl font-bold text-white">{{ guild.confirmed|length }}</div>
+                    <div class="text-3xl font-bold text-indigo-400">{{ guild.confirmed|length }}</div>
                     <div class="text-xs text-gray-500 uppercase tracking-wider mt-0.5">membres</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-3xl font-bold text-white">{{ guild.pending|length }}</div>
+                    <div class="text-3xl font-bold text-yellow-400">{{ guild.pending|length }}</div>
                     <div class="text-xs text-gray-500 uppercase tracking-wider mt-0.5">en attente</div>
                 </div>
             </div>
@@ -107,13 +107,20 @@
                 {% else %}
                     <div class="flex flex-nowrap gap-2 mb-4 overflow-hidden">
                         {% for m in guild.confirmed|slice(0, 7) %}
-                            <div class="w-9 h-9 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center text-sm font-bold text-gray-300 shrink-0"
-                                 title="{{ m.character.name }}{% if m.status.value == 'leader' %} 👑{% endif %}">
-                                {{ m.character.name|slice(0,1)|upper }}
-                            </div>
+                            {% if m.status.value == 'leader' %}
+                                <div class="w-9 h-9 rounded-full bg-yellow-900/40 border border-yellow-700/50 flex items-center justify-center text-sm font-bold text-yellow-300 shrink-0"
+                                     title="{{ m.character.name }} 👑">
+                                    {{ m.character.name|slice(0,1)|upper }}
+                                </div>
+                            {% else %}
+                                <div class="w-9 h-9 rounded-full bg-indigo-900/30 border border-indigo-800/40 flex items-center justify-center text-sm font-bold text-indigo-300 shrink-0"
+                                     title="{{ m.character.name }}">
+                                    {{ m.character.name|slice(0,1)|upper }}
+                                </div>
+                            {% endif %}
                         {% endfor %}
                         {% if guild.confirmed|length > 7 %}
-                            <div class="w-9 h-9 rounded-full bg-gray-800/60 border border-gray-700 flex items-center justify-center text-xs font-bold text-gray-500 shrink-0">
+                            <div class="w-9 h-9 rounded-full bg-gray-800/60 border border-gray-700 flex items-center justify-center text-xs font-bold text-gray-400 shrink-0">
                                 +{{ guild.confirmed|length - 7 }}
                             </div>
                         {% endif %}
@@ -199,18 +206,18 @@
                                     {% endif %}
                                 </div>
                                 <div class="text-xs text-gray-500 mt-0.5">
-                                    par {{ raid.creator.name }}
+                                    par <span class="text-gray-300">{{ raid.creator.name }}</span>
                                     {% if raid.scheduledAt %}
-                                        · {{ raid.scheduledAt|date('d/m/Y') }}
+                                        · <span class="text-indigo-400">{{ raid.scheduledAt|date('d/m/Y') }}</span>
                                     {% endif %}
                                 </div>
                             </div>
                             <div class="flex items-center gap-3 shrink-0 ml-4">
-                                <span class="text-sm text-gray-400">
-                                    {{ raid.participants|length }} / {{ raid.raidTemplate.maxParticipants }}
-                                    <span class="text-gray-600 ml-0.5">joueurs</span>
+                                <span class="text-sm text-indigo-400">
+                                    {{ raid.participants|length }}<span class="text-gray-600">/{{ raid.raidTemplate.maxParticipants }}</span>
+                                    <span class="text-gray-500 ml-0.5">joueurs</span>
                                 </span>
-                                <span class="text-gray-600">→</span>
+                                <span class="text-indigo-600">→</span>
                             </div>
                         </a>
                     </li>
