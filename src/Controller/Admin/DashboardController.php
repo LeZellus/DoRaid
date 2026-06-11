@@ -1,0 +1,46 @@
+<?php
+
+namespace App\Controller\Admin;
+
+use App\Entity\Enigme;
+use App\Entity\EnigmeTemplate;
+use App\Entity\Raid;
+use App\Entity\RaidTemplate;
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
+use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
+use Symfony\Component\HttpFoundation\Response;
+
+#[AdminDashboard(routePath: '/admin', routeName: 'admin_dashboard')]
+class DashboardController extends AbstractDashboardController
+{
+    public function index(): Response
+    {
+        return $this->render('admin/dashboard.html.twig');
+    }
+
+    public function configureDashboard(): Dashboard
+    {
+        return Dashboard::new()
+            ->setTitle('DoRaid — Administration')
+            ->setFaviconPath('favicon.ico')
+            ->renderContentMaximized();
+    }
+
+    public function configureMenuItems(): iterable
+    {
+        yield MenuItem::linkToDashboard('Tableau de bord', 'fa fa-home');
+
+        yield MenuItem::section('Contenu');
+        yield MenuItem::linkToCrud('Types de raid', 'fa fa-dragon', RaidTemplate::class);
+        yield MenuItem::linkToCrud('Énigmes des templates', 'fa fa-puzzle-piece', EnigmeTemplate::class);
+
+        yield MenuItem::section('Raids en cours');
+        yield MenuItem::linkToCrud('Raids', 'fa fa-shield-halved', Raid::class);
+        yield MenuItem::linkToCrud('Énigmes', 'fa fa-question-circle', Enigme::class);
+
+        yield MenuItem::section();
+        yield MenuItem::linkToUrl('← Retour au site', 'fa fa-arrow-left', '/');
+    }
+}

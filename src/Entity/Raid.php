@@ -105,4 +105,9 @@ class Raid
             fn($_, RaidParticipant $p) => $p->getCharacter() === $character
         );
     }
+
+    public function __toString(): string
+    {
+        return $this->raidTemplate->getName() . ' — ' . $this->guild->getName();
+    }
 }

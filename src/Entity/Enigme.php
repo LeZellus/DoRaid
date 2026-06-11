@@ -74,4 +74,6 @@ class Enigme
 
     public function getImages(): Collection { return $this->images; }
     public function getComments(): Collection { return $this->comments; }
+
+    public function __toString(): string { return $this->title; }
 }
