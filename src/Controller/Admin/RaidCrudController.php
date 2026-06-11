@@ -11,8 +11,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\ChoiceFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
 
@@ -53,7 +53,11 @@ class RaidCrudController extends AbstractCrudController
     {
         yield AssociationField::new('raidTemplate', 'Type');
         yield AssociationField::new('guild', 'Guilde');
-        yield TextField::new('status', 'Statut')->formatValue(fn ($v) => $v instanceof RaidStatus ? $v->label() : $v);
+        yield ChoiceField::new('status', 'Statut')
+            ->setChoices(array_combine(
+                array_map(fn(RaidStatus $s) => $s->label(), RaidStatus::cases()),
+                RaidStatus::cases()
+            ));
         yield DateTimeField::new('scheduledAt', 'Planifié le')->hideOnForm();
         yield DateTimeField::new('createdAt', 'Créé le')->hideOnForm();
     }
