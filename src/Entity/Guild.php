@@ -66,6 +66,7 @@ class Guild
     }
 
     public function getSlug(): string { return $this->slug; }
+    public function setSlug(string $slug): static { $this->slug = $slug; return $this; }
 
     public function getDescription(): ?string { return $this->description; }
     public function setDescription(?string $d): static { $this->description = $d; return $this; }

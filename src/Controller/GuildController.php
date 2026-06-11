@@ -37,7 +37,7 @@ class GuildController extends AbstractController
     }
 
     #[Route('/creer', name: 'app_guild_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $em): Response
+    public function new(Request $request, EntityManagerInterface $em, GuildRepository $repo): Response
     {
         $guild = new Guild();
         $form = $this->createForm(GuildType::class, $guild);
@@ -45,6 +45,7 @@ class GuildController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $guild->setOwner($this->getUser());
+            $guild->setSlug($this->uniqueSlug($guild->getName(), $repo));
             $em->persist($guild);
             $em->flush();
 
@@ -271,6 +272,20 @@ class GuildController extends AbstractController
         }
 
         return $this->render('guild/edit.html.twig', ['guild' => $guild, 'form' => $form]);
+    }
+
+    private function uniqueSlug(string $name, GuildRepository $repo, ?int $excludeId = null): string
+    {
+        $base = (new \Symfony\Component\String\Slugger\AsciiSlugger('fr'))->slug($name)->lower()->toString();
+        $slug = $base;
+        $i    = 2;
+        while (true) {
+            $existing = $repo->findOneBy(['slug' => $slug]);
+            if ($existing === null || $existing->getId() === $excludeId) {
+                return $slug;
+            }
+            $slug = $base . '-' . $i++;
+        }
     }
 
     private function isLeaderOf(Guild $guild): bool
