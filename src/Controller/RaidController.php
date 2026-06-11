@@ -113,7 +113,8 @@ class RaidController extends AbstractController
                 return $this->redirectToRoute('app_login');
             }
             $isMember = !empty($charRepo->findConfirmedInGuild($viewer, $raid->getGuild()));
-            if (!$isMember && $raid->getCreator()->getUser() !== $viewer) {
+            $isCreatorUser = $raid->getCreator()->getUser()->getId() === $viewer->getId();
+            if (!$isMember && !$isCreatorUser) {
                 throw $this->createAccessDeniedException('Ce raid est privé.');
             }
         }
