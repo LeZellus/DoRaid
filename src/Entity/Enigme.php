@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: EnigmeRepository::class)]
+#[ORM\UniqueConstraint(name: 'uniq_enigme_raid_order', columns: ['raid_id', 'order_number'])]
 class Enigme
 {
     #[ORM\Id]

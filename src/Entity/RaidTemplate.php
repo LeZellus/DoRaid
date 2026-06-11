@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\RaidTemplateRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: RaidTemplateRepository::class)]
 class RaidTemplate
@@ -14,12 +15,17 @@ class RaidTemplate
     private ?int $id = null;
 
     #[ORM\Column(length: 100, unique: true)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 2, max: 100)]
     private string $name;
 
     #[ORM\Column]
+    #[Assert\Positive]
     private int $minParticipants;
 
     #[ORM\Column]
+    #[Assert\Positive]
+    #[Assert\GreaterThanOrEqual(propertyPath: 'minParticipants', message: 'Le maximum doit être supérieur ou égal au minimum.')]
     private int $maxParticipants;
 
     public function getId(): ?int { return $this->id; }

@@ -22,8 +22,8 @@ class Guild
     #[Assert\NotBlank]
     #[Assert\Length(min: 2, max: 100)]
     #[Assert\Regex(
-        pattern: '/^[a-zA-Z ]+$/',
-        message: 'Le nom ne peut contenir que des lettres (a-z) et des espaces, sans accents ni caractères spéciaux.',
+        pattern: '/^[\p{L}0-9 \'\-]+$/u',
+        message: 'Le nom ne peut contenir que des lettres, chiffres, espaces, apostrophes et tirets.',
     )]
     private string $name;
 

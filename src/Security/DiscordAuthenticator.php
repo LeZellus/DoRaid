@@ -59,10 +59,14 @@ class DiscordAuthenticator extends OAuth2Authenticator
                     }
                 }
 
+                if (!$email) {
+                    throw new AuthenticationException('Votre compte Discord n\'a pas d\'adresse email vérifiée. Activez-en une sur Discord puis réessayez.');
+                }
+
                 $user = new User();
                 $user->setDiscordId($discordId);
                 $user->setUsername($discordUser->getUsername());
-                $user->setEmail($email ?? 'discord_' . $discordId . '@discord.invalid');
+                $user->setEmail($email);
                 $this->em->persist($user);
                 $this->em->flush();
 

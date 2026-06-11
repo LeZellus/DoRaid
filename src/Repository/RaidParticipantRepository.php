@@ -18,6 +18,7 @@ class RaidParticipantRepository extends ServiceEntityRepository
     public function findByUser(User $user): array
     {
         return $this->createQueryBuilder('rp')
+            ->addSelect('c', 'r', 'rt', 'g')
             ->join('rp.character', 'c')
             ->join('rp.raid', 'r')
             ->join('r.raidTemplate', 'rt')

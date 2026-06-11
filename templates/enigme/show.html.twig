@@ -9,10 +9,18 @@
      onclick="this.style.display='none'"
      style="display:none"
      class="fixed inset-0 z-50 bg-black/95 flex items-center justify-center cursor-zoom-out">
+    <button onclick="event.stopPropagation(); document.getElementById('lightbox').style.display='none'"
+            class="absolute top-4 right-4 text-white/60 hover:text-white text-3xl leading-none z-10"
+            aria-label="Fermer">✕</button>
     <img id="lightbox-img" src="" alt=""
          class="max-w-full max-h-full object-contain select-none"
          style="max-width:100vw;max-height:100vh">
 </div>
+<script>
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') document.getElementById('lightbox').style.display = 'none';
+});
+</script>
 
 <div class="max-w-5xl mx-auto px-6 py-10"
      data-controller="enigme"

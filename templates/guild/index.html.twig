@@ -67,6 +67,7 @@
                                 {% if guild.imagePath %}
                                     <img src="{{ asset('uploads/guildes/' ~ guild.slug ~ '/' ~ guild.imagePath) }}"
                                          alt="{{ guild.name }}"
+                                         loading="lazy"
                                          class="w-12 h-12 rounded-full object-cover border border-indigo-800/40 shrink-0">
                                 {% else %}
                                     <div class="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-600 to-indigo-800 flex items-center justify-center text-lg font-bold text-white shrink-0 group-hover:from-indigo-500 group-hover:to-indigo-700 transition-all">
@@ -127,6 +128,7 @@
     const cards        = document.querySelectorAll('.guild-card');
     const noResults    = document.getElementById('no-results');
     const grid         = document.getElementById('guild-grid');
+    let debounceTimer;
 
     function applyFilters() {
         const term   = searchInput.value.toLowerCase().trim();
@@ -141,7 +143,10 @@
         grid.classList.toggle('hidden', visible === 0);
     }
 
-    searchInput.addEventListener('input', applyFilters);
+    searchInput.addEventListener('input', () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(applyFilters, 200);
+    });
     serverSelect.addEventListener('change', applyFilters);
 
     if (serverSelect.value) applyFilters();

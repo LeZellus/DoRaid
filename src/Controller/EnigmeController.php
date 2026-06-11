@@ -65,6 +65,10 @@ class EnigmeController extends AbstractController
             return new JsonResponse(['success' => false, 'error' => 'Type non supporté : ' . $mime], 400);
         }
 
+        if ($enigme->getImages()->count() >= 20) {
+            return new JsonResponse(['success' => false, 'error' => 'Limite de 20 images par énigme atteinte.'], 400);
+        }
+
         $uploadDir = $this->projectDir . '/public/uploads/enigmes/' . $enigme->getId();
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0775, true);

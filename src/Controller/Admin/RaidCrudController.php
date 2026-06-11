@@ -29,6 +29,7 @@ class RaidCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('Raid')
             ->setEntityLabelInPlural('Raids')
             ->setDefaultSort(['createdAt' => 'DESC'])
+            ->setPageSize(50)
             ->showEntityActionsInlined();
     }
 
@@ -53,6 +54,7 @@ class RaidCrudController extends AbstractCrudController
     {
         yield AssociationField::new('raidTemplate', 'Type');
         yield AssociationField::new('guild', 'Guilde');
+        yield AssociationField::new('creator', 'Créateur')->hideOnForm();
         yield ChoiceField::new('status', 'Statut')
             ->setChoices(array_combine(
                 array_map(fn(RaidStatus $s) => $s->label(), RaidStatus::cases()),

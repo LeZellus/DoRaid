@@ -18,6 +18,9 @@ security:
             custom_authenticator:
                 - App\Security\AppAuthenticator
                 - App\Security\DiscordAuthenticator
+            login_throttling:
+                max_attempts: 5
+                interval: '1 minute'
             logout:
                 path: app_logout
                 target: app_home

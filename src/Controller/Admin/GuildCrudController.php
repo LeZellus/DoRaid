@@ -25,6 +25,7 @@ class GuildCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('Guilde')
             ->setEntityLabelInPlural('Guildes')
             ->setDefaultSort(['createdAt' => 'DESC'])
+            ->setPageSize(50)
             ->showEntityActionsInlined();
     }
 
