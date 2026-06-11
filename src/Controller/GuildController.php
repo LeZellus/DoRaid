@@ -101,6 +101,27 @@ class GuildController extends AbstractController
         ]);
     }
 
+    #[Route('/{id}/membres', name: 'app_guild_members')]
+    public function members(Guild $guild): Response
+    {
+        $currentUser = $this->getUser();
+        $isOwner     = $guild->getOwner()->getId() === $currentUser->getId();
+
+        $isLeader = false;
+        foreach ($guild->getMemberships() as $m) {
+            if ($m->getStatus() === MemberStatus::Leader && $m->getCharacter()->getUser()->getId() === $currentUser->getId()) {
+                $isLeader = true;
+                break;
+            }
+        }
+
+        return $this->render('guild/members.html.twig', [
+            'guild'    => $guild,
+            'isOwner'  => $isOwner,
+            'isLeader' => $isLeader,
+        ]);
+    }
+
     #[Route('/{id}/description', name: 'app_guild_description', methods: ['POST'])]
     public function updateDescription(Guild $guild, Request $request, EntityManagerInterface $em): Response
     {

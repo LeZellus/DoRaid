@@ -79,57 +79,49 @@
     {% endif %}
 
     {# ── Grille principale ── #}
-    <div class="grid gap-6 lg:grid-cols-5">
+    <div class="grid gap-6 lg:grid-cols-2">
 
-        {# ── Membres — 3/5 ── #}
-        <div class="lg:col-span-3 {{ ui.card_classes('overflow-hidden') }}">
+        {# ── Membres (widget compact) ── #}
+        <div class="{{ ui.card_classes('overflow-hidden') }}">
             <div class="{{ ui.card_header_classes('flex items-center justify-between') }}">
                 <h2 class="font-semibold text-white">Membres</h2>
-                {% if guild.confirmed|length > 0 %}
-                    <span class="text-xs text-gray-500">{{ guild.confirmed|length }} confirmé{{ guild.confirmed|length > 1 ? 's' : '' }}</span>
+                {% if isOwner and guild.pending|length > 0 %}
+                    <a href="{{ path('app_guild_members', {id: guild.id}) }}"
+                       class="text-xs font-medium text-yellow-400 hover:text-yellow-300 transition">
+                        {{ guild.pending|length }} en attente →
+                    </a>
                 {% endif %}
             </div>
-
-            {% if guild.confirmed is empty %}
-                <div class="{{ ui.card_body_classes('py-10 text-center') }}">
-                    <p class="text-gray-500 text-sm">Aucun membre confirmé pour l'instant.</p>
-                </div>
-            {% else %}
-                <ul class="divide-y divide-gray-800/60">
-                    {% for m in guild.confirmed %}
-                        <li class="flex items-center gap-4 px-6 py-3.5 hover:bg-gray-800/30 transition">
-                            <div class="w-9 h-9 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center text-sm font-bold text-gray-300 shrink-0">
+            <div class="{{ ui.card_body_classes() }}">
+                {% if guild.confirmed is empty %}
+                    <p class="text-sm text-gray-500">Aucun membre confirmé pour l'instant.</p>
+                {% else %}
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        {% for m in guild.confirmed|slice(0, 10) %}
+                            <div class="w-9 h-9 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center text-sm font-bold text-gray-300 shrink-0"
+                                 title="{{ m.character.name }}{% if m.status.value == 'leader' %} 👑{% endif %}">
                                 {{ m.character.name|slice(0,1)|upper }}
                             </div>
-                            <div class="flex-1 min-w-0">
-                                <div class="flex items-center gap-2">
-                                    <span class="font-medium text-white truncate">{{ m.character.name }}</span>
-                                    {% if m.status.value == 'leader' %}<span title="Meneur" class="text-base leading-none">👑</span>{% endif %}
-                                </div>
-                                <div class="flex items-center gap-1.5 mt-0.5">
-                                    <span class="text-xs text-gray-400">{{ m.character.gameClass.name }}</span>
-                                    {% if m.character.user.id == app.user.id %}
-                                        <span class="text-xs text-indigo-400 font-medium">· vous</span>
-                                    {% else %}
-                                        <span class="text-xs text-gray-600">· {{ m.character.user.username }}</span>
-                                        {{ ui.whisper(m.character.name) }}
-                                    {% endif %}
-                                </div>
+                        {% endfor %}
+                        {% if guild.confirmed|length > 10 %}
+                            <div class="w-9 h-9 rounded-full bg-gray-800/60 border border-gray-700 flex items-center justify-center text-xs font-bold text-gray-500">
+                                +{{ guild.confirmed|length - 10 }}
                             </div>
-                            {% if m.character.user == app.user and m.status.value != 'leader' %}
-                                <form method="post" action="{{ path('app_guild_leave', {id: m.id}) }}">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('leave_' ~ m.id) }}">
-                                    {{ ui.button('Quitter', 'ghost', 'submit', 'py-1.5 px-3 text-xs') }}
-                                </form>
-                            {% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
+                        {% endif %}
+                    </div>
+                    <a href="{{ path('app_guild_members', {id: guild.id}) }}"
+                       class="inline-flex items-center gap-1.5 text-sm text-indigo-400 hover:text-indigo-300 transition font-medium">
+                        Voir les {{ guild.confirmed|length }} membres
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                    </a>
+                {% endif %}
+            </div>
         </div>
 
-        {# ── Rejoindre — 2/5 ── #}
-        <div class="lg:col-span-2 {{ ui.card_classes('overflow-hidden') }}">
+        {# ── Rejoindre ── #}
+        <div class="{{ ui.card_classes('overflow-hidden') }}">
             <div class="{{ ui.card_header_classes() }}">
                 <h2 class="font-semibold text-white">
                     {% if isOwner and not guild.hasLeader() %}Choisir le meneur{% else %}Rejoindre{% endif %}
@@ -163,39 +155,6 @@
         </div>
 
     </div>
-
-    {# ── Demandes en attente ── #}
-    {% if isOwner and guild.pending|length > 0 %}
-        <div class="mt-6 {{ ui.card_classes('overflow-hidden') }}">
-            <div class="{{ ui.card_header_classes('flex items-center gap-3') }}">
-                <h2 class="font-semibold text-white">Demandes en attente</h2>
-                {{ ui.badge(guild.pending|length, 'warning') }}
-            </div>
-            <ul class="divide-y divide-gray-800/60">
-                {% for m in guild.pending %}
-                    <li class="flex items-center gap-4 px-6 py-3.5">
-                        <div class="w-9 h-9 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center text-sm font-bold text-gray-400 shrink-0">
-                            {{ m.character.name|slice(0,1)|upper }}
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <span class="font-medium text-white">{{ m.character.name }}</span>
-                            <div class="text-xs text-gray-500 mt-0.5">{{ m.character.gameClass.name }} · {{ m.character.user.username }}</div>
-                        </div>
-                        <div class="flex items-center gap-2 shrink-0">
-                            <form method="post" action="{{ path('app_guild_approve', {id: m.id}) }}">
-                                <input type="hidden" name="_token" value="{{ csrf_token('membership_' ~ m.id) }}">
-                                {{ ui.button('Accepter', 'success', 'submit', 'py-1.5 px-3 text-xs') }}
-                            </form>
-                            <form method="post" action="{{ path('app_guild_reject', {id: m.id}) }}">
-                                <input type="hidden" name="_token" value="{{ csrf_token('membership_' ~ m.id) }}">
-                                {{ ui.button('Refuser', 'danger', 'submit', 'py-1.5 px-3 text-xs') }}
-                            </form>
-                        </div>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-    {% endif %}
 
     {# ── Raids ── #}
     <div class="mt-6 {{ ui.card_classes('overflow-hidden') }}">

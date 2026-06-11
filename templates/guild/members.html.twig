@@ -1,0 +1,119 @@
+{% extends 'base.html.twig' %}
+{% import 'components/_ui.html.twig' as ui %}
+
+{% block title %}Membres – {{ guild.name }} – DoRaid{% endblock %}
+
+{% block body %}
+<div class="max-w-3xl mx-auto px-6 py-10">
+
+    {# ── Breadcrumb ── #}
+    <nav class="flex items-center gap-2 text-sm text-gray-500 mb-6">
+        <a href="{{ path('app_guild_index') }}" class="hover:text-gray-300 transition">Guildes</a>
+        <span class="text-gray-700">/</span>
+        <a href="{{ path('app_guild_show', {id: guild.id}) }}" class="hover:text-gray-300 transition">{{ guild.name }}</a>
+        <span class="text-gray-700">/</span>
+        <span class="text-gray-300">Membres</span>
+    </nav>
+
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold text-white">Membres de {{ guild.name }}</h1>
+        <span class="text-sm text-gray-500">
+            {{ guild.confirmed|length }} confirmé{{ guild.confirmed|length > 1 ? 's' : '' }}
+            {% if guild.pending|length > 0 %}
+                · <span class="text-yellow-400">{{ guild.pending|length }} en attente</span>
+            {% endif %}
+        </span>
+    </div>
+
+    {# ── Membres confirmés ── #}
+    <div class="{{ ui.card_classes('overflow-hidden mb-6') }}">
+        <div class="{{ ui.card_header_classes() }}">
+            <h2 class="font-semibold text-white">Membres confirmés</h2>
+        </div>
+
+        {% if guild.confirmed is empty %}
+            <div class="{{ ui.card_body_classes('py-10 text-center') }}">
+                <p class="text-gray-500 text-sm">Aucun membre confirmé pour l'instant.</p>
+            </div>
+        {% else %}
+            <ul class="divide-y divide-gray-800/60">
+                {% for m in guild.confirmed %}
+                    <li class="flex items-center gap-4 px-6 py-3.5 hover:bg-gray-800/30 transition">
+                        <div class="w-10 h-10 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center text-sm font-bold text-gray-300 shrink-0">
+                            {{ m.character.name|slice(0,1)|upper }}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="font-medium text-white truncate">{{ m.character.name }}</span>
+                                {% if m.status.value == 'leader' %}
+                                    <span title="Meneur" class="text-base leading-none">👑</span>
+                                {% endif %}
+                            </div>
+                            <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                                <span class="text-xs text-gray-400">{{ m.character.gameClass.name }}</span>
+                                {% if m.character.user.id == app.user.id %}
+                                    <span class="text-xs text-indigo-400 font-medium">· vous</span>
+                                {% else %}
+                                    <span class="text-xs text-gray-600">· {{ m.character.user.username }}</span>
+                                    {{ ui.whisper(m.character.name) }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            {% if m.character.user.id == app.user.id and m.status.value != 'leader' %}
+                                <form method="post" action="{{ path('app_guild_leave', {id: m.id}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('leave_' ~ m.id) }}">
+                                    {{ ui.button('Quitter', 'ghost', 'submit', 'py-1.5 px-3 text-xs') }}
+                                </form>
+                            {% endif %}
+                            {% if isOwner and m.character.user.id != app.user.id %}
+                                <form method="post" action="{{ path('app_guild_reject', {id: m.id}) }}"
+                                      onsubmit="return confirm('Exclure {{ m.character.name }} de la guilde ?')">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('membership_' ~ m.id) }}">
+                                    {{ ui.button('Exclure', 'danger', 'submit', 'py-1.5 px-3 text-xs') }}
+                                </form>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    {# ── Demandes en attente (propriétaire) ── #}
+    {% if isOwner and guild.pending|length > 0 %}
+        <div class="{{ ui.card_classes('overflow-hidden') }}">
+            <div class="{{ ui.card_header_classes('flex items-center gap-3') }}">
+                <h2 class="font-semibold text-white">Demandes en attente</h2>
+                {{ ui.badge(guild.pending|length, 'warning') }}
+            </div>
+            <ul class="divide-y divide-gray-800/60">
+                {% for m in guild.pending %}
+                    <li class="flex items-center gap-4 px-6 py-3.5">
+                        <div class="w-10 h-10 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center text-sm font-bold text-gray-400 shrink-0">
+                            {{ m.character.name|slice(0,1)|upper }}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <span class="font-medium text-white">{{ m.character.name }}</span>
+                            <div class="text-xs text-gray-500 mt-0.5">
+                                {{ m.character.gameClass.name }} · {{ m.character.user.username }}
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <form method="post" action="{{ path('app_guild_approve', {id: m.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('membership_' ~ m.id) }}">
+                                {{ ui.button('Accepter', 'success', 'submit', 'py-1.5 px-3 text-xs') }}
+                            </form>
+                            <form method="post" action="{{ path('app_guild_reject', {id: m.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('membership_' ~ m.id) }}">
+                                {{ ui.button('Refuser', 'danger', 'submit', 'py-1.5 px-3 text-xs') }}
+                            </form>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}
