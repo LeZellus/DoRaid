@@ -49,26 +49,25 @@ class RaidController extends AbstractController
         $raids   = $raidRepo->findVisibleForUser($userGuildIds, $serverName ?: null);
         $servers = $serverRepo->findAll();
 
-        // Keep only open raids
-        $activeRaids = array_values(array_filter($raids, fn($r) => $r->getStatus() === RaidStatus::Open));
+        $now  = new \DateTimeImmutable();
+        $open = array_filter($raids, fn($r) => $r->getStatus() === RaidStatus::Open);
 
-        // Sort: upcoming (scheduledAt in the future, nearest first) → then no date (createdAt DESC)
-        $now = new \DateTimeImmutable();
-        usort($activeRaids, function (Raid $a, Raid $b) use ($now) {
-            $aScheduled = $a->getScheduledAt() && $a->getScheduledAt() > $now;
-            $bScheduled = $b->getScheduledAt() && $b->getScheduledAt() > $now;
+        // À venir : scheduledAt dans le futur
+        $upcomingRaids = array_values(array_filter($open, fn($r) => $r->getScheduledAt() && $r->getScheduledAt() > $now));
+        usort($upcomingRaids, fn($a, $b) => $a->getScheduledAt() <=> $b->getScheduledAt());
 
-            if ($aScheduled && $bScheduled) {
-                return $a->getScheduledAt() <=> $b->getScheduledAt();
-            }
-            if ($aScheduled) return -1;
-            if ($bScheduled) return 1;
+        // Commencés : scheduledAt dans le passé
+        $startedRaids = array_values(array_filter($open, fn($r) => $r->getScheduledAt() && $r->getScheduledAt() <= $now));
+        usort($startedRaids, fn($a, $b) => $b->getScheduledAt() <=> $a->getScheduledAt());
 
-            return $b->getCreatedAt() <=> $a->getCreatedAt();
-        });
+        // En cours : pas de date planifiée
+        $ongoingRaids = array_values(array_filter($open, fn($r) => !$r->getScheduledAt()));
+        usort($ongoingRaids, fn($a, $b) => $b->getCreatedAt() <=> $a->getCreatedAt());
 
         return $this->render('raid/index.html.twig', [
-            'activeRaids'   => $activeRaids,
+            'upcomingRaids' => $upcomingRaids,
+            'startedRaids'  => $startedRaids,
+            'ongoingRaids'  => $ongoingRaids,
             'servers'       => $servers,
             'currentServer' => $serverName,
             'userGuildIds'  => $userGuildIds,

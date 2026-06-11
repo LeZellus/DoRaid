@@ -26,22 +26,22 @@
         {% endfor %}
     </div>
 
-    {% if activeRaids is empty %}
+    {% if upcomingRaids is empty and startedRaids is empty and ongoingRaids is empty %}
         <div class="{{ ui.card_classes('p-12 text-center') }}">
-            <p class="text-gray-400 text-lg">Aucun raid en cours{% if currentServer %} sur {{ currentServer }}{% endif %}.</p>
+            <p class="text-gray-400 text-lg">Aucun raid disponible{% if currentServer %} sur {{ currentServer }}{% endif %}.</p>
         </div>
     {% else %}
 
         {# ── Macro ligne raid ── #}
-        {% macro raid_row(raid, userGuildIds) %}
+        {% macro raid_row(raid, userGuildIds, showCountdown) %}
             {% import 'components/_ui.html.twig' as ui %}
             {% set isMyGuild  = raid.guild.id in userGuildIds %}
             {% set isFull     = raid.isFull() %}
-            {% set hasDate    = raid.scheduledAt and raid.scheduledAt > date() %}
-            {% set diffSec    = hasDate ? (raid.scheduledAt|date('U') - date()|date('U')) : 0 %}
-            {% set diffHours  = hasDate ? (diffSec / 3600)|round(0, 'floor') : 0 %}
-            {% set diffDays   = hasDate ? (diffSec / 86400)|round(0, 'floor') : 0 %}
-            {% set isImminent = hasDate and diffHours < 48 %}
+            {% set hasDate    = raid.scheduledAt is not null %}
+            {% set isFuture   = hasDate and raid.scheduledAt > date() %}
+            {% set diffSec    = isFuture ? (raid.scheduledAt|date('U') - date()|date('U')) : 0 %}
+            {% set diffHours  = isFuture ? (diffSec / 3600)|round(0, 'floor') : 0 %}
+            {% set isImminent = isFuture and diffHours < 48 %}
 
             <li class="{{ isFull ? 'opacity-60' : '' }}">
                 <a href="{{ path('app_raid_show', {id: raid.id}) }}"
@@ -49,7 +49,6 @@
                           {{ isImminent and not isFull ? 'border-l-4 border-yellow-400 bg-yellow-950/10 hover:bg-yellow-950/20' : 'hover:bg-gray-800/30' }}
                           {{ isFull ? 'border-l-4 border-red-800' : '' }}">
 
-                    {# Image template #}
                     {% if raid.raidTemplate.imagePath %}
                         <img src="{{ asset('uploads/raid-templates/' ~ raid.raidTemplate.imagePath) }}"
                              alt="{{ raid.raidTemplate.name }}"
@@ -82,7 +81,7 @@
                             <span>{{ raid.guild.name }}</span>
                             <span class="text-gray-700">·</span>
                             <span>{{ raid.guild.server.name }}</span>
-                            {% if raid.scheduledAt %}
+                            {% if hasDate %}
                                 <span class="text-gray-700">·</span>
                                 <span class="{{ isImminent ? 'text-yellow-400 font-medium' : 'text-gray-400' }}">
                                     {{ raid.scheduledAt|date('d/m à H:i') }}
@@ -94,52 +93,106 @@
                     </div>
 
                     {# Compteur + participants #}
-                    <div class="flex items-center gap-3 shrink-0">
-
-                        {% if hasDate and not isFull %}
-                            <div class="text-center min-w-[3rem]">
-                                {% if diffHours < 1 %}
-                                    <div class="text-base font-bold text-orange-400 leading-none">–1h</div>
-                                    <div class="text-xs text-orange-600 mt-0.5">imminent</div>
-                                {% elseif diffHours < 24 %}
-                                    <div class="text-base font-bold text-yellow-400 leading-none">{{ diffHours }}h</div>
-                                    <div class="text-xs text-yellow-600 mt-0.5">restantes</div>
-                                {% elseif diffDays == 1 %}
-                                    <div class="text-base font-bold text-yellow-400 leading-none">J-1</div>
-                                    <div class="text-xs text-yellow-600 mt-0.5">demain</div>
-                                {% else %}
-                                    <div class="text-base font-bold text-yellow-400 leading-none">J-{{ diffDays }}</div>
-                                    <div class="text-xs text-yellow-600 mt-0.5">jours</div>
-                                {% endif %}
+                    <div class="flex items-center gap-4 shrink-0">
+                        {% if showCountdown and isFuture and not isFull %}
+                            <div class="text-center min-w-[5rem]"
+                                 data-countdown="{{ raid.scheduledAt|date('U') }}">
+                                <div class="font-mono font-bold text-yellow-400 text-sm leading-none countdown-display">…</div>
+                                <div class="text-xs text-yellow-700 mt-0.5">avant le raid</div>
                             </div>
                         {% endif %}
-
                         <div class="text-right min-w-[2.5rem]">
                             <div class="text-sm font-medium {{ isFull ? 'text-red-400' : 'text-indigo-400' }}">
                                 {{ raid.acceptedParticipants|length }}<span class="text-gray-600 font-normal">/{{ raid.raidTemplate.maxParticipants }}</span>
                             </div>
                             <div class="text-xs text-gray-600 mt-0.5">joueurs</div>
                         </div>
-
                     </div>
 
                 </a>
             </li>
         {% endmacro %}
 
-        <div class="{{ ui.card_classes('overflow-hidden') }}">
-            <div class="{{ ui.card_header_classes('flex items-center justify-between') }}">
-                <h2 class="font-semibold text-white">En cours</h2>
-                <span class="text-xs text-gray-500">{{ activeRaids|length }} raid{{ activeRaids|length > 1 ? 's' : '' }}</span>
+        {# ── À venir ── #}
+        {% if upcomingRaids is not empty %}
+            <div class="{{ ui.card_classes('overflow-hidden mb-6') }}">
+                <div class="{{ ui.card_header_classes('flex items-center justify-between') }}">
+                    <h2 class="font-semibold text-white flex items-center gap-2">
+                        🕐 À venir
+                    </h2>
+                    <span class="text-xs text-gray-500">{{ upcomingRaids|length }} raid{{ upcomingRaids|length > 1 ? 's' : '' }}</span>
+                </div>
+                <ul class="divide-y divide-gray-800/60">
+                    {% for raid in upcomingRaids %}
+                        {{ _self.raid_row(raid, userGuildIds, true) }}
+                    {% endfor %}
+                </ul>
             </div>
-            <ul class="divide-y divide-gray-800/60">
-                {% for raid in activeRaids %}
-                    {{ _self.raid_row(raid, userGuildIds) }}
-                {% endfor %}
-            </ul>
-        </div>
+        {% endif %}
+
+        {# ── Commencés ── #}
+        {% if startedRaids is not empty %}
+            <div class="{{ ui.card_classes('overflow-hidden mb-6') }}">
+                <div class="{{ ui.card_header_classes('flex items-center justify-between') }}">
+                    <h2 class="font-semibold text-green-400 flex items-center gap-2">
+                        ⚔ Commencés
+                    </h2>
+                    <span class="text-xs text-gray-500">{{ startedRaids|length }} raid{{ startedRaids|length > 1 ? 's' : '' }}</span>
+                </div>
+                <ul class="divide-y divide-gray-800/60">
+                    {% for raid in startedRaids %}
+                        {{ _self.raid_row(raid, userGuildIds, false) }}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        {# ── En cours (sans date) ── #}
+        {% if ongoingRaids is not empty %}
+            <div class="{{ ui.card_classes('overflow-hidden') }}">
+                <div class="{{ ui.card_header_classes('flex items-center justify-between') }}">
+                    <h2 class="font-semibold text-indigo-400 flex items-center gap-2">
+                        En cours
+                    </h2>
+                    <span class="text-xs text-gray-500">{{ ongoingRaids|length }} raid{{ ongoingRaids|length > 1 ? 's' : '' }}</span>
+                </div>
+                <ul class="divide-y divide-gray-800/60">
+                    {% for raid in ongoingRaids %}
+                        {{ _self.raid_row(raid, userGuildIds, false) }}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
 
     {% endif %}
-
 </div>
+
+<script>
+(function () {
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function format(sec) {
+        if (sec <= 0) return 'Démarré';
+        var d = Math.floor(sec / 86400);
+        var h = Math.floor((sec % 86400) / 3600);
+        var m = Math.floor((sec % 3600) / 60);
+        var s = sec % 60;
+        if (d > 0) return 'J-' + d + ' ' + pad(h) + ':' + pad(m) + ':' + pad(s);
+        return pad(h) + ':' + pad(m) + ':' + pad(s);
+    }
+
+    function tick() {
+        var now = Math.floor(Date.now() / 1000);
+        document.querySelectorAll('[data-countdown]').forEach(function (el) {
+            var target = parseInt(el.dataset.countdown, 10);
+            var diff   = target - now;
+            var display = el.querySelector('.countdown-display');
+            if (display) display.textContent = format(diff);
+        });
+    }
+
+    tick();
+    setInterval(tick, 1000);
+})();
+</script>
 {% endblock %}
