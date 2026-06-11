@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Character;
+use App\Form\CharacterEditType;
 use App\Form\CharacterType;
 use App\Repository\CharacterRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -61,6 +62,28 @@ class CharacterController extends AbstractController
 
         return $this->render('character/new.html.twig', [
             'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}/modifier', name: 'app_character_edit', methods: ['GET', 'POST'])]
+    public function edit(Character $character, Request $request, EntityManagerInterface $em): Response
+    {
+        if ($character->getUser() !== $this->getUser()) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $form = $this->createForm(CharacterEditType::class, $character);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->flush();
+            $this->addFlash('success', 'Personnage mis à jour.');
+            return $this->redirectToRoute('app_character_index');
+        }
+
+        return $this->render('character/edit.html.twig', [
+            'form'      => $form,
+            'character' => $character,
         ]);
     }
 

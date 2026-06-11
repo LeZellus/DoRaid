@@ -61,6 +61,7 @@
                                         {% endif %}
                                     </div>
                                     <div class="flex items-center gap-2">
+                                        {{ ui.link_button('Modifier', path('app_character_edit', {id: character.id}), 'secondary', 'py-1 px-3 text-sm') }}
                                         {% if m and m.status.value != 'leader' %}
                                             <form method="post" action="{{ path('app_guild_leave', {id: m.id}) }}">
                                                 <input type="hidden" name="_token" value="{{ csrf_token('leave_' ~ m.id) }}">
