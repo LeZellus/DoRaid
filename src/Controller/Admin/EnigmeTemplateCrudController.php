@@ -23,26 +23,21 @@ class EnigmeTemplateCrudController extends AbstractCrudController
     {
         parent::updateEntity($em, $entityInstance);
 
-        // Match enigmes linked explicitly (raids created after sourceTemplate FK was added)
-        // OR by raidTemplate+orderNumber for older raids without the FK
-        $enigmes = $em->createQuery(
-            'SELECT e FROM App\Entity\Enigme e
-             JOIN e.raid r
-             WHERE e.sourceTemplate = :template
-                OR (e.sourceTemplate IS NULL
-                    AND e.orderNumber = :order
-                    AND r.raidTemplate = :raidTemplate)'
-        )->setParameters([
-            'template'    => $entityInstance,
-            'order'       => $entityInstance->getOrderNumber(),
-            'raidTemplate' => $entityInstance->getRaidTemplate(),
-        ])->getResult();
-
-        foreach ($enigmes as $enigme) {
-            $enigme->setTitle($entityInstance->getTitle());
-        }
-
-        $em->flush();
+        $em->getConnection()->executeStatement(
+            'UPDATE enigme e
+             JOIN raid r ON e.raid_id = r.id
+             SET e.title = :title
+             WHERE e.source_template_id = :templateId
+                OR (e.source_template_id IS NULL
+                    AND e.order_number = :orderNumber
+                    AND r.raid_template_id = :raidTemplateId)',
+            [
+                'title'          => $entityInstance->getTitle(),
+                'templateId'     => $entityInstance->getId(),
+                'orderNumber'    => $entityInstance->getOrderNumber(),
+                'raidTemplateId' => $entityInstance->getRaidTemplate()->getId(),
+            ]
+        );
     }
 
     public function configureCrud(Crud $crud): Crud
