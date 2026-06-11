@@ -4,9 +4,12 @@ namespace App\Entity;
 
 use App\Repository\CharacterRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: CharacterRepository::class)]
 #[ORM\Table(name: 'game_character')]
+#[ORM\UniqueConstraint(name: 'uniq_character_name_server', columns: ['name', 'server_id'])]
+#[UniqueEntity(fields: ['name', 'server'], message: 'Un personnage nommé "{{ value }}" existe déjà sur ce serveur.')]
 class Character
 {
     #[ORM\Id]
