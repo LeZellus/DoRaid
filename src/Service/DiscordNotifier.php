@@ -20,32 +20,47 @@ class DiscordNotifier
             return;
         }
 
-        $raidUrl = $this->router->generate('app_raid_show', ['id' => $raid->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+        $raidUrl  = $this->router->generate('app_raid_show', ['id' => $raid->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+        $guildUrl = $this->router->generate('app_guild_show', ['slug' => $raid->getGuild()->getSlug()], UrlGeneratorInterface::ABSOLUTE_URL);
+        $siteUrl  = $this->router->generate('app_home', [], UrlGeneratorInterface::ABSOLUTE_URL);
         $template = $raid->getRaidTemplate();
-        $date = $raid->getScheduledAt()?->format('d/m/Y à H\hi') ?? 'Date non définie';
+        $date     = $raid->getScheduledAt()?->format('d/m/Y à H\hi') ?? 'Non définie';
 
         $payload = [
             'embeds' => [[
                 'title'       => '⚔️ Nouveau raid : ' . $template->getName(),
+                'url'         => $raidUrl,
                 'description' => sprintf(
-                    "**Guilde :** %s\n**Date :** %s\n**Participants :** %d – %d joueurs\n**Créé par :** %s",
-                    $raid->getGuild()->getName(),
-                    $date,
-                    $template->getMinParticipants(),
-                    $template->getMaxParticipants(),
-                    $raid->getCreator()->getName(),
+                    "Un nouveau raid vient d'être créé sur **[DoRaid](%s)** !\nRejoignez-le dès maintenant en cliquant sur le bouton ci-dessous.",
+                    $siteUrl,
                 ),
                 'color'  => 0x5865F2,
-                'footer' => ['text' => 'DoRaid'],
+                'fields' => [
+                    ['name' => '🏰 Guilde',       'value' => sprintf('[%s](%s)', $raid->getGuild()->getName(), $guildUrl), 'inline' => true],
+                    ['name' => '⚔️ Type',          'value' => $template->getName(),     'inline' => true],
+                    ['name' => '👤 Créé par',      'value' => $raid->getCreator()->getName(), 'inline' => true],
+                    ['name' => '📅 Date',          'value' => $date,                    'inline' => true],
+                    ['name' => '👥 Participants',  'value' => $template->getMinParticipants() . ' – ' . $template->getMaxParticipants() . ' joueurs', 'inline' => true],
+                ],
+                'footer' => ['text' => 'DoRaid • ' . $raid->getGuild()->getName()],
+                'timestamp' => (new \DateTimeImmutable())->format(\DateTimeInterface::ATOM),
             ]],
             'components' => [[
                 'type'       => 1,
-                'components' => [[
-                    'type'  => 2,
-                    'style' => 5,
-                    'label' => '🗡️ Rejoindre le raid',
-                    'url'   => $raidUrl,
-                ]],
+                'components' => [
+                    [
+                        'type'  => 2,
+                        'style' => 5,
+                        'label' => '🗡️ Voir le raid',
+                        'url'   => $raidUrl,
+                    ],
+                    [
+                        'type'  => 2,
+                        'style' => 5,
+                        'label' => '🏰 Page de la guilde',
+                        'url'   => $guildUrl,
+                    ],
+                ],
             ]],
         ];
 
