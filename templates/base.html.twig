@@ -25,21 +25,23 @@
                     <span class="font-bold text-white text-lg tracking-tight">DoRaid</span>
                 </a>
 
-                {% if app.user %}
-
-                    {# Liens de navigation #}
-                    <div class="flex items-center gap-1">
+                {# Liens de navigation — visibles pour tous #}
+                <div class="flex items-center gap-1">
+                    {% if app.user %}
                         {% if route starts with 'app_character' %}
                             <a href="{{ path('app_character_index') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition text-white bg-gray-800">Personnages</a>
                         {% else %}
                             <a href="{{ path('app_character_index') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition text-gray-400 hover:text-white hover:bg-gray-800/60">Personnages</a>
                         {% endif %}
-                        {% if route starts with 'app_guild' %}
-                            <a href="{{ path('app_guild_index') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition text-white bg-gray-800">Guildes</a>
-                        {% else %}
-                            <a href="{{ path('app_guild_index') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition text-gray-400 hover:text-white hover:bg-gray-800/60">Guildes</a>
-                        {% endif %}
-                    </div>
+                    {% endif %}
+                    {% if route starts with 'app_guild' %}
+                        <a href="{{ path('app_guild_index') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition text-white bg-gray-800">Guildes</a>
+                    {% else %}
+                        <a href="{{ path('app_guild_index') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition text-gray-400 hover:text-white hover:bg-gray-800/60">Guildes</a>
+                    {% endif %}
+                </div>
+
+                {% if app.user %}
 
                     {# Lien admin #}
                     {% if is_granted('ROLE_ADMIN') %}
