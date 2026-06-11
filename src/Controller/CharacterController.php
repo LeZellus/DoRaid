@@ -7,6 +7,7 @@ use App\Form\CharacterType;
 use App\Repository\CharacterRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -39,12 +40,23 @@ class CharacterController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $character->setUser($this->getUser());
-            $em->persist($character);
-            $em->flush();
+            $existing = $em->getRepository(Character::class)->findOneBy([
+                'name'   => $character->getName(),
+                'server' => $character->getServer(),
+            ]);
 
-            $this->addFlash('success', 'Personnage créé avec succès !');
-            return $this->redirectToRoute('app_character_index');
+            if ($existing) {
+                $form->get('name')->addError(new FormError(
+                    sprintf('Un personnage nommé "%s" existe déjà sur %s.', $character->getName(), $character->getServer()->getName())
+                ));
+            } else {
+                $character->setUser($this->getUser());
+                $em->persist($character);
+                $em->flush();
+
+                $this->addFlash('success', 'Personnage créé avec succès !');
+                return $this->redirectToRoute('app_character_index');
+            }
         }
 
         return $this->render('character/new.html.twig', [
