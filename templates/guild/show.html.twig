@@ -90,10 +90,13 @@
     {# ── Grille principale ── #}
     <div class="grid gap-6 lg:grid-cols-2">
 
-        {# ── Membres (widget compact) ── #}
-        <div class="{{ ui.card_classes('overflow-hidden') }}">
+        {# ── Membres ── #}
+        <div class="{{ ui.card_classes('overflow-hidden flex flex-col') }}">
             <div class="{{ ui.card_header_classes('flex items-center justify-between') }}">
-                <h2 class="font-semibold text-white">Membres</h2>
+                <h2 class="font-semibold text-white">
+                    Membres
+                    <span class="ml-1.5 text-sm font-normal text-gray-500">{{ guild.confirmed|length }}</span>
+                </h2>
                 {% if isLeader and guild.pending|length > 0 %}
                     <a href="{{ path('app_guild_members', {slug: guild.slug}) }}"
                        class="text-xs font-medium text-yellow-400 hover:text-yellow-300 transition">
@@ -101,32 +104,38 @@
                     </a>
                 {% endif %}
             </div>
-            <div class="{{ ui.card_body_classes() }}">
-                {% if guild.confirmed is empty %}
+
+            {% if guild.confirmed is empty %}
+                <div class="{{ ui.card_body_classes() }}">
                     <p class="text-sm text-gray-500">Aucun membre confirmé pour l'instant.</p>
-                {% else %}
-                    <div class="flex flex-nowrap gap-2 mb-4 overflow-hidden">
-                        {% for m in guild.confirmed|slice(0, 7) %}
+                </div>
+            {% else %}
+                <ul class="divide-y divide-gray-800/60 overflow-y-auto" style="max-height: 16rem">
+                    {% for m in guild.confirmed %}
+                        <li class="flex items-center gap-3 px-5 py-3 hover:bg-gray-800/30 transition">
                             <img src="{{ asset('classes/' ~ m.character.gameClass.name|lower ~ '.png') }}"
                                  alt="{{ m.character.gameClass.name }}"
-                                 title="{{ m.character.name }}{{ m.status.value == 'leader' ? ' 👑' : '' }}"
-                                 class="w-9 h-9 rounded-full object-cover shrink-0">
-                        {% endfor %}
-                        {% if guild.confirmed|length > 7 %}
-                            <div class="w-9 h-9 rounded-full bg-gray-800/60 border border-gray-700 flex items-center justify-center text-xs font-bold text-gray-400 shrink-0">
-                                +{{ guild.confirmed|length - 7 }}
+                                 class="w-8 h-8 rounded-lg object-cover shrink-0">
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-white truncate">{{ m.character.name }}</p>
+                                <p class="text-xs text-gray-500 truncate">{{ m.character.gameClass.name }}</p>
                             </div>
-                        {% endif %}
-                    </div>
+                            {% if m.status.value == 'leader' %}
+                                <span class="text-xs font-medium text-yellow-400 shrink-0">👑 Meneur</span>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+                <div class="px-5 py-3 border-t border-gray-800/60 mt-auto">
                     <a href="{{ path('app_guild_members', {slug: guild.slug}) }}"
                        class="inline-flex items-center gap-1.5 text-sm text-indigo-400 hover:text-indigo-300 transition font-medium">
-                        Voir les {{ guild.confirmed|length }} membres
+                        Gérer les membres
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
                         </svg>
                     </a>
-                {% endif %}
-            </div>
+                </div>
+            {% endif %}
         </div>
 
         {# ── Rejoindre ── #}
