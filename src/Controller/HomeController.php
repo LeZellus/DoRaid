@@ -59,14 +59,28 @@ class HomeController extends AbstractController
             }
         }
 
+        $pendingByGuild = [];
+        foreach ($membershipRepo->findPendingForLeader($user) as $m) {
+            $id = $m->getGuild()->getId();
+            $pendingByGuild[$id] ??= ['guild' => $m->getGuild(), 'count' => 0];
+            $pendingByGuild[$id]['count']++;
+        }
+
+        $pendingByRaid = [];
+        foreach ($participantRepo->findPendingForCreator($user) as $p) {
+            $id = $p->getRaid()->getId();
+            $pendingByRaid[$id] ??= ['raid' => $p->getRaid(), 'count' => 0];
+            $pendingByRaid[$id]['count']++;
+        }
+
         return $this->render('home/index.html.twig', [
-            'activeRaids'              => $activeRaids,
-            'pendingRaids'             => $pendingRaids,
-            'completedRaids'           => $completedRaids,
-            'confirmedMemberships'     => $confirmedMemberships,
-            'pendingMemberships'       => $pendingMemberships,
-            'pendingGuildMembers'      => $membershipRepo->findPendingForLeader($user),
-            'pendingRaidParticipants'  => $participantRepo->findPendingForCreator($user),
+            'activeRaids'          => $activeRaids,
+            'pendingRaids'         => $pendingRaids,
+            'completedRaids'       => $completedRaids,
+            'confirmedMemberships' => $confirmedMemberships,
+            'pendingMemberships'   => $pendingMemberships,
+            'pendingByGuild'       => $pendingByGuild,
+            'pendingByRaid'        => $pendingByRaid,
         ]);
     }
 }
