@@ -33,21 +33,41 @@
     {% else %}
 
         {# ── Macro ligne raid ── #}
-        {% macro raid_row(raid, userGuildIds, showCountdown) %}
+        {# mode: 'before' = À venir, 'after' = Commencés, null = En cours #}
+        {% macro raid_row(raid, userGuildIds, mode) %}
             {% import 'components/_ui.html.twig' as ui %}
-            {% set isMyGuild  = raid.guild.id in userGuildIds %}
-            {% set isFull     = raid.isFull() %}
-            {% set hasDate    = raid.scheduledAt is not null %}
-            {% set isFuture   = hasDate and raid.scheduledAt > date() %}
-            {% set diffSec    = isFuture ? (raid.scheduledAt|date('U') - date()|date('U')) : 0 %}
-            {% set diffHours  = isFuture ? (diffSec / 3600)|round(0, 'floor') : 0 %}
-            {% set isImminent = isFuture and diffHours < 48 %}
+            {% set isMyGuild = raid.guild.id in userGuildIds %}
+            {% set isFull    = raid.isFull() %}
+            {% set hasDate   = raid.scheduledAt is not null %}
+            {% set isFuture  = hasDate and raid.scheduledAt > date() %}
 
-            <li class="{{ isFull ? 'opacity-60' : '' }}">
+            <li>
+                {# ── Bandeau countdown ── #}
+                {% if mode == 'before' and isFuture %}
+                    <div class="flex items-center gap-2 px-6 py-1.5 bg-yellow-950/50 border-b border-yellow-900/40 text-xs font-medium text-yellow-400"
+                         data-countdown="{{ raid.scheduledAt|date('U') }}"
+                         data-mode="before">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="countdown-text">…</span>
+                    </div>
+                {% endif %}
+                {% if mode == 'after' and hasDate and not isFuture %}
+                    <div class="flex items-center gap-2 px-6 py-1.5 bg-green-950/40 border-b border-green-900/30 text-xs font-medium text-green-400"
+                         data-countdown="{{ raid.scheduledAt|date('U') }}"
+                         data-mode="after">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="countdown-text">…</span>
+                    </div>
+                {% endif %}
+
+                {# ── Ligne principale ── #}
                 <a href="{{ path('app_raid_show', {id: raid.id}) }}"
-                   class="flex items-center gap-4 px-6 py-4 transition group
-                          {{ isImminent and not isFull ? 'border-l-4 border-yellow-400 bg-yellow-950/10 hover:bg-yellow-950/20' : 'hover:bg-gray-800/30' }}
-                          {{ isFull ? 'border-l-4 border-red-800' : '' }}">
+                   class="flex items-center gap-4 px-6 py-4 transition group hover:bg-gray-800/30
+                          {{ isFull ? 'opacity-60' : '' }}">
 
                     {% if raid.raidTemplate.imagePath %}
                         <img src="{{ asset('uploads/raid-templates/' ~ raid.raidTemplate.imagePath) }}"
@@ -83,30 +103,18 @@
                             <span>{{ raid.guild.server.name }}</span>
                             {% if hasDate %}
                                 <span class="text-gray-700">·</span>
-                                <span class="{{ isImminent ? 'text-yellow-400 font-medium' : 'text-gray-400' }}">
-                                    {{ raid.scheduledAt|date('d/m à H:i') }}
-                                </span>
+                                <span class="text-gray-400">{{ raid.scheduledAt|date('d/m à H:i') }}</span>
                             {% endif %}
                             <span class="text-gray-700">·</span>
                             <span>par {{ raid.creator.name }}</span>
                         </div>
                     </div>
 
-                    {# Compteur + participants #}
-                    <div class="flex items-center gap-4 shrink-0">
-                        {% if showCountdown and isFuture and not isFull %}
-                            <div class="text-center min-w-[5rem]"
-                                 data-countdown="{{ raid.scheduledAt|date('U') }}">
-                                <div class="font-mono font-bold text-yellow-400 text-sm leading-none countdown-display">…</div>
-                                <div class="text-xs text-yellow-700 mt-0.5">avant le raid</div>
-                            </div>
-                        {% endif %}
-                        <div class="text-right min-w-[2.5rem]">
-                            <div class="text-sm font-medium {{ isFull ? 'text-red-400' : 'text-indigo-400' }}">
-                                {{ raid.acceptedParticipants|length }}<span class="text-gray-600 font-normal">/{{ raid.raidTemplate.maxParticipants }}</span>
-                            </div>
-                            <div class="text-xs text-gray-600 mt-0.5">joueurs</div>
+                    <div class="text-right shrink-0">
+                        <div class="text-sm font-medium {{ isFull ? 'text-red-400' : 'text-indigo-400' }}">
+                            {{ raid.acceptedParticipants|length }}<span class="text-gray-600 font-normal">/{{ raid.raidTemplate.maxParticipants }}</span>
                         </div>
+                        <div class="text-xs text-gray-600 mt-0.5">joueurs</div>
                     </div>
 
                 </a>
@@ -117,14 +125,12 @@
         {% if upcomingRaids is not empty %}
             <div class="{{ ui.card_classes('overflow-hidden mb-6') }}">
                 <div class="{{ ui.card_header_classes('flex items-center justify-between') }}">
-                    <h2 class="font-semibold text-white flex items-center gap-2">
-                        🕐 À venir
-                    </h2>
+                    <h2 class="font-semibold text-white flex items-center gap-2">🕐 À venir</h2>
                     <span class="text-xs text-gray-500">{{ upcomingRaids|length }} raid{{ upcomingRaids|length > 1 ? 's' : '' }}</span>
                 </div>
                 <ul class="divide-y divide-gray-800/60">
                     {% for raid in upcomingRaids %}
-                        {{ _self.raid_row(raid, userGuildIds, true) }}
+                        {{ _self.raid_row(raid, userGuildIds, 'before') }}
                     {% endfor %}
                 </ul>
             </div>
@@ -134,14 +140,12 @@
         {% if startedRaids is not empty %}
             <div class="{{ ui.card_classes('overflow-hidden mb-6') }}">
                 <div class="{{ ui.card_header_classes('flex items-center justify-between') }}">
-                    <h2 class="font-semibold text-green-400 flex items-center gap-2">
-                        ⚔ Commencés
-                    </h2>
+                    <h2 class="font-semibold text-green-400 flex items-center gap-2">⚔ Commencés</h2>
                     <span class="text-xs text-gray-500">{{ startedRaids|length }} raid{{ startedRaids|length > 1 ? 's' : '' }}</span>
                 </div>
                 <ul class="divide-y divide-gray-800/60">
                     {% for raid in startedRaids %}
-                        {{ _self.raid_row(raid, userGuildIds, false) }}
+                        {{ _self.raid_row(raid, userGuildIds, 'after') }}
                     {% endfor %}
                 </ul>
             </div>
@@ -151,14 +155,12 @@
         {% if ongoingRaids is not empty %}
             <div class="{{ ui.card_classes('overflow-hidden') }}">
                 <div class="{{ ui.card_header_classes('flex items-center justify-between') }}">
-                    <h2 class="font-semibold text-indigo-400 flex items-center gap-2">
-                        En cours
-                    </h2>
+                    <h2 class="font-semibold text-indigo-400 flex items-center gap-2">En cours</h2>
                     <span class="text-xs text-gray-500">{{ ongoingRaids|length }} raid{{ ongoingRaids|length > 1 ? 's' : '' }}</span>
                 </div>
                 <ul class="divide-y divide-gray-800/60">
                     {% for raid in ongoingRaids %}
-                        {{ _self.raid_row(raid, userGuildIds, false) }}
+                        {{ _self.raid_row(raid, userGuildIds, null) }}
                     {% endfor %}
                 </ul>
             </div>
@@ -171,23 +173,42 @@
 (function () {
     function pad(n) { return String(n).padStart(2, '0'); }
 
-    function format(sec) {
-        if (sec <= 0) return 'Démarré';
+    function formatBefore(sec) {
+        if (sec <= 0) return 'Le raid vient de commencer !';
         var d = Math.floor(sec / 86400);
         var h = Math.floor((sec % 86400) / 3600);
         var m = Math.floor((sec % 3600) / 60);
         var s = sec % 60;
-        if (d > 0) return 'J-' + d + ' ' + pad(h) + ':' + pad(m) + ':' + pad(s);
-        return pad(h) + ':' + pad(m) + ':' + pad(s);
+        var parts = [];
+        if (d > 0) parts.push(d + ' jour' + (d > 1 ? 's' : ''));
+        if (h > 0) parts.push(h + 'h');
+        parts.push(pad(m) + 'min');
+        parts.push(pad(s) + 's');
+        return 'Le raid commence dans ' + parts.join(' ');
+    }
+
+    function formatAfter(elapsed) {
+        var h = Math.floor(elapsed / 3600);
+        var m = Math.floor((elapsed % 3600) / 60);
+        if (h > 0 && m > 0) return 'Le raid a commencé il y a ' + h + 'h ' + m + 'min';
+        if (h > 0)           return 'Le raid a commencé il y a ' + h + ' heure' + (h > 1 ? 's' : '');
+        if (m > 0)           return 'Le raid a commencé il y a ' + m + ' minute' + (m > 1 ? 's' : '');
+        return 'Le raid vient de commencer';
     }
 
     function tick() {
         var now = Math.floor(Date.now() / 1000);
         document.querySelectorAll('[data-countdown]').forEach(function (el) {
-            var target = parseInt(el.dataset.countdown, 10);
-            var diff   = target - now;
-            var display = el.querySelector('.countdown-display');
-            if (display) display.textContent = format(diff);
+            var target  = parseInt(el.dataset.countdown, 10);
+            var mode    = el.dataset.mode;
+            var diff    = target - now;
+            var textEl  = el.querySelector('.countdown-text');
+            if (!textEl) return;
+            if (mode === 'before') {
+                textEl.textContent = formatBefore(diff);
+            } else if (mode === 'after') {
+                textEl.textContent = formatAfter(-diff);
+            }
         });
     }
 
