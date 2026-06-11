@@ -10,21 +10,41 @@
         <h1 class="text-3xl font-bold text-white">Raids</h1>
     </div>
 
-    {# ── Filtre par serveur ── #}
-    <div class="flex items-center gap-2 flex-wrap mb-8">
-        <a href="{{ path('app_raid_index') }}"
-           class="px-4 py-1.5 rounded-full text-sm font-medium transition border
-                  {{ not currentServer ? 'bg-indigo-600 border-indigo-500 text-white' : 'border-gray-700 text-gray-400 hover:text-white hover:border-gray-500' }}">
+    {# ── Filtres ── #}
+    <form method="get" action="{{ path('app_raid_index') }}" id="raid-filters"
+          class="flex items-center gap-2 flex-wrap mb-8">
+
+        {# Serveur #}
+        <label class="cursor-pointer px-4 py-1.5 rounded-full text-sm font-medium transition border
+                       {{ not currentServer ? 'bg-indigo-600 border-indigo-500 text-white' : 'border-gray-700 text-gray-400 hover:text-white hover:border-gray-500' }}">
+            <input type="radio" name="server" value="" class="sr-only" {{ not currentServer ? 'checked' : '' }}>
             Tous
-        </a>
+        </label>
         {% for server in servers %}
-            <a href="{{ path('app_raid_index', {server: server.name}) }}"
-               class="px-4 py-1.5 rounded-full text-sm font-medium transition border
-                      {{ currentServer == server.name ? 'bg-indigo-600 border-indigo-500 text-white' : 'border-gray-700 text-gray-400 hover:text-white hover:border-gray-500' }}">
+            <label class="cursor-pointer px-4 py-1.5 rounded-full text-sm font-medium transition border
+                           {{ currentServer == server.name ? 'bg-indigo-600 border-indigo-500 text-white' : 'border-gray-700 text-gray-400 hover:text-white hover:border-gray-500' }}">
+                <input type="radio" name="server" value="{{ server.name }}" class="sr-only" {{ currentServer == server.name ? 'checked' : '' }}>
                 {{ server.name }}
-            </a>
+            </label>
         {% endfor %}
-    </div>
+
+        <div class="w-px h-5 bg-gray-700 shrink-0 mx-1"></div>
+
+        {# Non complets #}
+        <label class="cursor-pointer px-4 py-1.5 rounded-full text-sm font-medium transition border
+                       {{ filterNotFull ? 'bg-emerald-950/60 border-emerald-700/60 text-emerald-300' : 'border-gray-700 text-gray-400 hover:text-white hover:border-gray-500' }}">
+            <input type="checkbox" name="not_full" value="1" class="sr-only" {{ filterNotFull ? 'checked' : '' }}>
+            Places disponibles
+        </label>
+
+        {# Bientôt (48 h) #}
+        <label class="cursor-pointer px-4 py-1.5 rounded-full text-sm font-medium transition border
+                       {{ filterSoon ? 'bg-yellow-950/50 border-yellow-700/60 text-yellow-300' : 'border-gray-700 text-gray-400 hover:text-white hover:border-gray-500' }}">
+            <input type="checkbox" name="soon" value="1" class="sr-only" {{ filterSoon ? 'checked' : '' }}>
+            Bientôt <span class="text-xs opacity-60">(48h)</span>
+        </label>
+
+    </form>
 
     {% if upcomingRaids is empty and startedRaids is empty and ongoingRaids is empty %}
         <div class="{{ ui.card_classes('p-12 text-center') }}">
@@ -171,6 +191,23 @@
 
 <script>
 (function () {
+    // ── Filtres auto-submit ──
+    var form = document.getElementById('raid-filters');
+    if (form) {
+        form.querySelectorAll('input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                // Soumet en nettoyant les paramètres vides (server="")
+                var data     = new FormData(form);
+                var url      = new URL(window.location.pathname, window.location.origin);
+                data.forEach(function (value, key) {
+                    if (value !== '') url.searchParams.set(key, value);
+                });
+                window.location.href = url.toString();
+            });
+        });
+    }
+
+    // ── Countdown ──
     function pad(n) { return String(n).padStart(2, '0'); }
 
     function formatBefore(sec) {

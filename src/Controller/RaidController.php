@@ -46,6 +46,9 @@ class RaidController extends AbstractController
             }
         }
 
+        $filterNotFull = (bool) $request->query->get('not_full');
+        $filterSoon    = (bool) $request->query->get('soon');
+
         $raids   = $raidRepo->findVisibleForUser($userGuildIds, $serverName ?: null);
         $servers = $serverRepo->findAll();
 
@@ -64,13 +67,28 @@ class RaidController extends AbstractController
         $ongoingRaids = array_values(array_filter($open, fn($r) => !$r->getScheduledAt()));
         usort($ongoingRaids, fn($a, $b) => $b->getCreatedAt() <=> $a->getCreatedAt());
 
+        if ($filterNotFull) {
+            $upcomingRaids = array_values(array_filter($upcomingRaids, fn($r) => !$r->isFull()));
+            $startedRaids  = array_values(array_filter($startedRaids,  fn($r) => !$r->isFull()));
+            $ongoingRaids  = array_values(array_filter($ongoingRaids,  fn($r) => !$r->isFull()));
+        }
+
+        if ($filterSoon) {
+            $threshold     = $now->modify('+48 hours');
+            $upcomingRaids = array_values(array_filter($upcomingRaids, fn($r) => $r->getScheduledAt() <= $threshold));
+            $startedRaids  = [];
+            $ongoingRaids  = [];
+        }
+
         return $this->render('raid/index.html.twig', [
-            'upcomingRaids' => $upcomingRaids,
-            'startedRaids'  => $startedRaids,
-            'ongoingRaids'  => $ongoingRaids,
-            'servers'       => $servers,
-            'currentServer' => $serverName,
-            'userGuildIds'  => $userGuildIds,
+            'upcomingRaids'  => $upcomingRaids,
+            'startedRaids'   => $startedRaids,
+            'ongoingRaids'   => $ongoingRaids,
+            'servers'        => $servers,
+            'currentServer'  => $serverName,
+            'filterNotFull'  => $filterNotFull,
+            'filterSoon'     => $filterSoon,
+            'userGuildIds'   => $userGuildIds,
         ]);
     }
 
