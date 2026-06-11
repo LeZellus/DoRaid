@@ -241,21 +241,11 @@ class GuildController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        $oldSlug   = $guild->getSlug();
-        $uploadBase = $projectDir . '/public/uploads/guildes/';
-
         $form = $this->createForm(GuildEditType::class, $guild);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $newSlug   = $guild->getSlug();
-            $uploadDir = $uploadBase . $newSlug;
-
-            // Rename upload directory if slug changed
-            if ($oldSlug !== $newSlug && is_dir($uploadBase . $oldSlug)) {
-                rename($uploadBase . $oldSlug, $uploadDir);
-            }
-
+            $uploadDir = $projectDir . '/public/uploads/guildes/' . $guild->getSlug();
             $imageFile = $form->get('imageFile')->getData();
             if ($imageFile) {
                 if (!is_dir($uploadDir)) {

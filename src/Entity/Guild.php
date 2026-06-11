@@ -59,7 +59,9 @@ class Guild
     public function setName(string $name): static
     {
         $this->name = $name;
-        $this->slug = (new AsciiSlugger('fr'))->slug($name)->lower()->toString();
+        if (empty($this->slug)) {
+            $this->slug = (new AsciiSlugger('fr'))->slug($name)->lower()->toString();
+        }
         return $this;
     }
 

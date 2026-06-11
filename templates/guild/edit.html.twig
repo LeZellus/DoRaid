@@ -30,7 +30,7 @@
                     attr: { class: 'w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent' }
                 }) }}
                 {{ form_errors(form.name) }}
-                <p class="text-xs text-gray-600 mt-2">Changer le nom met aussi à jour l'URL de la guilde.</p>
+                <p class="text-xs text-gray-600 mt-2">L'URL de la guilde (<span class="font-mono text-gray-500">/guildes/{{ guild.slug }}</span>) ne change pas si vous renommez la guilde.</p>
             </div>
         </div>
 
