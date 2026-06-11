@@ -101,25 +101,24 @@ class RaidController extends AbstractController
         $eligible  = $charRepo->findEligibleForRaid($this->getUser(), $raid);
         $isCreator = (int) $raid->getCreator()->getUser()->getId() === $userId;
 
-        $participantCharacter = null;
-        $pendingApplication   = null;
+        $acceptedCharacters  = [];
+        $pendingApplications = [];
         foreach ($raid->getParticipants() as $p) {
             if ((int) $p->getCharacter()->getUser()->getId() === $userId) {
                 if ($p->getStatus() === RaidParticipantStatus::Accepted) {
-                    $participantCharacter = $p->getCharacter();
+                    $acceptedCharacters[] = $p->getCharacter();
                 } else {
-                    $pendingApplication = $p;
+                    $pendingApplications[] = $p;
                 }
-                break;
             }
         }
 
         return $this->render('raid/show.html.twig', [
-            'raid'                 => $raid,
-            'eligible'             => $eligible,
-            'isCreator'            => $isCreator,
-            'participantCharacter' => $participantCharacter,
-            'pendingApplication'   => $pendingApplication,
+            'raid'                => $raid,
+            'eligible'            => $eligible,
+            'isCreator'           => $isCreator,
+            'acceptedCharacters'  => $acceptedCharacters,
+            'pendingApplications' => $pendingApplications,
         ]);
     }
 

@@ -182,30 +182,33 @@
                 </ul>
             {% endif %}
 
+            {# Statuts des personnages déjà impliqués #}
+            {% if acceptedCharacters is not empty or pendingApplications is not empty %}
+                <div class="px-6 pt-4 space-y-1.5">
+                    {% for c in acceptedCharacters %}
+                        <div class="flex items-center gap-2 text-xs text-green-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span><strong class="text-white">{{ c.name }}</strong> participe.</span>
+                        </div>
+                    {% endfor %}
+                    {% for p in pendingApplications %}
+                        <div class="flex items-center gap-2 text-xs text-yellow-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                            </svg>
+                            <span><strong class="text-white">{{ p.character.name }}</strong> en attente d'approbation.</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
             {# Formulaire candidature #}
             <div class="px-6 py-5 shrink-0">
                 {% if raid.status != constant('App\\Entity\\RaidStatus::Open') %}
                     <p class="text-sm text-gray-500">Ce raid est terminé.</p>
-                {% elseif participantCharacter is not null %}
-                    <div class="flex items-center gap-2 text-sm text-green-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                        </svg>
-                        <span>Vous participez avec <strong class="text-white">{{ participantCharacter.name }}</strong>.</span>
-                    </div>
-                {% elseif pendingApplication is not null %}
-                    <div class="flex items-center gap-2 text-sm text-yellow-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
-                        </svg>
-                        <span>Candidature de <strong class="text-white">{{ pendingApplication.character.name }}</strong> en attente d'approbation.</span>
-                    </div>
-                {% elseif eligible is empty %}
-                    <p class="text-sm text-gray-500 leading-relaxed">
-                        Aucun personnage disponible.<br>
-                        Vous n'êtes peut-être pas membre confirmé de cette guilde.
-                    </p>
-                {% else %}
+                {% elseif eligible is not empty %}
                     <form method="post" action="{{ path('app_raid_apply', {id: raid.id}) }}" class="space-y-3">
                         <input type="hidden" name="_token" value="{{ csrf_token('apply_raid_' ~ raid.id) }}">
                         <select name="character_id"
@@ -216,6 +219,11 @@
                         </select>
                         {{ ui.button('Je suis intéressé', 'primary', 'submit') }}
                     </form>
+                {% elseif acceptedCharacters is empty and pendingApplications is empty %}
+                    <p class="text-sm text-gray-500 leading-relaxed">
+                        Aucun personnage disponible.<br>
+                        Vous n'êtes peut-être pas membre confirmé de cette guilde.
+                    </p>
                 {% endif %}
             </div>
         </div>
