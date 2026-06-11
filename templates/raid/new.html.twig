@@ -53,7 +53,20 @@
         </div>
 
         {{ form_row(form.description) }}
-        {{ form_row(form.scheduledAt) }}
+
+        <div>
+            {{ form_label(form.scheduledAt, null, {
+                label_attr: { class: 'block text-sm font-medium text-gray-300 mb-2' }
+            }) }}
+            {{ form_widget(form.scheduledAt, {
+                attr: {
+                    class: 'w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent cursor-pointer',
+                    style: 'color-scheme: dark',
+                    id: 'scheduledAt'
+                }
+            }) }}
+            {{ form_errors(form.scheduledAt) }}
+        </div>
 
         <div class="flex justify-end pt-2">
             {{ ui.button('Créer le raid', 'primary') }}
@@ -83,6 +96,13 @@ function selectTemplate(el) {
         if (card) {
             card.classList.add('border-indigo-500', 'bg-indigo-950/20', 'ring-2', 'ring-indigo-500/30');
         }
+    }
+
+    var dateInput = document.getElementById('scheduledAt');
+    if (dateInput) {
+        dateInput.addEventListener('click', function () {
+            try { this.showPicker(); } catch (e) {}
+        });
     }
 })();
 </script>
