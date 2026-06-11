@@ -36,6 +36,9 @@ class Guild
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $imagePath = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $discordWebhookUrl = null;
+
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private Server $server;
@@ -81,6 +84,9 @@ class Guild
 
     public function getImagePath(): ?string { return $this->imagePath; }
     public function setImagePath(?string $imagePath): static { $this->imagePath = $imagePath; return $this; }
+
+    public function getDiscordWebhookUrl(): ?string { return $this->discordWebhookUrl; }
+    public function setDiscordWebhookUrl(?string $url): static { $this->discordWebhookUrl = $url; return $this; }
 
     public function getServer(): Server { return $this->server; }
     public function setServer(Server $server): static { $this->server = $server; return $this; }

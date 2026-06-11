@@ -7,9 +7,11 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\Url;
 
 class GuildEditType extends AbstractType
 {
@@ -34,6 +36,15 @@ class GuildEditType extends AbstractType
                         'mimeTypes' => ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
                         'mimeTypesMessage' => 'Format accepté : JPG, PNG, WebP, GIF.',
                     ]),
+                ],
+            ])
+            ->add('discordWebhookUrl', UrlType::class, [
+                'label'       => 'Webhook Discord (optionnel)',
+                'required'    => false,
+                'attr'        => ['placeholder' => 'https://discord.com/api/webhooks/...'],
+                'help'        => 'Collez ici l\'URL de votre webhook Discord pour recevoir les notifications de raid.',
+                'constraints' => [
+                    new Url(message: 'L\'URL du webhook Discord n\'est pas valide.', requireTld: true),
                 ],
             ]);
     }

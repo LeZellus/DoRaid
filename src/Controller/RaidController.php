@@ -13,6 +13,7 @@ use App\Repository\CharacterRepository;
 use App\Repository\EnigmeTemplateRepository;
 use App\Repository\GuildRepository;
 use App\Repository\RaidTemplateRepository;
+use App\Service\DiscordNotifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,7 +32,8 @@ class RaidController extends AbstractController
         GuildRepository $guildRepo,
         CharacterRepository $charRepo,
         RaidTemplateRepository $templateRepo,
-        EnigmeTemplateRepository $enigmeTemplateRepo
+        EnigmeTemplateRepository $enigmeTemplateRepo,
+        DiscordNotifier $discord,
     ): Response {
         $guild = $guildRepo->find((int) $request->query->get('guild'));
 
@@ -81,6 +83,8 @@ class RaidController extends AbstractController
             }
 
             $em->flush();
+
+            $discord->notifyRaidCreated($raid);
 
             $this->addFlash('success', 'Raid ' . $template->getName() . ' créé !');
             return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
