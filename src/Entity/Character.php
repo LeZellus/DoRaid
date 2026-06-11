@@ -32,6 +32,12 @@ class Character
     #[ORM\JoinColumn(nullable: false)]
     private Server $server;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $level = null;
+
+    #[ORM\Column(type: 'string', enumType: OptimizationLevel::class, nullable: true)]
+    private ?OptimizationLevel $optimizationLevel = null;
+
     #[ORM\OneToOne(mappedBy: 'character')]
     private ?GuildMembership $membership = null;
 
@@ -48,6 +54,12 @@ class Character
 
     public function getServer(): Server { return $this->server; }
     public function setServer(Server $server): static { $this->server = $server; return $this; }
+
+    public function getLevel(): ?int { return $this->level; }
+    public function setLevel(?int $level): static { $this->level = $level; return $this; }
+
+    public function getOptimizationLevel(): ?OptimizationLevel { return $this->optimizationLevel; }
+    public function setOptimizationLevel(?OptimizationLevel $o): static { $this->optimizationLevel = $o; return $this; }
 
     public function getMembership(): ?GuildMembership { return $this->membership; }
 }

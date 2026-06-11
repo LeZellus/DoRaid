@@ -51,6 +51,12 @@
                             </div>
                             <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
                                 <span class="text-xs text-gray-400">{{ m.character.gameClass.name }}</span>
+                                {% if m.character.level %}
+                                    <span class="text-xs text-gray-500">· Niv. {{ m.character.level }}</span>
+                                {% endif %}
+                                {% if m.character.optimizationLevel %}
+                                    {{ ui.badge(m.character.optimizationLevel.label(), m.character.optimizationLevel.color()) }}
+                                {% endif %}
                                 {% if m.character.user.id == app.user.id %}
                                     <span class="text-xs text-indigo-400 font-medium">· vous</span>
                                 {% else %}

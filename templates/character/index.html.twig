@@ -37,6 +37,12 @@
                                              class="w-7 h-7 rounded-full object-cover shrink-0">
                                         <span class="font-semibold text-white">{{ character.name }}</span>
                                         {{ ui.badge(character.gameClass.name) }}
+                                        {% if character.level %}
+                                            {{ ui.badge('Niv. ' ~ character.level, 'indigo') }}
+                                        {% endif %}
+                                        {% if character.optimizationLevel %}
+                                            {{ ui.badge(character.optimizationLevel.label(), character.optimizationLevel.color()) }}
+                                        {% endif %}
                                         {% set m = character.membership %}
                                         {% if m %}
                                             <a href="{{ path('app_guild_show', {slug: m.guild.slug}) }}"
