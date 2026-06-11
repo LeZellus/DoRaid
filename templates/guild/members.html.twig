@@ -66,7 +66,7 @@
                                     {{ ui.button('Quitter', 'ghost', 'submit', 'py-1.5 px-3 text-xs') }}
                                 </form>
                             {% endif %}
-                            {% if isOwner and m.character.user.id != app.user.id %}
+                            {% if isLeader and m.character.user.id != app.user.id and m.status.value != 'leader' %}
                                 <form method="post" action="{{ path('app_guild_reject', {id: m.id}) }}"
                                       onsubmit="return confirm('Exclure {{ m.character.name }} de la guilde ?')">
                                     <input type="hidden" name="_token" value="{{ csrf_token('membership_' ~ m.id) }}">
@@ -80,8 +80,8 @@
         {% endif %}
     </div>
 
-    {# ── Demandes en attente (propriétaire) ── #}
-    {% if isOwner and guild.pending|length > 0 %}
+    {# ── Demandes en attente (meneur) ── #}
+    {% if isLeader and guild.pending|length > 0 %}
         <div class="{{ ui.card_classes('overflow-hidden') }}">
             <div class="{{ ui.card_header_classes('flex items-center gap-3') }}">
                 <h2 class="font-semibold text-white">Demandes en attente</h2>

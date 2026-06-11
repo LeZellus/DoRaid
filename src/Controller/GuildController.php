@@ -206,7 +206,7 @@ class GuildController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        if ($guild->getOwner() !== $this->getUser()) {
+        if (!$this->isLeaderOf($guild)) {
             throw $this->createAccessDeniedException();
         }
 
@@ -214,7 +214,7 @@ class GuildController extends AbstractController
         $em->flush();
 
         $this->addFlash('success', $membership->getCharacter()->getName() . ' est maintenant membre.');
-        return $this->redirectToRoute('app_guild_show', ['id' => $guild->getId()]);
+        return $this->redirectToRoute('app_guild_members', ['id' => $guild->getId()]);
     }
 
     #[Route('/memberships/{id}/reject', name: 'app_guild_reject', methods: ['POST'])]
@@ -226,15 +226,50 @@ class GuildController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        if ($guild->getOwner() !== $this->getUser()) {
+        if (!$this->isLeaderOf($guild)) {
             throw $this->createAccessDeniedException();
         }
 
+        if ($membership->getStatus() === MemberStatus::Leader) {
+            $this->addFlash('error', 'Le meneur ne peut pas être exclu.');
+            return $this->redirectToRoute('app_guild_members', ['id' => $guild->getId()]);
+        }
+
+        $name = $membership->getCharacter()->getName();
         $em->remove($membership);
         $em->flush();
 
-        $this->addFlash('success', 'Demande refusée.');
-        return $this->redirectToRoute('app_guild_show', ['id' => $guild->getId()]);
+        $this->addFlash('success', $name . ' a été retiré de la guilde.');
+        return $this->redirectToRoute('app_guild_members', ['id' => $guild->getId()]);
+    }
+
+    #[Route('/{id}/delete', name: 'app_guild_delete', methods: ['POST'])]
+    public function delete(Guild $guild, Request $request, EntityManagerInterface $em): Response
+    {
+        if (!$this->isCsrfTokenValid('delete_guild_' . $guild->getId(), $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException();
+        }
+
+        if (!$this->isLeaderOf($guild)) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $em->remove($guild);
+        $em->flush();
+
+        $this->addFlash('success', 'La guilde a été supprimée.');
+        return $this->redirectToRoute('app_guild_index');
+    }
+
+    private function isLeaderOf(Guild $guild): bool
+    {
+        $userId = (int) $this->getUser()->getId();
+        foreach ($guild->getMemberships() as $m) {
+            if ($m->getStatus() === MemberStatus::Leader && (int) $m->getCharacter()->getUser()->getId() === $userId) {
+                return true;
+            }
+        }
+        return false;
     }
 
     #[Route('/memberships/{id}/leave', name: 'app_guild_leave', methods: ['POST'])]
