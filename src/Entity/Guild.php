@@ -67,7 +67,8 @@ class Guild
     {
         $this->name = $name;
         if (empty($this->slug)) {
-            $this->slug = (new AsciiSlugger('fr'))->slug($name)->lower()->toString();
+            $slug = (new AsciiSlugger('fr'))->slug($name)->lower()->toString();
+            $this->slug = $slug !== '' ? $slug : 'guild-' . substr(bin2hex(random_bytes(4)), 0, 8);
         }
         return $this;
     }
