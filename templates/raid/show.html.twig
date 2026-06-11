@@ -258,7 +258,7 @@
                                                      text-xs font-bold text-gray-400 shrink-0 group-hover:border-indigo-600/50 transition">
                                             {{ enigme.orderNumber }}
                                         </span>
-                                        <span class="font-medium text-white text-sm">{{ enigme.title }}</span>
+                                        <span class="font-medium text-white text-sm">{{ enigme.sourceTemplate ? enigme.sourceTemplate.title : enigme.title }}</span>
                                     </div>
                                     <div class="flex items-center gap-3">
                                         {% if enigme.resolved %}

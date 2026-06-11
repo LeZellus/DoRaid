@@ -3,7 +3,6 @@
 namespace App\Controller\Admin;
 
 use App\Entity\EnigmeTemplate;
-use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
@@ -17,25 +16,6 @@ class EnigmeTemplateCrudController extends AbstractCrudController
     public static function getEntityFqcn(): string
     {
         return EnigmeTemplate::class;
-    }
-
-    public function updateEntity(EntityManagerInterface $em, object $entityInstance): void
-    {
-        parent::updateEntity($em, $entityInstance);
-
-        $em->getConnection()->executeStatement(
-            'UPDATE enigme e
-             JOIN raid r ON e.raid_id = r.id
-             JOIN enigme_template et ON et.id = :templateId
-             SET e.title = :title,
-                 e.source_template_id = :templateId
-             WHERE et.raid_template_id = r.raid_template_id
-               AND e.order_number = et.order_number',
-            [
-                'title'      => $entityInstance->getTitle(),
-                'templateId' => $entityInstance->getId(),
-            ]
-        );
     }
 
     public function configureCrud(Crud $crud): Crud

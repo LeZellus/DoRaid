@@ -9,7 +9,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-#[AsCommand(name: 'app:sync-enigme-titles', description: 'Sync enigme titles from their EnigmeTemplate')]
+#[AsCommand(name: 'app:sync-enigme-titles', description: 'Link legacy enigmes to their EnigmeTemplate (run once after deploy)')]
 class SyncEnigmeTitlesCommand extends Command
 {
     public function __construct(private Connection $connection)
@@ -21,35 +21,16 @@ class SyncEnigmeTitlesCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        // Show current state
-        $rows = $this->connection->fetchAllAssociative(
-            'SELECT e.id, e.title AS enigme_title, et.title AS template_title, e.order_number, e.source_template_id
-             FROM enigme e
-             JOIN raid r ON e.raid_id = r.id
-             JOIN enigme_template et ON et.raid_template_id = r.raid_template_id AND et.order_number = e.order_number
-             WHERE e.title != et.title'
-        );
-
-        if (empty($rows)) {
-            $io->success('All enigme titles are already in sync.');
-            return Command::SUCCESS;
-        }
-
-        $io->table(
-            ['enigme id', 'current title', 'template title'],
-            array_map(fn($r) => [$r['id'], $r['enigme_title'], $r['template_title']], $rows)
-        );
-
         $count = $this->connection->executeStatement(
             'UPDATE enigme e
              JOIN raid r ON e.raid_id = r.id
-             JOIN enigme_template et ON et.raid_template_id = r.raid_template_id AND et.order_number = e.order_number
-             SET e.title = et.title,
-                 e.source_template_id = et.id
-             WHERE e.title != et.title'
+             JOIN enigme_template et ON et.raid_template_id = r.raid_template_id
+                                    AND et.order_number = e.order_number
+             SET e.source_template_id = et.id
+             WHERE e.source_template_id IS NULL'
         );
 
-        $io->success(sprintf('%d enigme(s) updated.', $count));
+        $io->success(sprintf('%d legacy enigme(s) linked to their template.', $count));
 
         return Command::SUCCESS;
     }
