@@ -26,24 +26,25 @@ class DiscordNotifier
         $template = $raid->getRaidTemplate();
         $date     = $raid->getScheduledAt()?->format('d/m/Y à H\hi') ?? 'Non définie';
 
+        $participants = $template->getMinParticipants() === $template->getMaxParticipants()
+            ? $template->getMinParticipants() . ' joueurs'
+            : $template->getMinParticipants() . ' à ' . $template->getMaxParticipants() . ' joueurs';
+
         $payload = [
             'embeds' => [[
-                'title'       => '⚔️ Nouveau raid : ' . $template->getName(),
-                'url'         => $raidUrl,
-                'description' => sprintf(
-                    "Un nouveau raid vient d'être créé sur **[DoRaid](%s)** !",
-                    $siteUrl,
-                ),
-                'color'  => 0x5865F2,
-                'fields' => [
-                    ['name' => '🏰 Guilde',       'value' => sprintf('[%s](%s)', $raid->getGuild()->getName(), $guildUrl), 'inline' => true],
-                    ['name' => '⚔️ Type',          'value' => $template->getName(),     'inline' => true],
-                    ['name' => '👤 Créé par',      'value' => $raid->getCreator()->getName(), 'inline' => true],
-                    ['name' => '📅 Date',          'value' => $date,                    'inline' => true],
-                    ['name' => '👥 Participants',  'value' => $template->getMinParticipants() . ' – ' . $template->getMaxParticipants() . ' joueurs', 'inline' => true],
-                    ['name' => '🔗 Lien du raid',  'value' => $raidUrl,                 'inline' => false],
-                ],
-                'footer' => ['text' => 'DoRaid • ' . $raid->getGuild()->getName()],
+                'title' => '⚔️ ' . $template->getName(),
+                'url'   => $raidUrl,
+                'color' => 0x5865F2,
+                'description' => implode("\n", [
+                    sprintf("Un nouveau raid est ouvert dans la guilde **[%s](%s)** !", $raid->getGuild()->getName(), $guildUrl),
+                    '',
+                    sprintf("**Organisateur** · %s", $raid->getCreator()->getName()),
+                    sprintf("**Date** · %s", $date),
+                    sprintf("**Places** · %s", $participants),
+                    '',
+                    sprintf("[🗡️ Rejoindre le raid](%s)  ·  [🌐 DoRaid](%s)", $raidUrl, $siteUrl),
+                ]),
+                'footer'    => ['text' => 'DoRaid'],
                 'timestamp' => (new \DateTimeImmutable())->format(\DateTimeInterface::ATOM),
             ]],
         ];
