@@ -202,7 +202,7 @@
                         <p class="text-gray-500 text-sm">Vous ne participez à aucun raid actif.</p>
                     </div>
                 {% else %}
-                    <ul class="divide-y divide-gray-800/60">
+                    <ul class="divide-y divide-gray-800/60 overflow-y-auto" style="max-height: 20rem">
                         {% for p in activeRaids %}
                             <li>
                                 <a href="{{ path('app_raid_show', {id: p.raid.id}) }}"
@@ -249,7 +249,7 @@
                     <div class="{{ ui.card_header_classes() }}">
                         <h2 class="font-semibold text-yellow-400">Candidatures en attente</h2>
                     </div>
-                    <ul class="divide-y divide-gray-800/60">
+                    <ul class="divide-y divide-gray-800/60 overflow-y-auto" style="max-height: 16rem">
                         {% for p in pendingRaids %}
                             <li>
                                 <a href="{{ path('app_raid_show', {id: p.raid.id}) }}"
@@ -291,7 +291,7 @@
                         <h2 class="font-semibold text-gray-400">Raids terminés</h2>
                         <span class="text-xs text-gray-600">{{ completedRaids|length }} au total</span>
                     </div>
-                    <ul class="divide-y divide-gray-800/40">
+                    <ul class="divide-y divide-gray-800/40 overflow-y-auto" style="max-height: 14rem">
                         {% for p in completedRaids|slice(0, 5) %}
                             <li class="flex items-center gap-4 px-5 py-3 opacity-60">
                                 {% if p.raid.raidTemplate.imagePath %}

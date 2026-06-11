@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Guild;
 use App\Entity\GuildMembership;
 use App\Entity\MemberStatus;
+use App\Entity\RaidStatus;
 use App\Form\GuildEditType;
 use App\Form\GuildType;
 use App\Repository\CharacterRepository;
@@ -87,7 +88,9 @@ class GuildController extends AbstractController
 
         $eligible            = $currentUser ? $charRepo->findEligibleForGuild($currentUser, $guild->getServer()) : [];
         $confirmedCharacters = $currentUser ? $charRepo->findConfirmedInGuild($currentUser, $guild) : [];
-        $raids               = $raidRepo->findByGuild($guild);
+        $allRaids      = $raidRepo->findByGuild($guild);
+        $activeRaids   = array_values(array_filter($allRaids, fn($r) => $r->getStatus() === RaidStatus::Open));
+        $closedRaids   = array_values(array_filter($allRaids, fn($r) => $r->getStatus() === RaidStatus::Closed));
 
         return $this->render('guild/show.html.twig', [
             'guild'               => $guild,
@@ -95,7 +98,8 @@ class GuildController extends AbstractController
             'confirmedCharacters' => $confirmedCharacters,
             'isOwner'             => $isOwner,
             'isLeader'            => $isLeader,
-            'raids'               => $raids,
+            'activeRaids'         => $activeRaids,
+            'closedRaids'         => $closedRaids,
         ]);
     }
 
