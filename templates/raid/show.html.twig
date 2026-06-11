@@ -15,73 +15,78 @@
     </a>
 
     {# ── Hero ── #}
-    <div class="rounded-2xl bg-gradient-to-br from-indigo-950/70 via-gray-900 to-gray-950 border border-indigo-900/30 px-8 py-7 mb-8">
-        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
-            <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2 mb-2">
-                    {% if raid.status == constant('App\\Entity\\RaidStatus::Open') %}
-                        {{ ui.badge(raid.status.label(), 'success') }}
-                    {% else %}
-                        {{ ui.badge(raid.status.label(), 'default') }}
-                    {% endif %}
-                    <span class="text-xs text-gray-500">{{ raid.guild.server.name }}</span>
-                </div>
-                <h1 class="text-3xl font-bold text-white tracking-tight">{{ raid.raidTemplate.name }}</h1>
-                <p class="text-gray-400 text-sm mt-1">
-                    {{ raid.raidTemplate.minParticipants }} – {{ raid.raidTemplate.maxParticipants }} joueurs
-                    <span class="text-gray-700 mx-2">·</span>
-                    Créé par <span class="text-gray-200 font-medium">{{ raid.creator.name }}</span>
-                    <span class="text-gray-700 mx-2">·</span>
-                    {{ raid.createdAt|date('d/m/Y') }}
-                </p>
-                {% if raid.scheduledAt %}
-                    <p class="text-indigo-300 text-sm mt-1">
-                        📅 {{ raid.scheduledAt|date('d/m/Y à H:i') }}
-                    </p>
-                {% endif %}
-                {% if raid.description %}
-                    <p class="text-gray-300 text-sm mt-3 leading-relaxed">{{ raid.description }}</p>
-                {% endif %}
-            </div>
+    <div class="rounded-2xl border border-indigo-900/30 bg-gradient-to-br from-indigo-950/60 via-gray-900 to-gray-950 overflow-hidden mb-8">
 
-            <div class="flex gap-6 shrink-0">
-                <div class="text-center">
-                    <div class="text-3xl font-bold {{ raid.isFull() ? 'text-red-400' : 'text-white' }}">
-                        {{ raid.acceptedParticipants|length }}
-                    </div>
-                    <div class="text-xs text-gray-500 uppercase tracking-wider mt-0.5">
-                        / {{ raid.raidTemplate.maxParticipants }}
-                    </div>
-                    <div class="text-xs text-gray-600 mt-0.5">
-                        min {{ raid.raidTemplate.minParticipants }}
-                    </div>
-                </div>
-                {% if raid.pendingParticipants|length > 0 %}
-                    <div class="text-center">
-                        <div class="text-3xl font-bold text-yellow-400">
-                            {{ raid.pendingParticipants|length }}
-                        </div>
-                        <div class="text-xs text-gray-500 uppercase tracking-wider mt-0.5">intéressés</div>
-                    </div>
+        {# Bande supérieure : statut + serveur + actions créateur #}
+        <div class="flex items-center justify-between gap-4 px-8 py-3 border-b border-indigo-900/20 bg-indigo-950/20">
+            <div class="flex items-center gap-3">
+                {% if raid.status == constant('App\\Entity\\RaidStatus::Open') %}
+                    {{ ui.badge(raid.status.label(), 'success') }}
+                {% else %}
+                    {{ ui.badge(raid.status.label(), 'default') }}
                 {% endif %}
+                <span class="text-xs text-gray-500 font-medium">{{ raid.guild.server.name }}</span>
+                <span class="text-gray-700">·</span>
+                <span class="text-xs text-gray-500">{{ raid.guild.name }}</span>
             </div>
+            {% if isCreator %}
+                <div class="flex items-center gap-2">
+                    {% if raid.status == constant('App\\Entity\\RaidStatus::Open') %}
+                        <form method="post" action="{{ path('app_raid_close', {id: raid.id}) }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('close_raid_' ~ raid.id) }}">
+                            {{ ui.button('Terminer', 'secondary', 'submit', 'py-1 px-3 text-xs') }}
+                        </form>
+                    {% endif %}
+                    <form method="post" action="{{ path('app_raid_delete', {id: raid.id}) }}"
+                          onsubmit="return confirm('Supprimer ce raid définitivement ?')">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete_raid_' ~ raid.id) }}">
+                        {{ ui.button('Supprimer', 'danger', 'submit', 'py-1 px-3 text-xs') }}
+                    </form>
+                </div>
+            {% endif %}
         </div>
 
-        {% if isCreator %}
-            <div class="flex items-center gap-3 mt-6 pt-5 border-t border-indigo-900/30">
-                {% if raid.status == constant('App\\Entity\\RaidStatus::Open') %}
-                    <form method="post" action="{{ path('app_raid_close', {id: raid.id}) }}">
-                        <input type="hidden" name="_token" value="{{ csrf_token('close_raid_' ~ raid.id) }}">
-                        {{ ui.button('Marquer comme terminé', 'secondary', 'submit', 'py-1.5 px-3 text-xs') }}
-                    </form>
+        {# Corps : titre + méta + compteurs #}
+        <div class="flex flex-col sm:flex-row sm:items-center gap-6 px-8 py-6">
+
+            {# Infos principales #}
+            <div class="flex-1 min-w-0">
+                <h1 class="text-3xl font-bold text-white tracking-tight">{{ raid.raidTemplate.name }}</h1>
+
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-3 text-sm text-gray-400">
+                    <span>
+                        Créé par <span class="text-gray-200 font-medium">{{ raid.creator.name }}</span>
+                    </span>
+                    <span class="text-gray-700">·</span>
+                    <span>Créé le <span class="text-gray-300">{{ raid.createdAt|date('d/m/Y') }}</span></span>
+                    {% if raid.scheduledAt %}
+                        <span class="text-gray-700">·</span>
+                        <span class="text-indigo-300 font-medium">Prévu le {{ raid.scheduledAt|date('d/m/Y à H:i') }}</span>
+                    {% endif %}
+                </div>
+
+                {% if raid.description %}
+                    <p class="text-gray-400 text-sm mt-3 leading-relaxed border-t border-gray-800/60 pt-3">{{ raid.description }}</p>
                 {% endif %}
-                <form method="post" action="{{ path('app_raid_delete', {id: raid.id}) }}"
-                      onsubmit="return confirm('Supprimer ce raid définitivement ?')">
-                    <input type="hidden" name="_token" value="{{ csrf_token('delete_raid_' ~ raid.id) }}">
-                    {{ ui.button('Supprimer', 'danger', 'submit', 'py-1.5 px-3 text-xs') }}
-                </form>
             </div>
-        {% endif %}
+
+            {# Compteurs #}
+            <div class="flex items-center gap-4 shrink-0">
+                <div class="text-center bg-gray-800/40 rounded-xl px-5 py-3 border border-gray-700/30">
+                    <div class="text-2xl font-bold {{ raid.isFull() ? 'text-red-400' : 'text-white' }}">
+                        {{ raid.acceptedParticipants|length }}<span class="text-base font-normal text-gray-600">/{{ raid.raidTemplate.maxParticipants }}</span>
+                    </div>
+                    <div class="text-xs text-gray-500 mt-0.5">participants</div>
+                </div>
+                {% if raid.pendingParticipants|length > 0 %}
+                    <div class="text-center bg-yellow-900/20 rounded-xl px-5 py-3 border border-yellow-800/30">
+                        <div class="text-2xl font-bold text-yellow-400">{{ raid.pendingParticipants|length }}</div>
+                        <div class="text-xs text-yellow-600 mt-0.5">intéressés</div>
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
     </div>
 
     {# ── Grille principale ── #}
