@@ -49,15 +49,29 @@ class RaidController extends AbstractController
         $raids   = $raidRepo->findVisibleForUser($userGuildIds, $serverName ?: null);
         $servers = $serverRepo->findAll();
 
+        // Keep only open raids
         $activeRaids = array_values(array_filter($raids, fn($r) => $r->getStatus() === RaidStatus::Open));
-        $closedRaids = array_values(array_filter($raids, fn($r) => $r->getStatus() === RaidStatus::Closed));
+
+        // Sort: upcoming (scheduledAt in the future, nearest first) → then no date (createdAt DESC)
+        $now = new \DateTimeImmutable();
+        usort($activeRaids, function (Raid $a, Raid $b) use ($now) {
+            $aScheduled = $a->getScheduledAt() && $a->getScheduledAt() > $now;
+            $bScheduled = $b->getScheduledAt() && $b->getScheduledAt() > $now;
+
+            if ($aScheduled && $bScheduled) {
+                return $a->getScheduledAt() <=> $b->getScheduledAt();
+            }
+            if ($aScheduled) return -1;
+            if ($bScheduled) return 1;
+
+            return $b->getCreatedAt() <=> $a->getCreatedAt();
+        });
 
         return $this->render('raid/index.html.twig', [
-            'activeRaids'  => $activeRaids,
-            'closedRaids'  => $closedRaids,
-            'servers'      => $servers,
+            'activeRaids'   => $activeRaids,
+            'servers'       => $servers,
             'currentServer' => $serverName,
-            'userGuildIds' => $userGuildIds,
+            'userGuildIds'  => $userGuildIds,
         ]);
     }
 

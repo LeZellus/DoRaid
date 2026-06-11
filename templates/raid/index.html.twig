@@ -26,9 +26,9 @@
         {% endfor %}
     </div>
 
-    {% if activeRaids is empty and closedRaids is empty %}
+    {% if activeRaids is empty %}
         <div class="{{ ui.card_classes('p-12 text-center') }}">
-            <p class="text-gray-400 text-lg">Aucun raid disponible{% if currentServer %} sur {{ currentServer }}{% endif %}.</p>
+            <p class="text-gray-400 text-lg">Aucun raid en cours{% if currentServer %} sur {{ currentServer }}{% endif %}.</p>
         </div>
     {% else %}
 
@@ -36,9 +36,13 @@
         {% macro raid_row(raid, userGuildIds) %}
             {% import 'components/_ui.html.twig' as ui %}
             {% set isMyGuild = raid.guild.id in userGuildIds %}
-            <li>
+            {% set isFull    = raid.isFull() %}
+            {% set soon      = raid.scheduledAt and raid.scheduledAt > date() and raid.scheduledAt < date('+48 hours') %}
+            <li class="{{ isFull ? 'opacity-60' : '' }}">
                 <a href="{{ path('app_raid_show', {id: raid.id}) }}"
-                   class="flex items-center gap-4 px-6 py-4 hover:bg-gray-800/30 transition group">
+                   class="flex items-center gap-4 px-6 py-4 hover:bg-gray-800/30 transition group
+                          {{ soon and not isFull ? 'border-l-2 border-indigo-500' : '' }}
+                          {{ isFull ? 'border-l-2 border-red-800' : '' }}">
 
                     {# Image template #}
                     {% if raid.raidTemplate.imagePath %}
@@ -54,6 +58,12 @@
                             <span class="font-semibold text-white group-hover:text-indigo-300 transition truncate">
                                 {{ raid.raidTemplate.name }}
                             </span>
+                            {% if soon and not isFull %}
+                                <span class="text-xs font-medium bg-indigo-900/60 text-indigo-300 border border-indigo-700/50 rounded-full px-2 py-0.5 shrink-0">🕐 Bientôt</span>
+                            {% endif %}
+                            {% if isFull %}
+                                <span class="text-xs font-medium bg-red-900/50 text-red-400 border border-red-800/40 rounded-full px-2 py-0.5 shrink-0">Complet</span>
+                            {% endif %}
                             {% if isMyGuild %}
                                 <span class="text-xs font-medium bg-indigo-900/50 text-indigo-300 border border-indigo-700/40 rounded-full px-2 py-0.5 shrink-0">Ma guilde</span>
                             {% endif %}
@@ -72,7 +82,9 @@
                             <span>{{ raid.guild.server.name }}</span>
                             {% if raid.scheduledAt %}
                                 <span class="text-gray-700">·</span>
-                                <span class="text-indigo-400">{{ raid.scheduledAt|date('d/m à H:i') }}</span>
+                                <span class="{{ soon ? 'text-indigo-400 font-medium' : 'text-gray-400' }}">
+                                    {{ raid.scheduledAt|date('d/m à H:i') }}
+                                </span>
                             {% endif %}
                             <span class="text-gray-700">·</span>
                             <span>par {{ raid.creator.name }}</span>
@@ -80,7 +92,7 @@
                     </div>
 
                     <div class="text-right shrink-0">
-                        <div class="text-sm font-medium {{ raid.isFull() ? 'text-red-400' : 'text-indigo-400' }}">
+                        <div class="text-sm font-medium {{ isFull ? 'text-red-400' : 'text-indigo-400' }}">
                             {{ raid.acceptedParticipants|length }}<span class="text-gray-600 font-normal">/{{ raid.raidTemplate.maxParticipants }}</span>
                         </div>
                         <div class="text-xs text-gray-600 mt-0.5">joueurs</div>
@@ -90,35 +102,17 @@
             </li>
         {% endmacro %}
 
-        {# ── En cours ── #}
-        {% if activeRaids is not empty %}
-            <div class="{{ ui.card_classes('overflow-hidden mb-6') }}">
-                <div class="{{ ui.card_header_classes('flex items-center justify-between') }}">
-                    <h2 class="font-semibold text-white">En cours</h2>
-                    <span class="text-xs text-gray-500">{{ activeRaids|length }} raid{{ activeRaids|length > 1 ? 's' : '' }}</span>
-                </div>
-                <ul class="divide-y divide-gray-800/60">
-                    {% for raid in activeRaids %}
-                        {{ _self.raid_row(raid, userGuildIds) }}
-                    {% endfor %}
-                </ul>
+        <div class="{{ ui.card_classes('overflow-hidden') }}">
+            <div class="{{ ui.card_header_classes('flex items-center justify-between') }}">
+                <h2 class="font-semibold text-white">En cours</h2>
+                <span class="text-xs text-gray-500">{{ activeRaids|length }} raid{{ activeRaids|length > 1 ? 's' : '' }}</span>
             </div>
-        {% endif %}
-
-        {# ── Terminés ── #}
-        {% if closedRaids is not empty %}
-            <div class="{{ ui.card_classes('overflow-hidden') }}">
-                <div class="{{ ui.card_header_classes('flex items-center justify-between') }}">
-                    <h2 class="font-semibold text-red-400">Terminés</h2>
-                    <span class="text-xs text-gray-500">{{ closedRaids|length }} raid{{ closedRaids|length > 1 ? 's' : '' }}</span>
-                </div>
-                <ul class="divide-y divide-gray-800/60 overflow-y-auto opacity-70" style="max-height: 20rem">
-                    {% for raid in closedRaids %}
-                        {{ _self.raid_row(raid, userGuildIds) }}
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endif %}
+            <ul class="divide-y divide-gray-800/60">
+                {% for raid in activeRaids %}
+                    {{ _self.raid_row(raid, userGuildIds) }}
+                {% endfor %}
+            </ul>
+        </div>
 
     {% endif %}
 
