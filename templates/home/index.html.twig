@@ -163,19 +163,26 @@
                             <li>
                                 <a href="{{ path('app_raid_show', {id: p.raid.id}) }}"
                                    class="flex items-center gap-4 px-5 py-3.5 hover:bg-gray-800/30 transition group">
-                                    <img src="{{ asset('classes/' ~ p.character.gameClass.name|lower ~ '.png') }}"
-                                         alt="{{ p.character.gameClass.name }}"
-                                         class="w-9 h-9 rounded-full object-cover shrink-0">
+                                    {% if p.raid.raidTemplate.imagePath %}
+                                        <img src="{{ asset('uploads/raid-templates/' ~ p.raid.raidTemplate.imagePath) }}"
+                                             alt="{{ p.raid.raidTemplate.name }}"
+                                             class="w-9 h-9 rounded-lg object-cover shrink-0">
+                                    {% else %}
+                                        <span class="w-9 h-9 rounded-lg bg-indigo-900/40 flex items-center justify-center text-lg shrink-0">⚔</span>
+                                    {% endif %}
                                     <div class="flex-1 min-w-0">
                                         <div class="font-medium text-white text-sm truncate group-hover:text-indigo-300 transition">
                                             {{ p.raid.raidTemplate.name }}
                                         </div>
-                                        <div class="text-xs text-gray-500 mt-0.5">
-                                            {{ p.raid.guild.name }}
-                                            <span class="mx-1 text-gray-700">·</span>
+                                        <div class="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
+                                            <img src="{{ asset('classes/' ~ p.character.gameClass.name|lower ~ '.png') }}"
+                                                 alt="{{ p.character.gameClass.name }}"
+                                                 class="w-4 h-4 rounded-full object-cover shrink-0">
                                             {{ p.character.name }}
+                                            <span class="mx-0.5 text-gray-700">·</span>
+                                            {{ p.raid.guild.name }}
                                             {% if p.raid.scheduledAt %}
-                                                <span class="mx-1 text-gray-700">·</span>
+                                                <span class="mx-0.5 text-gray-700">·</span>
                                                 <span class="text-indigo-400">{{ p.raid.scheduledAt|date('d/m à H:i') }}</span>
                                             {% endif %}
                                         </div>
@@ -203,17 +210,24 @@
                             <li>
                                 <a href="{{ path('app_raid_show', {id: p.raid.id}) }}"
                                    class="flex items-center gap-4 px-5 py-3.5 hover:bg-gray-800/30 transition group opacity-80">
-                                    <img src="{{ asset('classes/' ~ p.character.gameClass.name|lower ~ '.png') }}"
-                                         alt="{{ p.character.gameClass.name }}"
-                                         class="w-9 h-9 rounded-full object-cover shrink-0">
+                                    {% if p.raid.raidTemplate.imagePath %}
+                                        <img src="{{ asset('uploads/raid-templates/' ~ p.raid.raidTemplate.imagePath) }}"
+                                             alt="{{ p.raid.raidTemplate.name }}"
+                                             class="w-9 h-9 rounded-lg object-cover shrink-0">
+                                    {% else %}
+                                        <span class="w-9 h-9 rounded-lg bg-indigo-900/40 flex items-center justify-center text-lg shrink-0">⚔</span>
+                                    {% endif %}
                                     <div class="flex-1 min-w-0">
                                         <div class="font-medium text-white text-sm truncate group-hover:text-yellow-300 transition">
                                             {{ p.raid.raidTemplate.name }}
                                         </div>
-                                        <div class="text-xs text-gray-500 mt-0.5">
-                                            {{ p.raid.guild.name }}
-                                            <span class="mx-1 text-gray-700">·</span>
+                                        <div class="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
+                                            <img src="{{ asset('classes/' ~ p.character.gameClass.name|lower ~ '.png') }}"
+                                                 alt="{{ p.character.gameClass.name }}"
+                                                 class="w-4 h-4 rounded-full object-cover shrink-0">
                                             {{ p.character.name }}
+                                            <span class="mx-0.5 text-gray-700">·</span>
+                                            {{ p.raid.guild.name }}
                                         </div>
                                     </div>
                                     <span class="text-xs font-medium bg-yellow-900/40 text-yellow-400 border border-yellow-800/40 rounded-full px-2 py-0.5 shrink-0">
@@ -236,15 +250,25 @@
                     <ul class="divide-y divide-gray-800/40">
                         {% for p in completedRaids|slice(0, 5) %}
                             <li class="flex items-center gap-4 px-5 py-3 opacity-60">
+                                {% if p.raid.raidTemplate.imagePath %}
+                                    <img src="{{ asset('uploads/raid-templates/' ~ p.raid.raidTemplate.imagePath) }}"
+                                         alt="{{ p.raid.raidTemplate.name }}"
+                                         class="w-9 h-9 rounded-lg object-cover shrink-0">
+                                {% else %}
+                                    <span class="w-9 h-9 rounded-lg bg-indigo-900/40 flex items-center justify-center text-lg shrink-0">⚔</span>
+                                {% endif %}
                                 <div class="flex-1 min-w-0">
                                     <div class="font-medium text-white text-sm truncate">
                                         {{ p.raid.raidTemplate.name }}
                                     </div>
-                                    <div class="text-xs text-gray-600 mt-0.5">
-                                        {{ p.raid.guild.name }}
-                                        <span class="mx-1 text-gray-700">·</span>
+                                    <div class="flex items-center gap-1.5 text-xs text-gray-600 mt-0.5">
+                                        <img src="{{ asset('classes/' ~ p.character.gameClass.name|lower ~ '.png') }}"
+                                             alt="{{ p.character.gameClass.name }}"
+                                             class="w-4 h-4 rounded-full object-cover shrink-0">
                                         {{ p.character.name }}
-                                        <span class="mx-1 text-gray-700">·</span>
+                                        <span class="mx-0.5 text-gray-700">·</span>
+                                        {{ p.raid.guild.name }}
+                                        <span class="mx-0.5 text-gray-700">·</span>
                                         {{ p.raid.createdAt|date('d/m/Y') }}
                                     </div>
                                 </div>
