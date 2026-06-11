@@ -5,8 +5,8 @@
 {% block main %}
 <div class="row g-4 mt-2">
 
-    <div class="col-md-6 col-xl-3">
-        <a href="{{ ea_url().setController('App\\Controller\\Admin\\RaidTemplateCrudController') }}"
+    <div class="col-md-6">
+        <a href="{{ ea_url().setController('App\\Controller\\Admin\\RaidTemplateCrudController').setAction('index') }}"
            class="card text-decoration-none h-100">
             <div class="card-body text-center py-4">
                 <div class="display-6 mb-2">🐉</div>
@@ -16,35 +16,13 @@
         </a>
     </div>
 
-    <div class="col-md-6 col-xl-3">
-        <a href="{{ ea_url().setController('App\\Controller\\Admin\\EnigmeTemplateCrudController') }}"
+    <div class="col-md-6">
+        <a href="{{ ea_url().setController('App\\Controller\\Admin\\EnigmeTemplateCrudController').setAction('index') }}"
            class="card text-decoration-none h-100">
             <div class="card-body text-center py-4">
                 <div class="display-6 mb-2">🧩</div>
                 <h5 class="card-title">Énigmes des templates</h5>
                 <p class="card-text text-muted small">Ajouter / supprimer des énigmes par template</p>
-            </div>
-        </a>
-    </div>
-
-    <div class="col-md-6 col-xl-3">
-        <a href="{{ ea_url().setController('App\\Controller\\Admin\\RaidCrudController') }}"
-           class="card text-decoration-none h-100">
-            <div class="card-body text-center py-4">
-                <div class="display-6 mb-2">🛡️</div>
-                <h5 class="card-title">Raids</h5>
-                <p class="card-text text-muted small">Modifier le statut et les détails des raids</p>
-            </div>
-        </a>
-    </div>
-
-    <div class="col-md-6 col-xl-3">
-        <a href="{{ ea_url().setController('App\\Controller\\Admin\\EnigmeCrudController') }}"
-           class="card text-decoration-none h-100">
-            <div class="card-body text-center py-4">
-                <div class="display-6 mb-2">❓</div>
-                <h5 class="card-title">Énigmes</h5>
-                <p class="card-text text-muted small">Modifier le nom des énigmes dans les raids</p>
             </div>
         </a>
     </div>

@@ -32,10 +32,6 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkTo(RaidTemplateCrudController::class, 'Types de raid', 'fa fa-dragon')->setAction('index');
         yield MenuItem::linkTo(EnigmeTemplateCrudController::class, 'Énigmes des templates', 'fa fa-puzzle-piece')->setAction('index');
 
-        yield MenuItem::section('Raids en cours');
-        yield MenuItem::linkTo(RaidCrudController::class, 'Raids', 'fa fa-shield-halved')->setAction('index');
-        yield MenuItem::linkTo(EnigmeCrudController::class, 'Énigmes', 'fa fa-question-circle')->setAction('index');
-
         yield MenuItem::section();
         yield MenuItem::linkToUrl('← Retour au site', 'fa fa-arrow-left', '/');
     }
