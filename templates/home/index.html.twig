@@ -86,9 +86,12 @@
                                             <div class="font-medium text-white text-sm truncate group-hover:text-indigo-300 transition">
                                                 {{ m.guild.name }}
                                             </div>
-                                            <div class="text-xs text-gray-500 mt-0.5">
+                                            <div class="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
+                                                <img src="{{ asset('classes/' ~ m.character.gameClass.name|lower ~ '.png') }}"
+                                                     alt="{{ m.character.gameClass.name }}"
+                                                     class="w-4 h-4 rounded-full object-cover shrink-0">
                                                 {{ m.character.name }}
-                                                <span class="mx-1 text-gray-700">·</span>
+                                                <span class="mx-0.5 text-gray-700">·</span>
                                                 {{ m.guild.server.name }}
                                             </div>
                                         </div>
@@ -120,9 +123,12 @@
                                         </div>
                                         <div class="flex-1 min-w-0">
                                             <div class="font-medium text-white text-sm truncate">{{ m.guild.name }}</div>
-                                            <div class="text-xs text-gray-500 mt-0.5">
+                                            <div class="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
+                                                <img src="{{ asset('classes/' ~ m.character.gameClass.name|lower ~ '.png') }}"
+                                                     alt="{{ m.character.gameClass.name }}"
+                                                     class="w-4 h-4 rounded-full object-cover shrink-0">
                                                 {{ m.character.name }}
-                                                <span class="mx-1 text-gray-700">·</span>
+                                                <span class="mx-0.5 text-gray-700">·</span>
                                                 {{ m.guild.server.name }}
                                             </div>
                                         </div>
@@ -157,6 +163,9 @@
                             <li>
                                 <a href="{{ path('app_raid_show', {id: p.raid.id}) }}"
                                    class="flex items-center gap-4 px-5 py-3.5 hover:bg-gray-800/30 transition group">
+                                    <img src="{{ asset('classes/' ~ p.character.gameClass.name|lower ~ '.png') }}"
+                                         alt="{{ p.character.gameClass.name }}"
+                                         class="w-9 h-9 rounded-full object-cover shrink-0">
                                     <div class="flex-1 min-w-0">
                                         <div class="font-medium text-white text-sm truncate group-hover:text-indigo-300 transition">
                                             {{ p.raid.raidTemplate.name }}
@@ -194,6 +203,9 @@
                             <li>
                                 <a href="{{ path('app_raid_show', {id: p.raid.id}) }}"
                                    class="flex items-center gap-4 px-5 py-3.5 hover:bg-gray-800/30 transition group opacity-80">
+                                    <img src="{{ asset('classes/' ~ p.character.gameClass.name|lower ~ '.png') }}"
+                                         alt="{{ p.character.gameClass.name }}"
+                                         class="w-9 h-9 rounded-full object-cover shrink-0">
                                     <div class="flex-1 min-w-0">
                                         <div class="font-medium text-white text-sm truncate group-hover:text-yellow-300 transition">
                                             {{ p.raid.raidTemplate.name }}

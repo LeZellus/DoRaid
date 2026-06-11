@@ -39,9 +39,9 @@
             <ul class="divide-y divide-gray-800/60">
                 {% for m in guild.confirmed %}
                     <li class="flex items-center gap-4 px-6 py-3.5 hover:bg-gray-800/30 transition">
-                        <div class="w-10 h-10 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center text-sm font-bold text-gray-300 shrink-0">
-                            {{ m.character.name|slice(0,1)|upper }}
-                        </div>
+                        <img src="{{ asset('classes/' ~ m.character.gameClass.name|lower ~ '.png') }}"
+                             alt="{{ m.character.gameClass.name }}"
+                             class="w-10 h-10 rounded-full object-cover shrink-0">
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2">
                                 <span class="font-medium text-white truncate">{{ m.character.name }}</span>
@@ -90,9 +90,9 @@
             <ul class="divide-y divide-gray-800/60">
                 {% for m in guild.pending %}
                     <li class="flex items-center gap-4 px-6 py-3.5">
-                        <div class="w-10 h-10 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center text-sm font-bold text-gray-400 shrink-0">
-                            {{ m.character.name|slice(0,1)|upper }}
-                        </div>
+                        <img src="{{ asset('classes/' ~ m.character.gameClass.name|lower ~ '.png') }}"
+                             alt="{{ m.character.gameClass.name }}"
+                             class="w-10 h-10 rounded-full object-cover shrink-0">
                         <div class="flex-1 min-w-0">
                             <span class="font-medium text-white">{{ m.character.name }}</span>
                             <div class="text-xs text-gray-500 mt-0.5">

@@ -32,6 +32,9 @@
                             {% for character in characters %}
                                 <div class="flex items-center justify-between py-3 first:pt-0 last:pb-0">
                                     <div class="flex items-center gap-3 flex-wrap">
+                                        <img src="{{ asset('classes/' ~ character.gameClass.name|lower ~ '.png') }}"
+                                             alt="{{ character.gameClass.name }}"
+                                             class="w-7 h-7 rounded-full object-cover shrink-0">
                                         <span class="font-semibold text-white">{{ character.name }}</span>
                                         {{ ui.badge(character.gameClass.name) }}
                                         {% set m = character.membership %}

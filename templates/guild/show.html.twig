@@ -107,17 +107,10 @@
                 {% else %}
                     <div class="flex flex-nowrap gap-2 mb-4 overflow-hidden">
                         {% for m in guild.confirmed|slice(0, 7) %}
-                            {% if m.status.value == 'leader' %}
-                                <div class="w-9 h-9 rounded-full bg-yellow-900/40 border border-yellow-700/50 flex items-center justify-center text-sm font-bold text-yellow-300 shrink-0"
-                                     title="{{ m.character.name }} 👑">
-                                    {{ m.character.name|slice(0,1)|upper }}
-                                </div>
-                            {% else %}
-                                <div class="w-9 h-9 rounded-full bg-indigo-900/30 border border-indigo-800/40 flex items-center justify-center text-sm font-bold text-indigo-300 shrink-0"
-                                     title="{{ m.character.name }}">
-                                    {{ m.character.name|slice(0,1)|upper }}
-                                </div>
-                            {% endif %}
+                            <img src="{{ asset('classes/' ~ m.character.gameClass.name|lower ~ '.png') }}"
+                                 alt="{{ m.character.gameClass.name }}"
+                                 title="{{ m.character.name }}{{ m.status.value == 'leader' ? ' 👑' : '' }}"
+                                 class="w-9 h-9 rounded-full object-cover shrink-0">
                         {% endfor %}
                         {% if guild.confirmed|length > 7 %}
                             <div class="w-9 h-9 rounded-full bg-gray-800/60 border border-gray-700 flex items-center justify-center text-xs font-bold text-gray-400 shrink-0">
