@@ -3,7 +3,6 @@
 namespace App\Controller\Admin;
 
 use App\Entity\EnigmeTemplate;
-use App\Repository\EnigmeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
@@ -15,8 +14,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
 
 class EnigmeTemplateCrudController extends AbstractCrudController
 {
-    public function __construct(private EnigmeRepository $enigmeRepo) {}
-
     public static function getEntityFqcn(): string
     {
         return EnigmeTemplate::class;
@@ -26,9 +23,23 @@ class EnigmeTemplateCrudController extends AbstractCrudController
     {
         parent::updateEntity($em, $entityInstance);
 
-        foreach ($this->enigmeRepo->findBy(['sourceTemplate' => $entityInstance]) as $enigme) {
+        // Match enigmes linked explicitly (raids created after sourceTemplate FK was added)
+        // OR by raidTemplate+orderNumber for older raids without the FK
+        $enigmes = $em->createQuery(
+            'SELECT e FROM App\Entity\Enigme e
+             JOIN e.raid r
+             WHERE e.sourceTemplate = :template
+                OR (e.sourceTemplate IS NULL
+                    AND e.orderNumber = :order
+                    AND r.raidTemplate = :raidTemplate)'
+        )->setParameters([
+            'template'    => $entityInstance,
+            'order'       => $entityInstance->getOrderNumber(),
+            'raidTemplate' => $entityInstance->getRaidTemplate(),
+        ])->getResult();
+
+        foreach ($enigmes as $enigme) {
             $enigme->setTitle($entityInstance->getTitle());
-            $enigme->setOrderNumber($entityInstance->getOrderNumber());
         }
 
         $em->flush();
