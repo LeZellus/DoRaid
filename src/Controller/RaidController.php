@@ -21,10 +21,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_USER')]
 #[Route('/raids')]
 class RaidController extends AbstractController
 {
+    #[IsGranted('ROLE_USER')]
     #[Route('/creer', name: 'app_raid_new', methods: ['GET', 'POST'])]
     public function new(
         Request $request,
@@ -101,18 +101,21 @@ class RaidController extends AbstractController
     #[Route('/{id}', name: 'app_raid_show')]
     public function show(Raid $raid, CharacterRepository $charRepo): Response
     {
-        $userId    = (int) $this->getUser()->getId();
-        $eligible  = $charRepo->findEligibleForRaid($this->getUser(), $raid);
-        $isCreator = (int) $raid->getCreator()->getUser()->getId() === $userId;
+        $currentUser = $this->getUser();
+        $userId      = $currentUser ? (int) $currentUser->getId() : null;
+        $eligible    = $currentUser ? $charRepo->findEligibleForRaid($currentUser, $raid) : [];
+        $isCreator   = $userId && (int) $raid->getCreator()->getUser()->getId() === $userId;
 
         $acceptedCharacters  = [];
         $pendingApplications = [];
-        foreach ($raid->getParticipants() as $p) {
-            if ((int) $p->getCharacter()->getUser()->getId() === $userId) {
-                if ($p->getStatus() === RaidParticipantStatus::Accepted) {
-                    $acceptedCharacters[] = $p->getCharacter();
-                } else {
-                    $pendingApplications[] = $p;
+        if ($userId) {
+            foreach ($raid->getParticipants() as $p) {
+                if ((int) $p->getCharacter()->getUser()->getId() === $userId) {
+                    if ($p->getStatus() === RaidParticipantStatus::Accepted) {
+                        $acceptedCharacters[] = $p->getCharacter();
+                    } else {
+                        $pendingApplications[] = $p;
+                    }
                 }
             }
         }
@@ -126,6 +129,7 @@ class RaidController extends AbstractController
         ]);
     }
 
+    #[IsGranted('ROLE_USER')]
     #[Route('/{id}/candidater', name: 'app_raid_apply', methods: ['POST'])]
     public function apply(Raid $raid, Request $request, CharacterRepository $charRepo, EntityManagerInterface $em): Response
     {
@@ -162,6 +166,7 @@ class RaidController extends AbstractController
         return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
     }
 
+    #[IsGranted('ROLE_USER')]
     #[Route('/participants/{id}/accepter', name: 'app_raid_accept', methods: ['POST'])]
     public function accept(RaidParticipant $participant, Request $request, EntityManagerInterface $em): Response
     {
@@ -182,6 +187,7 @@ class RaidController extends AbstractController
         return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
     }
 
+    #[IsGranted('ROLE_USER')]
     #[Route('/{id}/clore', name: 'app_raid_close', methods: ['POST'])]
     public function close(Raid $raid, Request $request, EntityManagerInterface $em): Response
     {
@@ -200,6 +206,7 @@ class RaidController extends AbstractController
         return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
     }
 
+    #[IsGranted('ROLE_USER')]
     #[Route('/participants/{id}/exclure', name: 'app_raid_kick', methods: ['POST'])]
     public function kick(RaidParticipant $participant, Request $request, EntityManagerInterface $em): Response
     {
@@ -221,6 +228,7 @@ class RaidController extends AbstractController
         return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
     }
 
+    #[IsGranted('ROLE_USER')]
     #[Route('/{id}/supprimer', name: 'app_raid_delete', methods: ['POST'])]
     public function delete(Raid $raid, Request $request, EntityManagerInterface $em): Response
     {

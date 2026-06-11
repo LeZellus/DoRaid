@@ -19,7 +19,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_USER')]
 #[Route('/guildes')]
 class GuildController extends AbstractController
 {
@@ -36,6 +35,7 @@ class GuildController extends AbstractController
         return $this->render('guild/index.html.twig', ['byServer' => $byServer]);
     }
 
+    #[IsGranted('ROLE_USER')]
     #[Route('/creer', name: 'app_guild_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $em, GuildRepository $repo): Response
     {
@@ -60,9 +60,8 @@ class GuildController extends AbstractController
     public function show(Guild $guild, CharacterRepository $charRepo, RaidRepository $raidRepo, EntityManagerInterface $em): Response
     {
         $currentUser = $this->getUser();
-        $isOwner     = $guild->getOwner()->getId() === $currentUser->getId();
+        $isOwner     = $currentUser && $guild->getOwner()->getId() === $currentUser->getId();
 
-        // Auto-approve pending memberships belonging to the guild owner
         if ($isOwner) {
             $changed = false;
             foreach ($guild->getPending() as $membership) {
@@ -77,15 +76,17 @@ class GuildController extends AbstractController
         }
 
         $isLeader = false;
-        foreach ($guild->getMemberships() as $m) {
-            if ($m->getStatus() === MemberStatus::Leader && $m->getCharacter()->getUser()->getId() === $currentUser->getId()) {
-                $isLeader = true;
-                break;
+        if ($currentUser) {
+            foreach ($guild->getMemberships() as $m) {
+                if ($m->getStatus() === MemberStatus::Leader && $m->getCharacter()->getUser()->getId() === $currentUser->getId()) {
+                    $isLeader = true;
+                    break;
+                }
             }
         }
 
-        $eligible            = $charRepo->findEligibleForGuild($currentUser, $guild->getServer());
-        $confirmedCharacters = $charRepo->findConfirmedInGuild($currentUser, $guild);
+        $eligible            = $currentUser ? $charRepo->findEligibleForGuild($currentUser, $guild->getServer()) : [];
+        $confirmedCharacters = $currentUser ? $charRepo->findConfirmedInGuild($currentUser, $guild) : [];
         $raids               = $raidRepo->findByGuild($guild);
 
         return $this->render('guild/show.html.twig', [
@@ -102,13 +103,15 @@ class GuildController extends AbstractController
     public function members(Guild $guild): Response
     {
         $currentUser = $this->getUser();
-        $isOwner     = $guild->getOwner()->getId() === $currentUser->getId();
+        $isOwner     = $currentUser && $guild->getOwner()->getId() === $currentUser->getId();
 
         $isLeader = false;
-        foreach ($guild->getMemberships() as $m) {
-            if ($m->getStatus() === MemberStatus::Leader && $m->getCharacter()->getUser()->getId() === $currentUser->getId()) {
-                $isLeader = true;
-                break;
+        if ($currentUser) {
+            foreach ($guild->getMemberships() as $m) {
+                if ($m->getStatus() === MemberStatus::Leader && $m->getCharacter()->getUser()->getId() === $currentUser->getId()) {
+                    $isLeader = true;
+                    break;
+                }
             }
         }
 
@@ -119,6 +122,7 @@ class GuildController extends AbstractController
         ]);
     }
 
+    #[IsGranted('ROLE_USER')]
     #[Route('/{slug}/rejoindre', name: 'app_guild_join', methods: ['POST'])]
     public function join(Guild $guild, Request $request, CharacterRepository $charRepo, GuildMembershipRepository $membershipRepo, EntityManagerInterface $em): Response
     {
@@ -167,6 +171,7 @@ class GuildController extends AbstractController
         return $this->redirectToRoute('app_guild_show', ['slug' => $guild->getSlug()]);
     }
 
+    #[IsGranted('ROLE_USER')]
     #[Route('/membres/{id}/approuver', name: 'app_guild_approve', methods: ['POST'])]
     public function approve(GuildMembership $membership, Request $request, EntityManagerInterface $em): Response
     {
@@ -187,6 +192,7 @@ class GuildController extends AbstractController
         return $this->redirectToRoute('app_guild_members', ['slug' => $guild->getSlug()]);
     }
 
+    #[IsGranted('ROLE_USER')]
     #[Route('/membres/{id}/refuser', name: 'app_guild_reject', methods: ['POST'])]
     public function reject(GuildMembership $membership, Request $request, EntityManagerInterface $em): Response
     {
@@ -213,6 +219,7 @@ class GuildController extends AbstractController
         return $this->redirectToRoute('app_guild_members', ['slug' => $guild->getSlug()]);
     }
 
+    #[IsGranted('ROLE_USER')]
     #[Route('/{slug}/supprimer', name: 'app_guild_delete', methods: ['POST'])]
     public function delete(Guild $guild, Request $request, EntityManagerInterface $em): Response
     {
@@ -231,6 +238,7 @@ class GuildController extends AbstractController
         return $this->redirectToRoute('app_guild_index');
     }
 
+    #[IsGranted('ROLE_USER')]
     #[Route('/{slug}/modifier', name: 'app_guild_edit', methods: ['GET', 'POST'])]
     public function edit(
         Guild $guild,
@@ -299,6 +307,7 @@ class GuildController extends AbstractController
         return false;
     }
 
+    #[IsGranted('ROLE_USER')]
     #[Route('/membres/{id}/quitter', name: 'app_guild_leave', methods: ['POST'])]
     public function leave(GuildMembership $membership, Request $request, EntityManagerInterface $em): Response
     {

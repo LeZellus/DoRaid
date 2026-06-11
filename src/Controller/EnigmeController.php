@@ -17,7 +17,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_USER')]
 class EnigmeController extends AbstractController
 {
     public function __construct(
@@ -28,15 +27,16 @@ class EnigmeController extends AbstractController
     #[Route('/enigmes/{id}', name: 'app_enigme_show', methods: ['GET'])]
     public function show(Enigme $enigme): Response
     {
-        $this->ensureParticipant($enigme);
+        $character = $this->getUser() ? $this->getParticipantCharacter($enigme->getRaid()) : null;
 
         return $this->render('enigme/show.html.twig', [
             'enigme'      => $enigme,
-            'character'   => $this->getParticipantCharacter($enigme->getRaid()),
+            'character'   => $character,
             'raidClosed'  => $enigme->getRaid()->getStatus() === RaidStatus::Closed,
         ]);
     }
 
+    #[IsGranted('ROLE_USER')]
     #[Route('/enigmes/{id}/images', name: 'app_enigme_upload_image', methods: ['POST'])]
     public function uploadImage(Enigme $enigme, Request $request, EntityManagerInterface $em): JsonResponse
     {
@@ -95,6 +95,7 @@ class EnigmeController extends AbstractController
         ]);
     }
 
+    #[IsGranted('ROLE_USER')]
     #[Route('/enigmes/{id}/comments', name: 'app_enigme_add_comment', methods: ['POST'])]
     public function addComment(Enigme $enigme, Request $request, EntityManagerInterface $em): JsonResponse
     {
@@ -127,6 +128,7 @@ class EnigmeController extends AbstractController
         ]);
     }
 
+    #[IsGranted('ROLE_USER')]
     #[Route('/enigmes/{id}/resolve', name: 'app_enigme_resolve', methods: ['POST'])]
     public function resolve(Enigme $enigme, Request $request, EntityManagerInterface $em): JsonResponse
     {
@@ -148,6 +150,7 @@ class EnigmeController extends AbstractController
         ]);
     }
 
+    #[IsGranted('ROLE_USER')]
     #[Route('/enigmes/{id}/partial', name: 'app_enigme_partial', methods: ['GET'])]
     public function partial(Enigme $enigme, Request $request): JsonResponse
     {
