@@ -48,8 +48,8 @@ class CharacterType extends AbstractType
                 'label'      => 'Niveau',
                 'required'   => false,
                 'empty_data' => null,
-                'attr'       => ['placeholder' => 'Ex : 200', 'min' => 1, 'max' => 230],
-                'constraints' => [new Range(min: 1, max: 230)],
+                'attr'       => ['placeholder' => 'Ex : 200', 'min' => 1, 'max' => 200],
+                'constraints' => [new Range(min: 1, max: 200)],
             ])
             ->add('optimizationLevel', EnumType::class, [
                 'label'        => 'Optimisation',
