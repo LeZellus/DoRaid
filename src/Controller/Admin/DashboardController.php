@@ -2,10 +2,6 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Enigme;
-use App\Entity\EnigmeTemplate;
-use App\Entity\Raid;
-use App\Entity\RaidTemplate;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -33,12 +29,12 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToDashboard('Tableau de bord', 'fa fa-home');
 
         yield MenuItem::section('Contenu');
-        yield MenuItem::linkTo(RaidTemplate::class, 'Types de raid', 'fa fa-dragon')->setAction('index');
-        yield MenuItem::linkTo(EnigmeTemplate::class, 'Énigmes des templates', 'fa fa-puzzle-piece')->setAction('index');
+        yield MenuItem::linkTo(RaidTemplateCrudController::class, 'Types de raid', 'fa fa-dragon')->setAction('index');
+        yield MenuItem::linkTo(EnigmeTemplateCrudController::class, 'Énigmes des templates', 'fa fa-puzzle-piece')->setAction('index');
 
         yield MenuItem::section('Raids en cours');
-        yield MenuItem::linkTo(Raid::class, 'Raids', 'fa fa-shield-halved')->setAction('index');
-        yield MenuItem::linkTo(Enigme::class, 'Énigmes', 'fa fa-question-circle')->setAction('index');
+        yield MenuItem::linkTo(RaidCrudController::class, 'Raids', 'fa fa-shield-halved')->setAction('index');
+        yield MenuItem::linkTo(EnigmeCrudController::class, 'Énigmes', 'fa fa-question-circle')->setAction('index');
 
         yield MenuItem::section();
         yield MenuItem::linkToUrl('← Retour au site', 'fa fa-arrow-left', '/');
