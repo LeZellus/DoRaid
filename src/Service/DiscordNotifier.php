@@ -31,7 +31,7 @@ class DiscordNotifier
                 'title'       => '⚔️ Nouveau raid : ' . $template->getName(),
                 'url'         => $raidUrl,
                 'description' => sprintf(
-                    "Un nouveau raid vient d'être créé sur **[DoRaid](%s)** !\nRejoignez-le dès maintenant en cliquant sur le bouton ci-dessous.",
+                    "Un nouveau raid vient d'être créé sur **[DoRaid](%s)** !",
                     $siteUrl,
                 ),
                 'color'  => 0x5865F2,
@@ -41,26 +41,10 @@ class DiscordNotifier
                     ['name' => '👤 Créé par',      'value' => $raid->getCreator()->getName(), 'inline' => true],
                     ['name' => '📅 Date',          'value' => $date,                    'inline' => true],
                     ['name' => '👥 Participants',  'value' => $template->getMinParticipants() . ' – ' . $template->getMaxParticipants() . ' joueurs', 'inline' => true],
+                    ['name' => '🔗 Lien du raid',  'value' => $raidUrl,                 'inline' => false],
                 ],
                 'footer' => ['text' => 'DoRaid • ' . $raid->getGuild()->getName()],
                 'timestamp' => (new \DateTimeImmutable())->format(\DateTimeInterface::ATOM),
-            ]],
-            'components' => [[
-                'type'       => 1,
-                'components' => [
-                    [
-                        'type'  => 2,
-                        'style' => 5,
-                        'label' => '🗡️ Voir le raid',
-                        'url'   => $raidUrl,
-                    ],
-                    [
-                        'type'  => 2,
-                        'style' => 5,
-                        'label' => '🏰 Page de la guilde',
-                        'url'   => $guildUrl,
-                    ],
-                ],
             ]],
         ];
 
