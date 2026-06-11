@@ -96,16 +96,16 @@
                 {% if guild.confirmed is empty %}
                     <p class="text-sm text-gray-500">Aucun membre confirmé pour l'instant.</p>
                 {% else %}
-                    <div class="flex flex-wrap gap-2 mb-4">
-                        {% for m in guild.confirmed|slice(0, 10) %}
+                    <div class="flex flex-nowrap gap-2 mb-4 overflow-hidden">
+                        {% for m in guild.confirmed|slice(0, 7) %}
                             <div class="w-9 h-9 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center text-sm font-bold text-gray-300 shrink-0"
                                  title="{{ m.character.name }}{% if m.status.value == 'leader' %} 👑{% endif %}">
                                 {{ m.character.name|slice(0,1)|upper }}
                             </div>
                         {% endfor %}
-                        {% if guild.confirmed|length > 10 %}
-                            <div class="w-9 h-9 rounded-full bg-gray-800/60 border border-gray-700 flex items-center justify-center text-xs font-bold text-gray-500">
-                                +{{ guild.confirmed|length - 10 }}
+                        {% if guild.confirmed|length > 7 %}
+                            <div class="w-9 h-9 rounded-full bg-gray-800/60 border border-gray-700 flex items-center justify-center text-xs font-bold text-gray-500 shrink-0">
+                                +{{ guild.confirmed|length - 7 }}
                             </div>
                         {% endif %}
                     </div>
