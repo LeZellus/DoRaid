@@ -99,8 +99,32 @@ class RaidController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_raid_show')]
-    public function show(Raid $raid, CharacterRepository $charRepo): Response
-    {
+    public function show(
+        Raid $raid,
+        CharacterRepository $charRepo,
+        EnigmeTemplateRepository $enigmeTemplateRepo,
+        EntityManagerInterface $em,
+    ): Response {
+        // Sync: add any enigme templates added after the raid was created
+        $existingIds = array_map(
+            fn($e) => $e->getSourceTemplate()->getId(),
+            $raid->getEnigmes()->toArray()
+        );
+        $needsFlush = false;
+        foreach ($enigmeTemplateRepo->findByTemplate($raid->getRaidTemplate()) as $et) {
+            if (!in_array($et->getId(), $existingIds, true)) {
+                $em->persist((new Enigme())
+                    ->setRaid($raid)
+                    ->setOrderNumber($et->getOrderNumber())
+                    ->setSourceTemplate($et)
+                );
+                $needsFlush = true;
+            }
+        }
+        if ($needsFlush) {
+            $em->flush();
+        }
+
         $currentUser = $this->getUser();
         $userId      = $currentUser ? (int) $currentUser->getId() : null;
         $eligible    = $currentUser ? $charRepo->findEligibleForRaid($currentUser, $raid) : [];
