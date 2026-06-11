@@ -31,11 +31,8 @@
             </div>
             <div class="flex items-center gap-2">
                 <button type="button" id="share-btn"
-                        class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-white border border-gray-700 hover:border-gray-500 rounded-lg px-3 py-1 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"/>
-                    </svg>
-                    <span id="share-label">Partager</span>
+                        class="inline-flex items-center justify-center gap-2 font-semibold rounded-xl transition bg-blue-600 hover:bg-blue-500 text-white py-1 px-3 text-xs">
+                    <span id="share-label">Copier le lien</span>
                 </button>
                 {% if isCreator %}
                     {% if raid.status == constant('App\\Entity\\RaidStatus::Open') %}
@@ -307,19 +304,12 @@
 <script>
 document.getElementById('share-btn').addEventListener('click', async function () {
     const url   = window.location.href;
-    const title = {{ raid.raidTemplate.name|json_encode|raw }};
-    const text  = 'Rejoins ce raid sur DoRaid : ' + title;
     const label = document.getElementById('share-label');
-
-    if (navigator.share) {
-        try { await navigator.share({ title, text, url }); } catch {}
-        return;
-    }
 
     try {
         await navigator.clipboard.writeText(url);
         label.textContent = 'Lien copié !';
-        setTimeout(() => label.textContent = 'Partager', 2000);
+        setTimeout(() => label.textContent = 'Copier le lien', 2000);
     } catch {
         prompt('Copie ce lien :', url);
     }
