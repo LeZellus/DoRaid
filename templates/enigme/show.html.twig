@@ -58,7 +58,7 @@ document.addEventListener('keydown', e => {
                 Résolue
             </span>
         </div>
-        {% if not raidClosed %}
+        {% if app.user and not raidClosed %}
             <button data-action="click->enigme#resolve"
                     data-enigme-target="resolveBtn"
                     {{ enigme.resolved ? 'hidden' : '' }}
@@ -74,8 +74,8 @@ document.addEventListener('keydown', e => {
         {# ── Left: paste + images ── #}
         <div class="lg:col-span-2 space-y-4">
 
-            {# Paste zone — masquée si raid terminé #}
-            {% if not raidClosed %}
+            {# Paste zone — masquée si raid terminé ou invité #}
+            {% if app.user and not raidClosed %}
             <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
                 <div class="px-5 py-4 border-b border-gray-800">
                     <h2 class="font-semibold text-white text-sm">Ajouter une image</h2>
@@ -119,7 +119,7 @@ document.addEventListener('keydown', e => {
                         {% include 'enigme/_comments.html.twig' with {enigme: enigme} only %}
                     </div>
 
-                    {% if not raidClosed %}
+                    {% if app.user and not raidClosed %}
                     <form data-action="submit->enigme#submitComment" class="shrink-0 space-y-2">
                         <input type="hidden" name="_token" value="{{ csrf_token('comment_enigme_' ~ enigme.id) }}">
                         <textarea name="content"
@@ -134,6 +134,11 @@ document.addEventListener('keydown', e => {
                             Envoyer
                         </button>
                     </form>
+                    {% elseif not app.user %}
+                    <a href="{{ path('app_login') }}"
+                       class="block w-full text-center text-sm text-gray-500 hover:text-indigo-400 transition py-2 border border-gray-800 rounded-lg">
+                        Connectez-vous pour commenter
+                    </a>
                     {% endif %}
                 </div>
             </div>
