@@ -40,7 +40,8 @@ class RaidTemplateCrudController extends AbstractCrudController
         yield IntegerField::new('maxParticipants', 'Max. joueurs');
         yield IntegerField::new('duration', 'Durée (minutes)')
             ->setHelp('Durée habituelle du raid en minutes. Ex: 90 = 1h30')
-            ->setRequired(false);
+            ->setRequired(false)
+            ->setFormTypeOptions(['empty_data' => null]);
         yield ImageField::new('imagePath', 'Image')
             ->setUploadDir('public/uploads/raid-templates')
             ->setBasePath('uploads/raid-templates')
