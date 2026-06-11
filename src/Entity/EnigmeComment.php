@@ -21,7 +21,7 @@ class EnigmeComment
     private string $content;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private Character $author;
 
     #[ORM\Column]

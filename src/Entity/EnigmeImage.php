@@ -21,7 +21,7 @@ class EnigmeImage
     private string $filePath;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private Character $addedBy;
 
     #[ORM\Column]
