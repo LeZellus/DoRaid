@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Guild;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -31,6 +32,18 @@ class GuildCrudController extends AbstractCrudController
     {
         return $actions
             ->disable(Action::NEW, Action::EDIT);
+    }
+
+    public function deleteEntity(EntityManagerInterface $entityManager, mixed $entityInstance): void
+    {
+        foreach ($entityInstance->getRaids()->toArray() as $raid) {
+            $entityManager->remove($raid);
+        }
+        foreach ($entityInstance->getMemberships()->toArray() as $membership) {
+            $entityManager->remove($membership);
+        }
+        $entityManager->remove($entityInstance);
+        $entityManager->flush();
     }
 
     public function configureFields(string $pageName): iterable
