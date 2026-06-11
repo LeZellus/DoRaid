@@ -19,6 +19,10 @@ class Enigme
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private Raid $raid;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?EnigmeTemplate $sourceTemplate = null;
+
     #[ORM\Column(length: 50)]
     private string $title;
 
@@ -59,6 +63,9 @@ class Enigme
 
     public function getRaid(): Raid { return $this->raid; }
     public function setRaid(Raid $raid): static { $this->raid = $raid; return $this; }
+
+    public function getSourceTemplate(): ?EnigmeTemplate { return $this->sourceTemplate; }
+    public function setSourceTemplate(?EnigmeTemplate $t): static { $this->sourceTemplate = $t; return $this; }
 
     public function getTitle(): string { return $this->title; }
     public function setTitle(string $title): static { $this->title = $title; return $this; }

@@ -77,6 +77,7 @@ class RaidController extends AbstractController
                     ->setRaid($raid)
                     ->setTitle($enigmeTemplate->getTitle())
                     ->setOrderNumber($enigmeTemplate->getOrderNumber())
+                    ->setSourceTemplate($enigmeTemplate)
                 );
             }
 
