@@ -24,7 +24,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/raids')]
 class RaidController extends AbstractController
 {
-    #[Route('/new', name: 'app_raid_new', methods: ['GET', 'POST'])]
+    #[Route('/creer', name: 'app_raid_new', methods: ['GET', 'POST'])]
     public function new(
         Request $request,
         EntityManagerInterface $em,
@@ -123,7 +123,7 @@ class RaidController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/apply', name: 'app_raid_apply', methods: ['POST'])]
+    #[Route('/{id}/candidater', name: 'app_raid_apply', methods: ['POST'])]
     public function apply(Raid $raid, Request $request, CharacterRepository $charRepo, EntityManagerInterface $em): Response
     {
         if (!$this->isCsrfTokenValid('apply_raid_' . $raid->getId(), $request->request->get('_token'))) {
@@ -159,7 +159,7 @@ class RaidController extends AbstractController
         return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
     }
 
-    #[Route('/participants/{id}/accept', name: 'app_raid_accept', methods: ['POST'])]
+    #[Route('/participants/{id}/accepter', name: 'app_raid_accept', methods: ['POST'])]
     public function accept(RaidParticipant $participant, Request $request, EntityManagerInterface $em): Response
     {
         $raid = $participant->getRaid();
@@ -179,7 +179,7 @@ class RaidController extends AbstractController
         return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
     }
 
-    #[Route('/{id}/close', name: 'app_raid_close', methods: ['POST'])]
+    #[Route('/{id}/clore', name: 'app_raid_close', methods: ['POST'])]
     public function close(Raid $raid, Request $request, EntityManagerInterface $em): Response
     {
         if (!$this->isCsrfTokenValid('close_raid_' . $raid->getId(), $request->request->get('_token'))) {
@@ -197,7 +197,7 @@ class RaidController extends AbstractController
         return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
     }
 
-    #[Route('/participants/{id}/kick', name: 'app_raid_kick', methods: ['POST'])]
+    #[Route('/participants/{id}/exclure', name: 'app_raid_kick', methods: ['POST'])]
     public function kick(RaidParticipant $participant, Request $request, EntityManagerInterface $em): Response
     {
         $raid = $participant->getRaid();
@@ -218,7 +218,7 @@ class RaidController extends AbstractController
         return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
     }
 
-    #[Route('/{id}/delete', name: 'app_raid_delete', methods: ['POST'])]
+    #[Route('/{id}/supprimer', name: 'app_raid_delete', methods: ['POST'])]
     public function delete(Raid $raid, Request $request, EntityManagerInterface $em): Response
     {
         if (!$this->isCsrfTokenValid('delete_raid_' . $raid->getId(), $request->request->get('_token'))) {

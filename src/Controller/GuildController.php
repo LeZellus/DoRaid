@@ -19,7 +19,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_USER')]
-#[Route('/guilds')]
+#[Route('/guildes')]
 class GuildController extends AbstractController
 {
     #[Route('', name: 'app_guild_index')]
@@ -35,7 +35,7 @@ class GuildController extends AbstractController
         return $this->render('guild/index.html.twig', ['byServer' => $byServer]);
     }
 
-    #[Route('/new', name: 'app_guild_new', methods: ['GET', 'POST'])]
+    #[Route('/creer', name: 'app_guild_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $em): Response
     {
         $guild = new Guild();
@@ -149,7 +149,7 @@ class GuildController extends AbstractController
         return $this->redirectToRoute('app_guild_show', ['id' => $guild->getId()]);
     }
 
-    #[Route('/{id}/join', name: 'app_guild_join', methods: ['POST'])]
+    #[Route('/{id}/rejoindre', name: 'app_guild_join', methods: ['POST'])]
     public function join(Guild $guild, Request $request, CharacterRepository $charRepo, GuildMembershipRepository $membershipRepo, EntityManagerInterface $em): Response
     {
         if (!$this->isCsrfTokenValid('join_guild_' . $guild->getId(), $request->request->get('_token'))) {
@@ -197,7 +197,7 @@ class GuildController extends AbstractController
         return $this->redirectToRoute('app_guild_show', ['id' => $guild->getId()]);
     }
 
-    #[Route('/memberships/{id}/approve', name: 'app_guild_approve', methods: ['POST'])]
+    #[Route('/membres/{id}/approuver', name: 'app_guild_approve', methods: ['POST'])]
     public function approve(GuildMembership $membership, Request $request, EntityManagerInterface $em): Response
     {
         $guild = $membership->getGuild();
@@ -217,7 +217,7 @@ class GuildController extends AbstractController
         return $this->redirectToRoute('app_guild_members', ['id' => $guild->getId()]);
     }
 
-    #[Route('/memberships/{id}/reject', name: 'app_guild_reject', methods: ['POST'])]
+    #[Route('/membres/{id}/refuser', name: 'app_guild_reject', methods: ['POST'])]
     public function reject(GuildMembership $membership, Request $request, EntityManagerInterface $em): Response
     {
         $guild = $membership->getGuild();
@@ -243,7 +243,7 @@ class GuildController extends AbstractController
         return $this->redirectToRoute('app_guild_members', ['id' => $guild->getId()]);
     }
 
-    #[Route('/{id}/delete', name: 'app_guild_delete', methods: ['POST'])]
+    #[Route('/{id}/supprimer', name: 'app_guild_delete', methods: ['POST'])]
     public function delete(Guild $guild, Request $request, EntityManagerInterface $em): Response
     {
         if (!$this->isCsrfTokenValid('delete_guild_' . $guild->getId(), $request->request->get('_token'))) {
@@ -272,7 +272,7 @@ class GuildController extends AbstractController
         return false;
     }
 
-    #[Route('/memberships/{id}/leave', name: 'app_guild_leave', methods: ['POST'])]
+    #[Route('/membres/{id}/quitter', name: 'app_guild_leave', methods: ['POST'])]
     public function leave(GuildMembership $membership, Request $request, EntityManagerInterface $em): Response
     {
         if (!$this->isCsrfTokenValid('leave_' . $membership->getId(), $request->request->get('_token'))) {

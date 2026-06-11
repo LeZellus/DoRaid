@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_USER')]
-#[Route('/characters')]
+#[Route('/personnages')]
 class CharacterController extends AbstractController
 {
     #[Route('', name: 'app_character_index')]
@@ -31,7 +31,7 @@ class CharacterController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_character_new', methods: ['GET', 'POST'])]
+    #[Route('/creer', name: 'app_character_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $em): Response
     {
         $character = new Character();
@@ -52,7 +52,7 @@ class CharacterController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/delete', name: 'app_character_delete', methods: ['POST'])]
+    #[Route('/{id}/supprimer', name: 'app_character_delete', methods: ['POST'])]
     public function delete(Character $character, EntityManagerInterface $em, Request $request): Response
     {
         if ($character->getUser() !== $this->getUser()) {
