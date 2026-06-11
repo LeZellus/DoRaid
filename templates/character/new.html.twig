@@ -7,6 +7,13 @@
 <div class="flex items-center justify-center py-16 px-4">
     <div class="w-full max-w-md">
 
+        {% for message in app.flashes('onboarding') %}
+        <div class="mb-6 rounded-xl border border-indigo-500/30 bg-indigo-900/20 px-5 py-4 text-indigo-200 text-sm">
+            <p class="font-semibold text-indigo-100 mb-1">Bienvenue sur DoRaid !</p>
+            <p>{{ message }}</p>
+        </div>
+        {% endfor %}
+
         <div class="flex items-center gap-4 mb-8">
             <a href="{{ path('app_character_index') }}" class="text-gray-500 hover:text-white transition">← Retour</a>
             <h1 class="text-3xl font-bold text-white">Nouveau personnage</h1>

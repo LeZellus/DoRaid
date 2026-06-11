@@ -228,11 +228,11 @@ class RaidController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        $guildId = $raid->getGuild()->getId();
+        $guildSlug = $raid->getGuild()->getSlug();
         $em->remove($raid);
         $em->flush();
 
         $this->addFlash('success', 'Raid supprimé.');
-        return $this->redirectToRoute('app_guild_show', ['id' => $guildId]);
+        return $this->redirectToRoute('app_guild_show', ['slug' => $guildSlug]);
     }
 }

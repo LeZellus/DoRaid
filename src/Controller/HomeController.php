@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\MemberStatus;
 use App\Entity\RaidParticipantStatus;
 use App\Entity\RaidStatus;
+use App\Repository\CharacterRepository;
 use App\Repository\GuildMembershipRepository;
 use App\Repository\RaidParticipantRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,11 +18,17 @@ class HomeController extends AbstractController
     public function index(
         RaidParticipantRepository $participantRepo,
         GuildMembershipRepository $membershipRepo,
+        CharacterRepository $characterRepo,
     ): Response {
         $user = $this->getUser();
 
         if (!$user) {
             return $this->render('home/index.html.twig');
+        }
+
+        if (empty($characterRepo->findByUser($user))) {
+            $this->addFlash('onboarding', 'Bienvenue ! Commencez par créer votre premier personnage pour rejoindre des guildes et des raids.');
+            return $this->redirectToRoute('app_character_new');
         }
 
         $allParticipations = $participantRepo->findByUser($user);
