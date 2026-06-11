@@ -32,6 +32,9 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkTo(RaidTemplateCrudController::class, 'Types de raid', 'fa fa-dragon')->setAction('index');
         yield MenuItem::linkTo(EnigmeTemplateCrudController::class, 'Énigmes des templates', 'fa fa-puzzle-piece')->setAction('index');
 
+        yield MenuItem::section('Modération');
+        yield MenuItem::linkTo(GuildCrudController::class, 'Guildes', 'fa fa-shield')->setAction('index');
+
         yield MenuItem::section();
         yield MenuItem::linkToUrl('← Retour au site', 'fa fa-arrow-left', '/');
     }
