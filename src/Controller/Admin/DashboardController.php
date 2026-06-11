@@ -33,12 +33,12 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToDashboard('Tableau de bord', 'fa fa-home');
 
         yield MenuItem::section('Contenu');
-        yield MenuItem::linkToCrud('Types de raid', 'fa fa-dragon', RaidTemplate::class);
-        yield MenuItem::linkToCrud('Énigmes des templates', 'fa fa-puzzle-piece', EnigmeTemplate::class);
+        yield MenuItem::linkTo(RaidTemplate::class, 'Types de raid', 'fa fa-dragon');
+        yield MenuItem::linkTo(EnigmeTemplate::class, 'Énigmes des templates', 'fa fa-puzzle-piece');
 
         yield MenuItem::section('Raids en cours');
-        yield MenuItem::linkToCrud('Raids', 'fa fa-shield-halved', Raid::class);
-        yield MenuItem::linkToCrud('Énigmes', 'fa fa-question-circle', Enigme::class);
+        yield MenuItem::linkTo(Raid::class, 'Raids', 'fa fa-shield-halved');
+        yield MenuItem::linkTo(Enigme::class, 'Énigmes', 'fa fa-question-circle');
 
         yield MenuItem::section();
         yield MenuItem::linkToUrl('← Retour au site', 'fa fa-arrow-left', '/');
