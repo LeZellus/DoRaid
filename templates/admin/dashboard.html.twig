@@ -28,6 +28,17 @@
     </div>
 
     <div class="col-md-6 col-xl-4">
+        <a href="{{ ea_url().setController('App\\Controller\\Admin\\UserCrudController').setAction('index') }}"
+           class="card text-decoration-none h-100">
+            <div class="card-body text-center py-4">
+                <div class="display-6 mb-2">👥</div>
+                <h5 class="card-title">Membres</h5>
+                <p class="card-text text-muted small">Consulter les comptes et gérer les rôles admin</p>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-6 col-xl-4">
         <a href="{{ ea_url().setController('App\\Controller\\Admin\\GuildCrudController').setAction('index') }}"
            class="card text-decoration-none h-100">
             <div class="card-body text-center py-4">
