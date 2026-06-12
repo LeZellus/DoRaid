@@ -148,7 +148,7 @@ class RaidController extends AbstractController
 
         if (empty($characters)) {
             $this->addFlash('error', 'Vous devez être membre confirmé de cette guilde pour créer un raid.');
-            return $this->redirectToRoute('app_guild_show', ['id' => $guild->getId()]);
+            return $this->redirectToRoute('app_guild_show', ['slug' => $guild->getSlug()]);
         }
 
         $templates = $templateRepo->findAllOrdered();
@@ -350,6 +350,11 @@ class RaidController extends AbstractController
 
         if ($raid->isParticipant($character)) {
             $this->addFlash('error', 'Ce personnage a déjà candidaté à ce raid.');
+            return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
+        }
+
+        if ($raid->isFull()) {
+            $this->addFlash('error', 'Ce raid est complet.');
             return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
         }
 

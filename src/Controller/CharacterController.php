@@ -68,7 +68,7 @@ class CharacterController extends AbstractController
     #[Route('/{id}/modifier', name: 'app_character_edit', methods: ['GET', 'POST'])]
     public function edit(Character $character, Request $request, EntityManagerInterface $em): Response
     {
-        if ($character->getUser() !== $this->getUser()) {
+        if ($character->getUser()->getId() !== $this->getUser()->getId()) {
             throw $this->createAccessDeniedException();
         }
 
@@ -90,7 +90,7 @@ class CharacterController extends AbstractController
     #[Route('/{id}/supprimer', name: 'app_character_delete', methods: ['POST'])]
     public function delete(Character $character, EntityManagerInterface $em, Request $request): Response
     {
-        if ($character->getUser() !== $this->getUser()) {
+        if ($character->getUser()->getId() !== $this->getUser()->getId()) {
             throw $this->createAccessDeniedException();
         }
 

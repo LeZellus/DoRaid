@@ -201,6 +201,67 @@ class GuildControllerTest extends WebTestCaseBase
         $this->assertStringContainsString('déjà dans une guilde', $this->client->getResponse()->getContent());
     }
 
+    // ─── Rejoindre ────────────────────────────────────────────────────────────
+
+    public function testJoinWithCharacterAlreadyInGuildShowsError(): void
+    {
+        $server     = $this->makeServer();
+        $owner      = $this->makeUser('joinowner@test.com');
+        $ownerChar  = $this->makeCharacter($owner, $server);
+        $guildA     = $this->makeGuild($owner, $server);
+        $this->makeMembership($guildA, $ownerChar, MemberStatus::Leader);
+
+        $guildB    = $this->makeGuild($owner, $server);
+        $applicant = $this->makeUser('alreadyin@test.com');
+        $appChar   = $this->makeCharacter($applicant, $server);
+        $this->makeMembership($guildA, $appChar, MemberStatus::Member);
+
+        // Second char sans guilde : rend le formulaire de rejoindre visible (eligible)
+        $freeChar = $this->makeCharacter($applicant, $server);
+        $this->flush();
+        $this->em->clear();
+
+        $this->client->loginUser($applicant);
+        // Le form apparaît grâce à freeChar ; on en extrait le token
+        $crawler = $this->client->request('GET', '/guildes/' . $guildB->getSlug());
+        $token   = $crawler->filter('form[action$="rejoindre"] input[name="_token"]')->attr('value');
+
+        // Soumet avec appChar (déjà en guilde) : erreur propre, pas un 500
+        $this->client->request('POST', '/guildes/' . $guildB->getSlug() . '/rejoindre', [
+            '_token'       => $token,
+            'character_id' => $appChar->getId(),
+        ]);
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->client->followRedirect();
+        $this->assertStringContainsString('déjà dans une guilde', $this->client->getResponse()->getContent());
+    }
+
+    public function testNonLeaderCannotApproveApplication(): void
+    {
+        $server     = $this->makeServer();
+        $owner      = $this->makeUser('approveowner@test.com');
+        $ownerChar  = $this->makeCharacter($owner, $server);
+        $guild      = $this->makeGuild($owner, $server);
+        $this->makeMembership($guild, $ownerChar, MemberStatus::Leader);
+
+        $applicant = $this->makeUser('pending@test.com');
+        $appChar   = $this->makeCharacter($applicant, $server);
+        $membership = $this->makeMembership($guild, $appChar, MemberStatus::Pending);
+
+        $nonLeader = $this->makeUser('nonleader@test.com');
+        $this->flush();
+        $membershipId = $membership->getId();
+
+        $this->client->loginUser($nonLeader);
+        // Token invalide : approve() lance createAccessDeniedException() sur CSRF invalide → 403
+        $this->client->request('POST', '/guildes/membres/' . $membershipId . '/approuver', [
+            '_token' => 'invalid',
+        ]);
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
     // ─── Helpers ───────────────────────────────────────────────────────────────
 
     /**

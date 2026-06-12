@@ -4,6 +4,7 @@ namespace App\Tests\Functional;
 
 use App\Entity\Guild;
 use App\Entity\MemberStatus;
+use App\Entity\RaidStatus;
 use App\Entity\Server;
 
 class RaidControllerTest extends WebTestCaseBase
@@ -130,6 +131,164 @@ class RaidControllerTest extends WebTestCaseBase
         $this->assertResponseIsSuccessful();
         // Le message d'absence de personnage sur le serveur doit apparaître
         $this->assertStringContainsString('aucun personnage', $crawler->html());
+    }
+
+    // ─── Double candidature ───────────────────────────────────────────────────
+
+    public function testApplyTwiceWithSameCharacterShowsErrorNotException(): void
+    {
+        [$raidId, , , $server] = $this->createRaidWithGuild(isPublic: true);
+
+        $user = $this->makeUser('twice@test.com');
+        $char = $this->makeCharacter($user, $server);
+        $this->flush();
+        $charId = $char->getId();
+
+        $this->client->loginUser($user);
+        $crawler = $this->client->request('GET', '/raids/' . $raidId);
+        $token   = $crawler->filter('form[action$="candidater"] input[name="_token"]')->attr('value');
+
+        $this->client->request('POST', '/raids/' . $raidId . '/candidater', [
+            '_token' => $token, 'character_id' => $charId,
+        ]);
+        $this->assertResponseStatusCodeSame(302);
+
+        // Deuxième candidature avec le même token (non consommé par défaut en Symfony)
+        $this->client->request('POST', '/raids/' . $raidId . '/candidater', [
+            '_token' => $token, 'character_id' => $charId,
+        ]);
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->client->followRedirect();
+        $this->assertStringContainsString('déjà candidaté', $this->client->getResponse()->getContent());
+    }
+
+    // ─── Raid complet ─────────────────────────────────────────────────────────
+
+    public function testApplyToFullRaidShowsError(): void
+    {
+        $server    = $this->makeServer();
+        $owner     = $this->makeUser('raidowner@test.com');
+        $ownerChar = $this->makeCharacter($owner, $server);
+        $guild     = $this->makeGuild($owner, $server);
+        $this->makeMembership($guild, $ownerChar, MemberStatus::Leader);
+
+        // Template avec 1 participant max
+        $template = (new \App\Entity\RaidTemplate())
+            ->setName('Mini-' . uniqid('', true))
+            ->setMaxParticipants(1)
+            ->setMinParticipants(1)
+            ->setDuration(60);
+        $this->em->persist($template);
+
+        $raid = (new \App\Entity\Raid())
+            ->setGuild($guild)
+            ->setCreator($ownerChar)
+            ->setRaidTemplate($template)
+            ->setIsPublic(true);
+        $this->em->persist($raid);
+
+        // Le créateur est déjà participant (ajouté à la création dans le controller)
+        $this->em->persist(
+            (new \App\Entity\RaidParticipant())
+                ->setRaid($raid)
+                ->setCharacter($ownerChar)
+                ->setStatus(\App\Entity\RaidParticipantStatus::Accepted)
+        );
+        $this->flush();
+        $raidId = $raid->getId();
+
+        $applicant     = $this->makeUser('latecomer@test.com');
+        $applicantChar = $this->makeCharacter($applicant, $server);
+        $this->flush();
+        $this->em->clear();
+
+        $this->client->loginUser($applicant);
+        $crawler = $this->client->request('GET', '/raids/' . $raidId);
+        $token   = $crawler->filter('form[action$="candidater"] input[name="_token"]')->attr('value');
+
+        $this->client->request('POST', '/raids/' . $raidId . '/candidater', [
+            '_token' => $token, 'character_id' => $applicantChar->getId(),
+        ]);
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->client->followRedirect();
+        $this->assertStringContainsString('complet', $this->client->getResponse()->getContent());
+    }
+
+    // ─── Raid fermé ───────────────────────────────────────────────────────────
+
+    public function testApplyToClosedRaidShowsError(): void
+    {
+        $server    = $this->makeServer();
+        $owner     = $this->makeUser('closedowner@test.com');
+        $ownerChar = $this->makeCharacter($owner, $server);
+        $guild     = $this->makeGuild($owner, $server);
+        $this->makeMembership($guild, $ownerChar, MemberStatus::Leader);
+        $raid = $this->makeRaid($guild, $ownerChar, isPublic: true);
+        $this->flush();
+        $raidId = $raid->getId();
+
+        $user = $this->makeUser('late@test.com');
+        $char = $this->makeCharacter($user, $server);
+        $this->flush();
+        $this->em->clear();
+
+        $this->client->loginUser($user);
+        // Récupère le token pendant que le raid est encore ouvert (form visible)
+        $crawler = $this->client->request('GET', '/raids/' . $raidId);
+        $token   = $crawler->filter('form[action$="candidater"] input[name="_token"]')->attr('value');
+
+        // Ferme le raid directement via l'EM (sans passer par le controller)
+        $raidEntity = $this->em->find(\App\Entity\Raid::class, $raidId);
+        $raidEntity->setStatus(\App\Entity\RaidStatus::Closed);
+        $this->em->flush();
+
+        $this->client->request('POST', '/raids/' . $raidId . '/candidater', [
+            '_token' => $token, 'character_id' => $char->getId(),
+        ]);
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->client->followRedirect();
+        $this->assertStringContainsString('terminé', $this->client->getResponse()->getContent());
+    }
+
+    // ─── Contrôle d'accès ─────────────────────────────────────────────────────
+
+    public function testNonMemberCannotCreateRaidAndIsRedirectedProperly(): void
+    {
+        $server    = $this->makeServer();
+        $owner     = $this->makeUser('guildowner@test.com');
+        $ownerChar = $this->makeCharacter($owner, $server);
+        $guild     = $this->makeGuild($owner, $server);
+        $this->makeMembership($guild, $ownerChar, MemberStatus::Leader);
+        $this->flush();
+        $guildId   = $guild->getId();
+        $guildSlug = $guild->getSlug();
+
+        $nonMember = $this->makeUser('nobody@test.com');
+        $this->flush();
+
+        $this->client->loginUser($nonMember);
+        $this->client->request('GET', '/raids/creer?guild=' . $guildId);
+
+        // Ne doit pas 500 (ancien bug : route générée avec ['id'] au lieu de ['slug'])
+        $this->assertResponseRedirects();
+        $this->assertStringContainsString('/guildes/' . $guildSlug, $this->client->getResponse()->headers->get('location'));
+    }
+
+    public function testNonCreatorCannotCloseRaid(): void
+    {
+        [$raidId] = $this->createRaidWithGuild(isPublic: true);
+
+        $other = $this->makeUser('notthecreator@test.com');
+        $this->flush();
+
+        $this->client->loginUser($other);
+        // Token invalide suffit : le contrôleur retourne 403 dès le check CSRF (createAccessDeniedException)
+        $this->client->request('POST', '/raids/' . $raidId . '/clore', ['_token' => 'invalid']);
+
+        $this->assertResponseStatusCodeSame(403);
     }
 
     // ─── Helpers ───────────────────────────────────────────────────────────────
