@@ -100,7 +100,11 @@ class GuildController extends AbstractController
 
         $eligible            = $currentUser ? $charRepo->findEligibleForGuild($currentUser, $guild->getServer()) : [];
         $confirmedCharacters = $currentUser ? $charRepo->findConfirmedInGuild($currentUser, $guild) : [];
-        $allRaids      = $raidRepo->findByGuild($guild);
+        $isMember            = $isLeader || !empty($confirmedCharacters);
+        $allRaids      = array_filter(
+            $raidRepo->findByGuild($guild),
+            fn($r) => $r->isPublic() || $isMember
+        );
         $activeRaids   = array_values(array_filter($allRaids, fn($r) => $r->getStatus() === RaidStatus::Open));
         $closedRaids   = array_values(array_filter($allRaids, fn($r) => $r->getStatus() === RaidStatus::Closed));
 
