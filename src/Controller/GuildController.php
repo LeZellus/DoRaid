@@ -50,90 +50,23 @@ class GuildController extends AbstractController
 
     #[IsGranted('ROLE_USER')]
     #[Route('/creer', name: 'app_guild_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $em, GuildRepository $repo, CharacterRepository $charRepo): Response
+    public function new(Request $request, EntityManagerInterface $em, GuildRepository $repo): Response
     {
-        try {
-            return $this->doNew($request, $em, $repo, $charRepo);
-        } catch (\Throwable $e) {
-            $logDir = dirname(__DIR__, 2) . '/var/log';
-            if (!is_dir($logDir)) {
-                @mkdir($logDir, 0775, true);
-            }
-            @file_put_contents(
-                $logDir . '/guild_debug.log',
-                date('Y-m-d H:i:s') . ' ' . get_class($e) . ': ' . $e->getMessage()
-                    . ' in ' . $e->getFile() . ':' . $e->getLine() . "\n"
-                    . $e->getTraceAsString() . "\n---\n",
-                FILE_APPEND
-            );
-            throw $e;
-        }
-    }
-
-    private function doNew(Request $request, EntityManagerInterface $em, GuildRepository $repo, CharacterRepository $charRepo): Response
-    {
-        $user       = $this->getUser();
-        $characters = $charRepo->findByUser($user);
-
-        // Aucun personnage : impossible de devenir meneur, on redirige vers la création
-        if (empty($characters)) {
-            $this->addFlash('error', 'Vous devez d\'abord créer un personnage avant de pouvoir fonder une guilde.');
-            return $this->redirectToRoute('app_character_new');
-        }
-
-        $charsByServerId = [];
-        foreach ($characters as $c) {
-            $charsByServerId[$c->getServer()->getId()][] = $c;
-        }
-
         $guild = new Guild();
-        $form  = $this->createForm(GuildType::class, $guild);
+        $form = $this->createForm(GuildType::class, $guild);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $characterId = (int) $request->request->get('character_id');
-            $character   = $characterId > 0 ? $charRepo->find($characterId) : null;
-
-            // Personnage non sélectionné
-            if (!$character || $character->getUser() !== $user) {
-                $this->addFlash('error', 'Sélectionnez un personnage meneur pour cette guilde.');
-                return $this->render('guild/new.html.twig', [
-                    'form'                => $form,
-                    'charsByServerId'     => $charsByServerId,
-                    'submittedCharId'     => $characterId,
-                ]);
-            }
-
-            // Personnage sur le mauvais serveur
-            if ($character->getServer()->getId() !== $guild->getServer()->getId()) {
-                $this->addFlash('error', 'Ce personnage n\'est pas sur le serveur sélectionné pour la guilde. Choisissez un personnage sur ce serveur ou changez de serveur.');
-                return $this->render('guild/new.html.twig', [
-                    'form'            => $form,
-                    'charsByServerId' => $charsByServerId,
-                    'submittedCharId' => $characterId,
-                ]);
-            }
-
-            $guild->setOwner($user);
+            $guild->setOwner($this->getUser());
             $guild->setSlug($this->uniqueSlug($guild->getName(), $repo));
             $em->persist($guild);
-            $em->persist(
-                (new GuildMembership())
-                    ->setGuild($guild)
-                    ->setCharacter($character)
-                    ->setStatus(MemberStatus::Leader)
-            );
             $em->flush();
 
-            $this->addFlash('success', $character->getName() . ' est maintenant meneur de ' . $guild->getName() . ' !');
+            $this->addFlash('success', 'Guilde créée ! Choisissez votre personnage meneur ci-dessous.');
             return $this->redirectToRoute('app_guild_show', ['slug' => $guild->getSlug()]);
         }
 
-        return $this->render('guild/new.html.twig', [
-            'form'            => $form,
-            'charsByServerId' => $charsByServerId,
-            'submittedCharId' => 0,
-        ]);
+        return $this->render('guild/new.html.twig', ['form' => $form]);
     }
 
     #[Route('/{slug}', name: 'app_guild_show')]
