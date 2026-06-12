@@ -57,6 +57,111 @@ class GuildControllerTest extends WebTestCaseBase
         $this->assertStringContainsString($privateName, $this->client->getResponse()->getContent());
     }
 
+    // ─── Création de guilde ────────────────────────────────────────────────────
+
+    public function testGuildCreationRedirectsToCharacterCreationWhenNoCharacters(): void
+    {
+        $user = $this->makeUser('newbie@test.com');
+        $this->flush();
+
+        $this->client->loginUser($user);
+        $this->client->request('GET', '/guildes/creer');
+
+        $this->assertResponseRedirects();
+        $this->assertStringContainsString('/personnages/creer', $this->client->getResponse()->headers->get('location'));
+    }
+
+    public function testGuildCreationFailsWhenCharacterIsOnWrongServer(): void
+    {
+        $serverA = $this->makeServer();
+        $serverB = $this->makeServer();
+        $user    = $this->makeUser('creator@test.com');
+        $char    = $this->makeCharacter($user, $serverA);
+        $this->flush();
+        $this->em->clear();
+
+        $this->client->loginUser($user);
+
+        // GET pour récupérer le token CSRF
+        $crawler = $this->client->request('GET', '/guildes/creer');
+        $this->assertResponseIsSuccessful();
+
+        $token = $crawler->filter('input[name="guild[_token]"]')->attr('value');
+
+        // Soumet la guilde sur serverB mais avec un personnage sur serverA
+        $this->client->request('POST', '/guildes/creer', [
+            'guild' => [
+                'name'   => 'Guilde Test',
+                'server' => $serverB->getId(),
+                '_token' => $token,
+            ],
+            'character_id' => $char->getId(),
+        ]);
+
+        // Doit ré-afficher le formulaire avec une erreur (pas de redirect)
+        $this->assertResponseIsSuccessful();
+        $this->assertStringContainsString('pas sur le serveur', $this->client->getResponse()->getContent());
+    }
+
+    public function testGuildCreationSucceedsWithValidCharacter(): void
+    {
+        $server = $this->makeServer();
+        $user   = $this->makeUser('founder@test.com');
+        $char   = $this->makeCharacter($user, $server);
+        $this->flush();
+        $this->em->clear();
+
+        $this->client->loginUser($user);
+
+        $crawler = $this->client->request('GET', '/guildes/creer');
+        $token   = $crawler->filter('input[name="guild[_token]"]')->attr('value');
+
+        $this->client->request('POST', '/guildes/creer', [
+            'guild' => [
+                'name'   => 'Les Conquérants',
+                'server' => $server->getId(),
+                '_token' => $token,
+            ],
+            'character_id' => $char->getId(),
+        ]);
+
+        // Redirect vers la guilde créée
+        $this->assertResponseRedirects();
+        $location = $this->client->getResponse()->headers->get('location');
+        $this->assertStringContainsString('/guildes/', $location);
+
+        // La page guilde est accessible
+        $this->client->followRedirect();
+        $this->assertResponseIsSuccessful();
+        $this->assertStringContainsString('Les Conquérants', $this->client->getResponse()->getContent());
+    }
+
+    public function testGuildCreationFailsWhenNoCharacterSelected(): void
+    {
+        $server = $this->makeServer();
+        $user   = $this->makeUser('founder@test.com');
+        $this->makeCharacter($user, $server);
+        $this->flush();
+        $this->em->clear();
+
+        $this->client->loginUser($user);
+
+        $crawler = $this->client->request('GET', '/guildes/creer');
+        $token   = $crawler->filter('input[name="guild[_token]"]')->attr('value');
+
+        $this->client->request('POST', '/guildes/creer', [
+            'guild' => [
+                'name'   => 'Guilde Sans Chef',
+                'server' => $server->getId(),
+                '_token' => $token,
+            ],
+            // character_id intentionnellement absent
+        ]);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertStringContainsString('Sélectionnez un personnage', $this->client->getResponse()->getContent());
+    }
+
     // ─── Helpers ───────────────────────────────────────────────────────────────
 
     /**
