@@ -52,14 +52,32 @@ class HomeController extends AbstractController
 
         $confirmedMemberships = [];
         $pendingMemberships   = [];
+        $guildMap             = [];
 
         foreach ($allMemberships as $m) {
             if ($m->getStatus() === MemberStatus::Pending) {
                 $pendingMemberships[] = $m;
             } else {
                 $confirmedMemberships[] = $m;
+                $guildId = $m->getGuild()->getId();
+                if (!isset($guildMap[$guildId])) {
+                    $guildMap[$guildId] = [
+                        'guild'    => $m->getGuild(),
+                        'isLeader' => false,
+                        'count'    => 0,
+                    ];
+                }
+                $guildMap[$guildId]['count']++;
+                if ($m->getStatus() === MemberStatus::Leader) {
+                    $guildMap[$guildId]['isLeader'] = true;
+                }
             }
         }
+
+        // Leaders first, then alphabetical
+        usort($guildMap, fn($a, $b) =>
+            $b['isLeader'] <=> $a['isLeader'] ?: strcmp($a['guild']->getName(), $b['guild']->getName())
+        );
 
         $pendingByGuild = [];
         foreach ($membershipRepo->findPendingForLeader($user) as $m) {
@@ -83,6 +101,7 @@ class HomeController extends AbstractController
             'pendingRaids'         => $pendingRaids,
             'completedRaids'       => $completedRaids,
             'confirmedMemberships' => $confirmedMemberships,
+            'guildMap'             => $guildMap,
             'pendingMemberships'   => $pendingMemberships,
             'pendingByGuild'       => $pendingByGuild,
             'pendingByRaid'        => $pendingByRaid,

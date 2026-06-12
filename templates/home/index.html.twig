@@ -83,8 +83,8 @@
             <div class="text-xs text-gray-500 uppercase tracking-wider mt-1">Candidature{{ pendingRaids|length > 1 ? 's' : '' }} raid</div>
         </div>
         <div class="{{ ui.card_classes('p-5 text-center') }}">
-            <div class="text-3xl font-bold text-white">{{ confirmedMemberships|length }}</div>
-            <div class="text-xs text-gray-500 uppercase tracking-wider mt-1">Guilde{{ confirmedMemberships|length > 1 ? 's' : '' }}</div>
+            <div class="text-3xl font-bold text-white">{{ guildMap|length }}</div>
+            <div class="text-xs text-gray-500 uppercase tracking-wider mt-1">Guilde{{ guildMap|length > 1 ? 's' : '' }}</div>
         </div>
     </div>
 
@@ -99,46 +99,43 @@
                     {{ ui.link_button('+ Créer', path('app_guild_new'), 'secondary') }}
                 </div>
 
-                {% if confirmedMemberships is empty and pendingMemberships is empty %}
+                {% if guildMap is empty and pendingMemberships is empty %}
                     <div class="{{ ui.card_body_classes('py-8 text-center') }}">
                         <p class="text-gray-500 text-sm mb-4">Vous n'êtes encore dans aucune guilde.</p>
                         {{ ui.link_button('Rejoindre une guilde', path('app_guild_index'), 'primary') }}
                     </div>
                 {% else %}
-                    {% if confirmedMemberships is not empty %}
+                    {% if guildMap is not empty %}
                         <ul class="divide-y divide-gray-800/60">
-                            {% for m in confirmedMemberships %}
+                            {% for item in guildMap %}
                                 <li>
-                                    <a href="{{ path('app_guild_show', {slug: m.guild.slug}) }}"
-                                       class="flex items-center gap-4 px-5 py-3.5 hover:bg-gray-800/30 transition group">
-                                        {% if m.guild.imagePath %}
-                                            <img src="{{ asset('uploads/guildes/' ~ m.guild.slug ~ '/' ~ m.guild.imagePath) }}"
-                                                 alt="{{ m.guild.name }}"
+                                    <a href="{{ path('app_guild_show', {slug: item.guild.slug}) }}"
+                                       class="flex items-center gap-4 px-5 py-3.5 hover:bg-gray-800/30 transition group {% if item.isLeader %}border-l-2 border-yellow-500/60{% endif %}">
+                                        {% if item.guild.imagePath %}
+                                            <img src="{{ asset('uploads/guildes/' ~ item.guild.slug ~ '/' ~ item.guild.imagePath) }}"
+                                                 alt="{{ item.guild.name }}"
                                                  class="w-9 h-9 rounded-lg object-cover shrink-0">
                                         {% else %}
                                             <div class="w-9 h-9 rounded-lg bg-indigo-900/40 flex items-center justify-center text-sm font-bold text-indigo-300 shrink-0">
-                                                {{ m.guild.name|slice(0,1)|upper }}
+                                                {{ item.guild.name|slice(0,1)|upper }}
                                             </div>
                                         {% endif %}
                                         <div class="flex-1 min-w-0">
-                                            <div class="font-medium text-white text-sm truncate group-hover:text-indigo-300 transition">
-                                                {{ m.guild.name }}
+                                            <div class="font-medium text-sm truncate group-hover:text-indigo-300 transition {% if item.isLeader %}text-yellow-300{% else %}text-white{% endif %}">
+                                                {{ item.guild.name }}
                                             </div>
-                                            <div class="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
-                                                <img src="{{ asset('classes/' ~ m.character.gameClass.name|lower ~ '.png') }}"
-                                                     alt="{{ m.character.gameClass.name }}"
-                                                     class="w-4 h-4 rounded-full object-cover shrink-0">
-                                                {{ m.character.name }}
-                                                <span class="mx-0.5 text-gray-700">·</span>
-                                                {{ m.guild.server.name }}
+                                            <div class="text-xs text-gray-500 mt-0.5">
+                                                {{ item.guild.server.name }}
+                                                {% if item.count > 1 %}
+                                                    <span class="mx-0.5 text-gray-700">·</span>
+                                                    {{ item.count }} personnages
+                                                {% endif %}
                                             </div>
                                         </div>
-                                        {% if m.status.value == 'leader' %}
+                                        {% if item.isLeader %}
                                             <span class="text-xs font-medium bg-yellow-900/40 text-yellow-400 border border-yellow-800/40 rounded-full px-2 py-0.5 shrink-0">
                                                 ⭐ Meneur
                                             </span>
-                                        {% else %}
-                                            <span class="text-xs text-gray-600 shrink-0">{{ m.status.label() }}</span>
                                         {% endif %}
                                     </a>
                                 </li>
