@@ -255,14 +255,14 @@ class RaidController extends AbstractController
 
         $acceptedCharacters  = [];
         $pendingApplications = [];
-        if ($userId) {
-            foreach ($raid->getParticipants() as $p) {
-                if ((int) $p->getCharacter()->getUser()->getId() === $userId) {
-                    if ($p->getStatus() === RaidParticipantStatus::Accepted) {
-                        $acceptedCharacters[] = $p->getCharacter();
-                    } else {
-                        $pendingApplications[] = $p;
-                    }
+        $participantsByUser  = [];
+        foreach ($raid->getParticipants() as $p) {
+            $participantsByUser[(int) $p->getCharacter()->getUser()->getId()] = $p->getCharacter();
+            if ($userId && (int) $p->getCharacter()->getUser()->getId() === $userId) {
+                if ($p->getStatus() === RaidParticipantStatus::Accepted) {
+                    $acceptedCharacters[] = $p->getCharacter();
+                } else {
+                    $pendingApplications[] = $p;
                 }
             }
         }
@@ -273,6 +273,7 @@ class RaidController extends AbstractController
             'isCreator'           => $isCreator,
             'acceptedCharacters'  => $acceptedCharacters,
             'pendingApplications' => $pendingApplications,
+            'participantsByUser'  => $participantsByUser,
             'rootComments'        => $commentRepo->findRootByRaid($raid),
         ]);
     }
