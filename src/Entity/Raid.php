@@ -50,10 +50,14 @@ class Raid
     #[ORM\OrderBy(['orderNumber' => 'ASC'])]
     private Collection $enigmes;
 
+    #[ORM\OneToMany(targetEntity: RaidComment::class, mappedBy: 'raid', cascade: ['remove'], orphanRemoval: true)]
+    private Collection $comments;
+
     public function __construct()
     {
         $this->participants = new ArrayCollection();
         $this->enigmes      = new ArrayCollection();
+        $this->comments     = new ArrayCollection();
         $this->createdAt    = new \DateTimeImmutable();
     }
 
@@ -99,6 +103,8 @@ class Raid
     }
 
     public function getEnigmes(): Collection { return $this->enigmes; }
+
+    public function getComments(): Collection { return $this->comments; }
 
     public function getExpectedEndTime(): ?\DateTimeImmutable
     {

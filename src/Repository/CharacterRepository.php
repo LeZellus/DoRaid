@@ -71,6 +71,25 @@ class CharacterRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /** All user characters on the same server as the raid (guild members or external) that haven't joined yet */
+    public function findAllEligibleForRaid(User $user, Raid $raid): array
+    {
+        return $this->createQueryBuilder('c')
+            ->leftJoin(
+                RaidParticipant::class, 'rp',
+                'WITH', 'rp.character = c AND rp.raid = :raid'
+            )
+            ->where('c.user = :user')
+            ->andWhere('c.server = :server')
+            ->andWhere('rp.id IS NULL')
+            ->setParameter('user', $user)
+            ->setParameter('raid', $raid)
+            ->setParameter('server', $raid->getGuild()->getServer())
+            ->orderBy('c.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     /** @return Character[] */
     public function findByUser(User $user): array
     {

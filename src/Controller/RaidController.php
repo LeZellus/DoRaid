@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Enigme;
-use App\Entity\MemberStatus;
 use App\Entity\Raid;
 use App\Entity\RaidParticipant;
 use App\Entity\RaidParticipantStatus;
@@ -12,6 +11,7 @@ use App\Form\RaidType;
 use App\Repository\CharacterRepository;
 use App\Repository\EnigmeTemplateRepository;
 use App\Repository\GuildMembershipRepository;
+use App\Repository\RaidCommentRepository;
 use App\Repository\GuildRepository;
 use App\Repository\RaidRepository;
 use App\Repository\RaidTemplateRepository;
@@ -187,6 +187,7 @@ class RaidController extends AbstractController
         Raid $raid,
         CharacterRepository $charRepo,
         EnigmeTemplateRepository $enigmeTemplateRepo,
+        RaidCommentRepository $commentRepo,
         EntityManagerInterface $em,
     ): Response {
         // Visibility check: private raids are guild-member only
@@ -225,7 +226,7 @@ class RaidController extends AbstractController
 
         $currentUser = $this->getUser();
         $userId      = $currentUser ? (int) $currentUser->getId() : null;
-        $eligible    = $currentUser ? $charRepo->findEligibleForRaid($currentUser, $raid) : [];
+        $eligible    = $currentUser ? $charRepo->findAllEligibleForRaid($currentUser, $raid) : [];
         $isCreator   = $userId && (int) $raid->getCreator()->getUser()->getId() === $userId;
 
         $acceptedCharacters  = [];
@@ -248,6 +249,7 @@ class RaidController extends AbstractController
             'isCreator'           => $isCreator,
             'acceptedCharacters'  => $acceptedCharacters,
             'pendingApplications' => $pendingApplications,
+            'rootComments'        => $commentRepo->findRootByRaid($raid),
         ]);
     }
 
@@ -293,9 +295,8 @@ class RaidController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        $membership = $character->getMembership();
-        if (!$membership || $membership->getGuild()->getId() !== $raid->getGuild()->getId() || $membership->getStatus() === MemberStatus::Pending) {
-            $this->addFlash('error', 'Ce personnage n\'est pas membre confirmé de cette guilde.');
+        if ($character->getServer()->getId() !== $raid->getGuild()->getServer()->getId()) {
+            $this->addFlash('error', 'Ce personnage n\'est pas sur le même serveur que ce raid.');
             return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
         }
 
