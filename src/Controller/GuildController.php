@@ -52,6 +52,26 @@ class GuildController extends AbstractController
     #[Route('/creer', name: 'app_guild_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $em, GuildRepository $repo, CharacterRepository $charRepo): Response
     {
+        try {
+            return $this->doNew($request, $em, $repo, $charRepo);
+        } catch (\Throwable $e) {
+            $logDir = dirname(__DIR__, 2) . '/var/log';
+            if (!is_dir($logDir)) {
+                @mkdir($logDir, 0775, true);
+            }
+            @file_put_contents(
+                $logDir . '/guild_debug.log',
+                date('Y-m-d H:i:s') . ' ' . get_class($e) . ': ' . $e->getMessage()
+                    . ' in ' . $e->getFile() . ':' . $e->getLine() . "\n"
+                    . $e->getTraceAsString() . "\n---\n",
+                FILE_APPEND
+            );
+            throw $e;
+        }
+    }
+
+    private function doNew(Request $request, EntityManagerInterface $em, GuildRepository $repo, CharacterRepository $charRepo): Response
+    {
         $user       = $this->getUser();
         $characters = $charRepo->findByUser($user);
 
