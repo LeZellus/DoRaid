@@ -26,6 +26,19 @@
         {% endif %}
     </div>
 
+    {# ── Bandeau demandes en attente (meneur uniquement) ── #}
+    {% if isLeader and guild.pending|length > 0 %}
+        <a href="{{ path('app_guild_members', {slug: guild.slug}) }}"
+           class="flex items-center gap-3 px-4 py-3 mb-6 rounded-xl bg-yellow-900/30 border border-yellow-700/40 text-yellow-200 hover:bg-yellow-900/50 transition">
+            <span class="text-lg shrink-0">⚠</span>
+            <span class="text-sm">
+                <strong>{{ guild.pending|length }} demande{{ guild.pending|length > 1 ? 's' : '' }} en attente</strong>
+                pour rejoindre la guilde.
+            </span>
+            <span class="ml-auto text-xs text-yellow-400/70 shrink-0">Voir les membres →</span>
+        </a>
+    {% endif %}
+
     {# ── Hero ── #}
     <div class="rounded-2xl bg-gradient-to-br from-indigo-950/70 via-gray-900 to-gray-950 border border-indigo-900/30 px-8 py-7 mb-8">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">

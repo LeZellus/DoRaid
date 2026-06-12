@@ -24,7 +24,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class GuildController extends AbstractController
 {
     #[Route('', name: 'app_guild_index')]
-    public function index(GuildRepository $repo): Response
+    public function index(GuildRepository $repo, GuildMembershipRepository $membershipRepo): Response
     {
         $guilds = $repo->findAllOrdered();
 
@@ -33,7 +33,19 @@ class GuildController extends AbstractController
             $byServer[$guild->getServer()->getName()][] = $guild;
         }
 
-        return $this->render('guild/index.html.twig', ['byServer' => $byServer]);
+        $leaderGuildIds = [];
+        if ($this->getUser()) {
+            foreach ($membershipRepo->findConfirmedForUser($this->getUser()) as $m) {
+                if ($m->getStatus() === MemberStatus::Leader) {
+                    $leaderGuildIds[] = $m->getGuild()->getId();
+                }
+            }
+        }
+
+        return $this->render('guild/index.html.twig', [
+            'byServer'       => $byServer,
+            'leaderGuildIds' => $leaderGuildIds,
+        ]);
     }
 
     #[IsGranted('ROLE_USER')]
