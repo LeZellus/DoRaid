@@ -181,7 +181,7 @@
                         <p class="text-gray-500 text-sm">Aucun participant confirmé pour l'instant.</p>
                     </div>
                 {% else %}
-                    <ul class="divide-y divide-gray-800/60" style="max-height:16rem;overflow-y:auto">
+                    <ul class="divide-y divide-gray-800/60 overflow-y-auto" style="max-height:16rem">
                         {% for p in raid.acceptedParticipants %}
                             {% set isGuildMember = p.character.membership is not null
                                 and p.character.membership.guild.id == raid.guild.id
@@ -249,7 +249,7 @@
                         <p class="text-gray-500 text-sm">Personne n'a encore candidaté.</p>
                     </div>
                 {% else %}
-                    <ul class="divide-y divide-gray-800/60" style="max-height:16rem;overflow-y:auto">
+                    <ul class="divide-y divide-gray-800/60 overflow-y-auto" style="max-height:16rem">
                         {% for p in raid.pendingParticipants %}
                             {% set isGuildMember = p.character.membership is not null
                                 and p.character.membership.guild.id == raid.guild.id
