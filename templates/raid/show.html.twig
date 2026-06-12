@@ -330,6 +330,13 @@
                                 {{ ui.button('Candidater', 'primary', 'submit', 'py-2 px-4 text-sm shrink-0') }}
                             </form>
                         </div>
+                    {% elseif pendingApplications is empty and acceptedCharacters is empty %}
+                        <div class="border-t border-gray-800/60 px-6 py-3">
+                            <p class="text-xs text-center text-orange-400/90">
+                                Vous n'avez aucun personnage sur le serveur <strong class="text-orange-300">{{ raid.guild.server }}</strong>.
+                                <a href="{{ path('app_character_new') }}" class="underline hover:text-orange-200 ml-1">Créer un personnage →</a>
+                            </p>
+                        </div>
                     {% endif %}
                 {% endif %}
             </div>
