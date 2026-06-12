@@ -13,6 +13,7 @@ use App\Repository\EnigmeTemplateRepository;
 use App\Repository\GuildMembershipRepository;
 use App\Repository\RaidCommentRepository;
 use App\Repository\GuildRepository;
+use App\Repository\RaidParticipantRepository;
 use App\Repository\RaidRepository;
 use App\Repository\RaidTemplateRepository;
 use App\Repository\ServerRepository;
@@ -33,26 +34,35 @@ class RaidController extends AbstractController
         RaidRepository $raidRepo,
         ServerRepository $serverRepo,
         GuildMembershipRepository $membershipRepo,
+        RaidParticipantRepository $participantRepo,
         EntityManagerInterface $em,
     ): Response {
         $user       = $this->getUser();
         $serverName = $request->query->get('server');
+        $filterType = $request->query->get('type');
 
         $userGuildIds = [];
-        $userGuilds   = [];
         if ($user) {
             foreach ($membershipRepo->findConfirmedForUser($user) as $m) {
                 $userGuildIds[] = $m->getGuild()->getId();
-                $userGuilds[$m->getGuild()->getId()] = $m->getGuild();
             }
         }
 
         $filterNotFull = (bool) $request->query->get('not_full');
         $filterSoon    = (bool) $request->query->get('soon');
 
-        $now     = new \DateTimeImmutable();
-        $raids   = $raidRepo->findVisibleForUser($userGuildIds, $serverName ?: null);
-        $servers = $serverRepo->findAll();
+        $now   = new \DateTimeImmutable();
+        $raids = $raidRepo->findVisibleForUser($userGuildIds, $serverName ?: null);
+
+        // Collecte les types disponibles avant tout filtre (pour les options du filtre)
+        $raidTypes = [];
+        foreach ($raids as $r) {
+            $name = $r->getRaidTemplate()->getName();
+            if (!isset($raidTypes[$name])) {
+                $raidTypes[$name] = $name;
+            }
+        }
+        ksort($raidTypes);
 
         // Auto-close raids whose scheduled duration has elapsed
         $flush = false;
@@ -70,6 +80,10 @@ class RaidController extends AbstractController
         }
 
         $open = array_filter($raids, fn($r) => $r->getStatus() === RaidStatus::Open);
+
+        if ($filterType) {
+            $open = array_filter($open, fn($r) => $r->getRaidTemplate()->getName() === $filterType);
+        }
 
         // À venir : scheduledAt dans le futur
         $upcomingRaids = array_values(array_filter($open, fn($r) => $r->getScheduledAt() && $r->getScheduledAt() > $now));
@@ -96,15 +110,20 @@ class RaidController extends AbstractController
             $ongoingRaids  = [];
         }
 
+        $myParticipations = $user ? $participantRepo->findOpenParticipationsForUser($user) : [];
+
         return $this->render('raid/index.html.twig', [
-            'upcomingRaids'  => $upcomingRaids,
-            'startedRaids'   => $startedRaids,
-            'ongoingRaids'   => $ongoingRaids,
-            'servers'        => $servers,
-            'currentServer'  => $serverName,
-            'filterNotFull'  => $filterNotFull,
-            'filterSoon'     => $filterSoon,
-            'userGuildIds'   => $userGuildIds,
+            'upcomingRaids'    => $upcomingRaids,
+            'startedRaids'     => $startedRaids,
+            'ongoingRaids'     => $ongoingRaids,
+            'servers'          => $serverRepo->findAll(),
+            'currentServer'    => $serverName,
+            'filterNotFull'    => $filterNotFull,
+            'filterSoon'       => $filterSoon,
+            'filterType'       => $filterType,
+            'raidTypes'        => array_keys($raidTypes),
+            'userGuildIds'     => $userGuildIds,
+            'myParticipations' => $myParticipations,
         ]);
     }
 

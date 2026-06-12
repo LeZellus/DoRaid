@@ -69,6 +69,26 @@ class RaidParticipantRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    /** @return RaidParticipant[] Participations sur des raids ouverts pour un utilisateur */
+    public function findOpenParticipationsForUser(User $user): array
+    {
+        return $this->createQueryBuilder('rp')
+            ->addSelect('c', 'r', 'rt', 'g', 's')
+            ->join('rp.character', 'c')
+            ->join('rp.raid', 'r')
+            ->join('r.raidTemplate', 'rt')
+            ->join('r.guild', 'g')
+            ->join('g.server', 's')
+            ->where('c.user = :user')
+            ->andWhere('r.status = :open')
+            ->setParameter('user', $user)
+            ->setParameter('open', \App\Entity\RaidStatus::Open)
+            ->orderBy('r.scheduledAt', 'ASC')
+            ->addOrderBy('r.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
     /** Vérifie si un utilisateur a candidaté (peu importe le statut) sur un raid */
     public function hasApplied(User $user, Raid $raid): bool
     {
