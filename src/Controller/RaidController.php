@@ -311,6 +311,14 @@ class RaidController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
+        if (!$raid->isPublic()) {
+            $isMember = !empty($charRepo->findConfirmedInGuild($this->getUser(), $raid->getGuild()));
+            if (!$isMember) {
+                $this->addFlash('error', 'Ce raid est privé et réservé aux membres de la guilde.');
+                return $this->redirectToRoute('app_guild_show', ['slug' => $raid->getGuild()->getSlug()]);
+            }
+        }
+
         if ($raid->getStatus() !== RaidStatus::Open) {
             $this->addFlash('error', 'Ce raid est terminé.');
             return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
