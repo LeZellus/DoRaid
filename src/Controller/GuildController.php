@@ -23,6 +23,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/guildes')]
 class GuildController extends AbstractController
 {
+    public function __construct(private CharacterRepository $charRepo)
+    {
+    }
+
     #[Route('', name: 'app_guild_index')]
     public function index(GuildRepository $repo, GuildMembershipRepository $membershipRepo): Response
     {
@@ -52,25 +56,60 @@ class GuildController extends AbstractController
     #[Route('/creer', name: 'app_guild_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $em, GuildRepository $repo): Response
     {
+        $user       = $this->getUser();
+        $characters = $this->charRepo->findByUser($user);
+
+        if (empty($characters)) {
+            $this->addFlash('error', 'Vous devez d\'abord créer un personnage avant de pouvoir fonder une guilde.');
+            return $this->redirectToRoute('app_character_new');
+        }
+
+        $charsByServerId = [];
+        foreach ($characters as $c) {
+            $charsByServerId[$c->getServer()->getId()][] = $c;
+        }
+
         $guild = new Guild();
-        $form = $this->createForm(GuildType::class, $guild);
+        $form  = $this->createForm(GuildType::class, $guild);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $guild->setOwner($this->getUser());
+            $characterId = (int) $request->request->get('character_id');
+            $character   = $characterId > 0 ? $this->charRepo->find($characterId) : null;
+
+            if (!$character || (int) $character->getUser()->getId() !== (int) $user->getId()) {
+                $this->addFlash('error', 'Sélectionnez un personnage meneur pour cette guilde.');
+                return $this->render('guild/new.html.twig', [
+                    'form' => $form, 'charsByServerId' => $charsByServerId, 'submittedCharId' => $characterId,
+                ]);
+            }
+
+            if ((int) $character->getServer()->getId() !== (int) $guild->getServer()->getId()) {
+                $this->addFlash('error', 'Ce personnage n\'est pas sur le serveur sélectionné pour la guilde.');
+                return $this->render('guild/new.html.twig', [
+                    'form' => $form, 'charsByServerId' => $charsByServerId, 'submittedCharId' => $characterId,
+                ]);
+            }
+
+            $guild->setOwner($user);
             $guild->setSlug($this->uniqueSlug($guild->getName(), $repo));
             $em->persist($guild);
+            $em->persist(
+                (new GuildMembership())->setGuild($guild)->setCharacter($character)->setStatus(MemberStatus::Leader)
+            );
             $em->flush();
 
-            $this->addFlash('success', 'Guilde créée ! Choisissez votre personnage meneur ci-dessous.');
+            $this->addFlash('success', $character->getName() . ' est maintenant meneur de ' . $guild->getName() . ' !');
             return $this->redirectToRoute('app_guild_show', ['slug' => $guild->getSlug()]);
         }
 
-        return $this->render('guild/new.html.twig', ['form' => $form]);
+        return $this->render('guild/new.html.twig', [
+            'form' => $form, 'charsByServerId' => $charsByServerId, 'submittedCharId' => 0,
+        ]);
     }
 
     #[Route('/{slug}', name: 'app_guild_show')]
-    public function show(Guild $guild, CharacterRepository $charRepo, RaidRepository $raidRepo, EntityManagerInterface $em): Response
+    public function show(Guild $guild, RaidRepository $raidRepo, EntityManagerInterface $em): Response
     {
         $currentUser = $this->getUser();
         $isOwner     = $currentUser && $guild->getOwner()->getId() === $currentUser->getId();
@@ -90,8 +129,8 @@ class GuildController extends AbstractController
 
         $isLeader = $this->isLeaderOf($guild);
 
-        $eligible            = $currentUser ? $charRepo->findEligibleForGuild($currentUser, $guild->getServer()) : [];
-        $confirmedCharacters = $currentUser ? $charRepo->findConfirmedInGuild($currentUser, $guild) : [];
+        $eligible            = $currentUser ? $this->charRepo->findEligibleForGuild($currentUser, $guild->getServer()) : [];
+        $confirmedCharacters = $currentUser ? $this->charRepo->findConfirmedInGuild($currentUser, $guild) : [];
         $isMember            = $isLeader || !empty($confirmedCharacters);
         $allRaids      = array_filter(
             $raidRepo->findByGuild($guild),
@@ -127,7 +166,7 @@ class GuildController extends AbstractController
 
     #[IsGranted('ROLE_USER')]
     #[Route('/{slug}/rejoindre', name: 'app_guild_join', methods: ['POST'])]
-    public function join(Guild $guild, Request $request, CharacterRepository $charRepo, GuildMembershipRepository $membershipRepo, EntityManagerInterface $em): Response
+    public function join(Guild $guild, Request $request, GuildMembershipRepository $membershipRepo, EntityManagerInterface $em): Response
     {
         if (!$this->isCsrfTokenValid('join_guild_' . $guild->getId(), $request->request->get('_token'))) {
             $this->addFlash('error', 'Token de sécurité invalide. Rechargez la page et réessayez.');
@@ -136,7 +175,7 @@ class GuildController extends AbstractController
 
         $currentUser = $this->getUser();
         $characterId = (int) $request->request->get('character_id');
-        $character   = $characterId > 0 ? $charRepo->find($characterId) : null;
+        $character   = $characterId > 0 ? $this->charRepo->find($characterId) : null;
 
         if (!$character || (int) $character->getUser()->getId() !== (int) $currentUser->getId()) {
             $this->addFlash('error', 'Personnage invalide.');

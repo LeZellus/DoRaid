@@ -15,9 +15,88 @@
         {{ form_start(form, {attr: {class: 'space-y-5'}}) }}
             {{ form_row(form.name) }}
             {{ form_row(form.server) }}
-            {{ ui.button('Créer la guilde', 'primary', 'submit', 'w-full mt-2') }}
+
+            {# ── Personnage meneur ── #}
+            <div id="leader-section" class="hidden">
+                <p class="text-sm font-medium text-gray-300 mb-3">Personnage meneur <span class="text-red-400">*</span></p>
+
+                {% for serverId, chars in charsByServerId %}
+                    <div class="character-group space-y-2" data-server="{{ serverId }}" style="display:none">
+                        {% for char in chars %}
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input type="radio" name="character_id" value="{{ char.id }}"
+                                       class="accent-indigo-500 w-4 h-4 shrink-0"
+                                       {{ submittedCharId is defined and submittedCharId == char.id ? 'checked' : '' }}>
+                                <span class="text-sm text-gray-200 group-hover:text-white transition">
+                                    {{ char.name }}
+                                    <span class="text-gray-500 text-xs">· {{ char.gameClass.name }}</span>
+                                </span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                <div id="no-char-warning" class="hidden">
+                    <div class="flex items-start gap-3 p-3 rounded-lg bg-yellow-950/40 border border-yellow-800/40 text-sm text-yellow-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mt-0.5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>
+                            Aucun personnage sur ce serveur.
+                            <a href="{{ path('app_character_new') }}" class="underline hover:text-yellow-100 transition">
+                                Créez-en un d'abord
+                            </a>
+                            puis revenez créer votre guilde.
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" id="submit-btn"
+                    class="w-full mt-2 px-4 py-2 rounded-lg font-semibold text-sm transition
+                           bg-indigo-600 hover:bg-indigo-500 text-white
+                           disabled:opacity-40 disabled:cursor-not-allowed">
+                Créer la guilde
+            </button>
         {{ form_end(form) }}
 
     </div>
 </div>
+
+<script>
+(function () {
+    var serverSelect  = document.querySelector('select[name="guild[server]"]');
+    var leaderSection = document.getElementById('leader-section');
+    var noCharWarning = document.getElementById('no-char-warning');
+    var submitBtn     = document.getElementById('submit-btn');
+    var groups        = document.querySelectorAll('.character-group');
+
+    if (!serverSelect) return;
+
+    function update() {
+        var serverId = serverSelect.value;
+
+        leaderSection.classList.toggle('hidden', !serverId);
+
+        if (!serverId) {
+            submitBtn.disabled = true;
+            return;
+        }
+
+        var found = false;
+        groups.forEach(function (g) {
+            var match = g.dataset.server === serverId;
+            g.style.display = match ? '' : 'none';
+            if (match) found = true;
+            if (!match) g.querySelectorAll('input[type="radio"]').forEach(function (r) { r.checked = false; });
+        });
+
+        noCharWarning.classList.toggle('hidden', found);
+        submitBtn.disabled = !found;
+    }
+
+    serverSelect.addEventListener('change', update);
+    update();
+})();
+</script>
 {% endblock %}
