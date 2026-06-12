@@ -2,22 +2,22 @@
 
 namespace App\Controller;
 
-use App\Entity\Enigme;
 use App\Entity\Raid;
 use App\Entity\RaidParticipant;
 use App\Entity\RaidParticipantStatus;
 use App\Entity\RaidStatus;
 use App\Form\RaidType;
 use App\Repository\CharacterRepository;
-use App\Repository\EnigmeTemplateRepository;
 use App\Repository\GuildMembershipRepository;
-use App\Repository\RaidCommentRepository;
 use App\Repository\GuildRepository;
+use App\Repository\RaidCommentRepository;
 use App\Repository\RaidParticipantRepository;
 use App\Repository\RaidRepository;
 use App\Repository\RaidTemplateRepository;
 use App\Repository\ServerRepository;
 use App\Service\DiscordNotifier;
+use App\Service\EnigmeSyncService;
+use App\Traits\CsrfGuardTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,6 +28,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/raids')]
 class RaidController extends AbstractController
 {
+    use CsrfGuardTrait;
+
+    public function __construct(private readonly EnigmeSyncService $enigmeSyncService) {}
+
     #[Route('', name: 'app_raid_index')]
     public function index(
         Request $request,
@@ -35,7 +39,6 @@ class RaidController extends AbstractController
         ServerRepository $serverRepo,
         GuildMembershipRepository $membershipRepo,
         RaidParticipantRepository $participantRepo,
-        EntityManagerInterface $em,
     ): Response {
         $user       = $this->getUser();
         $serverName = $request->query->get('server');
@@ -54,7 +57,6 @@ class RaidController extends AbstractController
         $now   = new \DateTimeImmutable();
         $raids = $raidRepo->findVisibleForUser($userGuildIds, $serverName ?: null);
 
-        // Collecte les types disponibles avant tout filtre (pour les options du filtre)
         $raidTypes = [];
         foreach ($raids as $r) {
             $name = $r->getRaidTemplate()->getName();
@@ -64,36 +66,18 @@ class RaidController extends AbstractController
         }
         ksort($raidTypes);
 
-        // Auto-close raids whose scheduled duration has elapsed
-        $flush = false;
-        foreach ($raids as $r) {
-            if ($r->getStatus() === RaidStatus::Open) {
-                $end = $r->getExpectedEndTime();
-                if ($end !== null && $end <= $now) {
-                    $r->setStatus(RaidStatus::Closed);
-                    $flush = true;
-                }
-            }
-        }
-        if ($flush) {
-            $em->flush();
-        }
-
         $open = array_filter($raids, fn($r) => $r->getStatus() === RaidStatus::Open);
 
         if ($filterType) {
             $open = array_filter($open, fn($r) => $r->getRaidTemplate()->getName() === $filterType);
         }
 
-        // À venir : scheduledAt dans le futur
         $upcomingRaids = array_values(array_filter($open, fn($r) => $r->getScheduledAt() && $r->getScheduledAt() > $now));
         usort($upcomingRaids, fn($a, $b) => $a->getScheduledAt() <=> $b->getScheduledAt());
 
-        // Commencés : scheduledAt dans le passé
         $startedRaids = array_values(array_filter($open, fn($r) => $r->getScheduledAt() && $r->getScheduledAt() <= $now));
         usort($startedRaids, fn($a, $b) => $b->getScheduledAt() <=> $a->getScheduledAt());
 
-        // En cours : pas de date planifiée
         $ongoingRaids = array_values(array_filter($open, fn($r) => !$r->getScheduledAt()));
         usort($ongoingRaids, fn($a, $b) => $b->getCreatedAt() <=> $a->getCreatedAt());
 
@@ -135,7 +119,6 @@ class RaidController extends AbstractController
         GuildRepository $guildRepo,
         CharacterRepository $charRepo,
         RaidTemplateRepository $templateRepo,
-        EnigmeTemplateRepository $enigmeTemplateRepo,
         DiscordNotifier $discord,
     ): Response {
         $guild = $guildRepo->find((int) $request->query->get('guild'));
@@ -168,23 +151,14 @@ class RaidController extends AbstractController
                 ]);
             }
 
-            if (!$character || $character->getUser() !== $this->getUser()) {
+            if (!$character || $character->getUser()->getId() !== $this->getUser()->getId()) {
                 throw $this->createAccessDeniedException();
             }
 
             $raid->setGuild($guild)->setCreator($character)->setRaidTemplate($template);
             $em->persist($raid);
             $em->persist((new RaidParticipant())->setRaid($raid)->setCharacter($character)->setStatus(RaidParticipantStatus::Accepted));
-
-            // Auto-create enigmas from the template definitions
-            foreach ($enigmeTemplateRepo->findByTemplate($template) as $enigmeTemplate) {
-                $em->persist((new Enigme())
-                    ->setRaid($raid)
-                    ->setOrderNumber($enigmeTemplate->getOrderNumber())
-                    ->setSourceTemplate($enigmeTemplate)
-                );
-            }
-
+            $this->enigmeSyncService->syncFromTemplate($raid, $em);
             $em->flush();
 
             $discord->notifyRaidCreated($raid);
@@ -206,12 +180,9 @@ class RaidController extends AbstractController
     {
         if ($r = $this->checkRaidAccess($raid, $charRepo)) return $r;
 
-        $currentUser = $this->getUser();
-        $isCreator   = $currentUser && $raid->isCreatedBy($currentUser);
-
         return $this->render('raid/participants.html.twig', [
             'raid'      => $raid,
-            'isCreator' => $isCreator,
+            'isCreator' => $this->getUser() && $raid->isCreatedBy($this->getUser()),
         ]);
     }
 
@@ -219,29 +190,12 @@ class RaidController extends AbstractController
     public function show(
         Raid $raid,
         CharacterRepository $charRepo,
-        EnigmeTemplateRepository $enigmeTemplateRepo,
         RaidCommentRepository $commentRepo,
         EntityManagerInterface $em,
     ): Response {
         if ($r = $this->checkRaidAccess($raid, $charRepo)) return $r;
 
-        // Sync: add any enigme templates added after the raid was created
-        $existingIds = array_map(
-            fn($e) => $e->getSourceTemplate()->getId(),
-            $raid->getEnigmes()->toArray()
-        );
-        $needsFlush = false;
-        foreach ($enigmeTemplateRepo->findByTemplate($raid->getRaidTemplate()) as $et) {
-            if (!in_array($et->getId(), $existingIds, true)) {
-                $em->persist((new Enigme())
-                    ->setRaid($raid)
-                    ->setOrderNumber($et->getOrderNumber())
-                    ->setSourceTemplate($et)
-                );
-                $needsFlush = true;
-            }
-        }
-        if ($needsFlush) {
+        if ($this->enigmeSyncService->syncFromTemplate($raid, $em)) {
             $em->flush();
         }
 
@@ -310,19 +264,14 @@ class RaidController extends AbstractController
             return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
         }
 
-        return $this->render('raid/edit.html.twig', [
-            'form' => $form,
-            'raid' => $raid,
-        ]);
+        return $this->render('raid/edit.html.twig', ['form' => $form, 'raid' => $raid]);
     }
 
     #[IsGranted('ROLE_USER')]
     #[Route('/{id}/candidater', name: 'app_raid_apply', methods: ['POST'])]
     public function apply(Raid $raid, Request $request, CharacterRepository $charRepo, EntityManagerInterface $em): Response
     {
-        if (!$this->isCsrfTokenValid('apply_raid_' . $raid->getId(), $request->request->get('_token'))) {
-            throw $this->createAccessDeniedException();
-        }
+        $this->requireCsrfToken('apply_raid_' . $raid->getId(), $request);
 
         if (!$raid->isPublic()) {
             $isMember = !empty($charRepo->findConfirmedInGuild($this->getUser(), $raid->getGuild()));
@@ -370,10 +319,7 @@ class RaidController extends AbstractController
     public function accept(RaidParticipant $participant, Request $request, EntityManagerInterface $em): Response
     {
         $raid = $participant->getRaid();
-
-        if (!$this->isCsrfTokenValid('accept_' . $participant->getId(), $request->request->get('_token'))) {
-            throw $this->createAccessDeniedException();
-        }
+        $this->requireCsrfToken('accept_' . $participant->getId(), $request);
 
         if (!$raid->isCreatedBy($this->getUser())) {
             throw $this->createAccessDeniedException();
@@ -390,9 +336,7 @@ class RaidController extends AbstractController
     #[Route('/{id}/clore', name: 'app_raid_close', methods: ['POST'])]
     public function close(Raid $raid, Request $request, EntityManagerInterface $em): Response
     {
-        if (!$this->isCsrfTokenValid('close_raid_' . $raid->getId(), $request->request->get('_token'))) {
-            throw $this->createAccessDeniedException();
-        }
+        $this->requireCsrfToken('close_raid_' . $raid->getId(), $request);
 
         if (!$raid->isCreatedBy($this->getUser())) {
             throw $this->createAccessDeniedException();
@@ -410,10 +354,7 @@ class RaidController extends AbstractController
     public function kick(RaidParticipant $participant, Request $request, EntityManagerInterface $em): Response
     {
         $raid = $participant->getRaid();
-
-        if (!$this->isCsrfTokenValid('kick_' . $participant->getId(), $request->request->get('_token'))) {
-            throw $this->createAccessDeniedException();
-        }
+        $this->requireCsrfToken('kick_' . $participant->getId(), $request);
 
         if (!$raid->isCreatedBy($this->getUser())) {
             throw $this->createAccessDeniedException();
@@ -431,9 +372,7 @@ class RaidController extends AbstractController
     #[Route('/{id}/supprimer', name: 'app_raid_delete', methods: ['POST'])]
     public function delete(Raid $raid, Request $request, EntityManagerInterface $em): Response
     {
-        if (!$this->isCsrfTokenValid('delete_raid_' . $raid->getId(), $request->request->get('_token'))) {
-            throw $this->createAccessDeniedException();
-        }
+        $this->requireCsrfToken('delete_raid_' . $raid->getId(), $request);
 
         if (!$raid->isCreatedBy($this->getUser())) {
             throw $this->createAccessDeniedException();

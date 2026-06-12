@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Raid;
 use App\Entity\RaidComment;
 use App\Repository\RaidParticipantRepository;
+use App\Traits\CsrfGuardTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,14 +17,14 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/raids')]
 class RaidCommentController extends AbstractController
 {
-    public function __construct(private RaidParticipantRepository $participantRepo) {}
+    use CsrfGuardTrait;
+
+    public function __construct(private readonly RaidParticipantRepository $participantRepo) {}
 
     #[Route('/{id}/commenter', name: 'app_raid_comment_new', methods: ['POST'])]
     public function new(Raid $raid, Request $request, EntityManagerInterface $em): Response
     {
-        if (!$this->isCsrfTokenValid('comment_' . $raid->getId(), $request->request->get('_token'))) {
-            throw $this->createAccessDeniedException();
-        }
+        $this->requireCsrfToken('comment_' . $raid->getId(), $request);
 
         if (!$this->hasApplied($raid)) {
             throw $this->createAccessDeniedException('Vous devez postuler au raid pour commenter.');
@@ -49,9 +50,7 @@ class RaidCommentController extends AbstractController
     {
         $raid = $parent->getRaid();
 
-        if (!$this->isCsrfTokenValid('reply_' . $parent->getId(), $request->request->get('_token'))) {
-            throw $this->createAccessDeniedException();
-        }
+        $this->requireCsrfToken('reply_' . $parent->getId(), $request);
 
         if (!$this->hasApplied($raid)) {
             throw $this->createAccessDeniedException('Vous devez postuler au raid pour commenter.');
@@ -83,9 +82,7 @@ class RaidCommentController extends AbstractController
     {
         $raid = $comment->getRaid();
 
-        if (!$this->isCsrfTokenValid('delete_comment_' . $comment->getId(), $request->request->get('_token'))) {
-            throw $this->createAccessDeniedException();
-        }
+        $this->requireCsrfToken('delete_comment_' . $comment->getId(), $request);
 
         $isAuthor  = $comment->getAuthor()->getId() === $this->getUser()->getId();
         $isCreator = $raid->isCreatedBy($this->getUser());

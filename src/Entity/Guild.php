@@ -117,6 +117,17 @@ class Guild
         );
     }
 
+    public function isLeaderOf(User $user): bool
+    {
+        foreach ($this->memberships as $m) {
+            if ($m->getStatus() === MemberStatus::Leader
+                && $m->getCharacter()->getUser()->getId() === $user->getId()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function getRaids(): Collection { return $this->raids; }
 
     public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }

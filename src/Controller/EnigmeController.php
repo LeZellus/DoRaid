@@ -9,6 +9,8 @@ use App\Entity\EnigmeImage;
 use App\Entity\Raid;
 use App\Entity\RaidStatus;
 use App\Repository\RaidParticipantRepository;
+use App\Service\FileUploadService;
+use App\Traits\CsrfGuardTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -20,10 +22,13 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class EnigmeController extends AbstractController
 {
+    use CsrfGuardTrait;
+
     public function __construct(
         #[Autowire('%kernel.project_dir%')]
-        private string $projectDir,
-        private RaidParticipantRepository $participantRepo,
+        private readonly string $projectDir,
+        private readonly RaidParticipantRepository $participantRepo,
+        private readonly FileUploadService $fileUpload,
     ) {}
 
     #[Route('/enigmes/{id}', name: 'app_enigme_show', methods: ['GET'])]
@@ -50,6 +55,7 @@ class EnigmeController extends AbstractController
         }
 
         $file = $request->files->get('image');
+
         if (!$file) {
             return new JsonResponse(['success' => false, 'error' => 'Aucun fichier reçu — vérifiez upload_max_filesize dans php.ini (actuel : ' . ini_get('upload_max_filesize') . ')'], 400);
         }
@@ -72,13 +78,7 @@ class EnigmeController extends AbstractController
         }
 
         $uploadDir = $this->projectDir . '/public/uploads/enigmes/' . $enigme->getId();
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0775, true);
-        }
-
-        $ext      = $file->guessExtension() ?? 'png';
-        $filename = uniqid('img_', true) . '.' . $ext;
-        $file->move($uploadDir, $filename);
+        $filename  = $this->fileUpload->upload($file, $uploadDir, uniqid('img_', true));
 
         $image = (new EnigmeImage())
             ->setEnigme($enigme)

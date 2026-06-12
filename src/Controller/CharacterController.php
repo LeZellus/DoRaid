@@ -6,6 +6,7 @@ use App\Entity\Character;
 use App\Form\CharacterEditType;
 use App\Form\CharacterType;
 use App\Repository\CharacterRepository;
+use App\Traits\CsrfGuardTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
@@ -18,6 +19,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/personnages')]
 class CharacterController extends AbstractController
 {
+    use CsrfGuardTrait;
     #[Route('', name: 'app_character_index')]
     public function index(CharacterRepository $repo): Response
     {
@@ -94,11 +96,10 @@ class CharacterController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        if ($this->isCsrfTokenValid('delete_character_' . $character->getId(), $request->request->get('_token'))) {
-            $em->remove($character);
-            $em->flush();
-            $this->addFlash('success', 'Personnage supprimé.');
-        }
+        $this->requireCsrfToken('delete_character_' . $character->getId(), $request);
+        $em->remove($character);
+        $em->flush();
+        $this->addFlash('success', 'Personnage supprimé.');
 
         return $this->redirectToRoute('app_character_index');
     }

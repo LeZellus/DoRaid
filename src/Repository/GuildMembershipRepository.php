@@ -50,6 +50,22 @@ class GuildMembershipRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /** @return int[] IDs of guilds where $user has a Leader membership */
+    public function findLeaderGuildIdsForUser(User $user): array
+    {
+        $rows = $this->createQueryBuilder('m')
+            ->select('IDENTITY(m.guild) AS guild_id')
+            ->join('m.character', 'c')
+            ->where('c.user = :user')
+            ->andWhere('m.status = :leader')
+            ->setParameter('user', $user)
+            ->setParameter('leader', MemberStatus::Leader)
+            ->getQuery()
+            ->getScalarResult();
+
+        return array_map(fn($r) => (int) $r['guild_id'], $rows);
+    }
+
     /** @return GuildMembership[] */
     public function findByUser(User $user): array
     {

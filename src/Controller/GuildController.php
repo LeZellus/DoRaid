@@ -12,6 +12,8 @@ use App\Repository\CharacterRepository;
 use App\Repository\GuildMembershipRepository;
 use App\Repository\GuildRepository;
 use App\Repository\RaidRepository;
+use App\Service\FileUploadService;
+use App\Traits\CsrfGuardTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -23,28 +25,25 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/guildes')]
 class GuildController extends AbstractController
 {
-    public function __construct(private CharacterRepository $charRepo)
-    {
-    }
+    use CsrfGuardTrait;
+
+    public function __construct(
+        private readonly CharacterRepository $charRepo,
+        private readonly FileUploadService $fileUpload,
+    ) {}
 
     #[Route('', name: 'app_guild_index')]
     public function index(GuildRepository $repo, GuildMembershipRepository $membershipRepo): Response
     {
-        $guilds = $repo->findAllOrdered();
-
+        $guilds   = $repo->findAllOrdered();
         $byServer = [];
         foreach ($guilds as $guild) {
             $byServer[$guild->getServer()->getName()][] = $guild;
         }
 
-        $leaderGuildIds = [];
-        if ($this->getUser()) {
-            foreach ($membershipRepo->findConfirmedForUser($this->getUser()) as $m) {
-                if ($m->getStatus() === MemberStatus::Leader) {
-                    $leaderGuildIds[] = $m->getGuild()->getId();
-                }
-            }
-        }
+        $leaderGuildIds = $this->getUser()
+            ? $membershipRepo->findLeaderGuildIdsForUser($this->getUser())
+            : [];
 
         return $this->render('guild/index.html.twig', [
             'byServer'       => $byServer,
@@ -140,17 +139,14 @@ class GuildController extends AbstractController
             }
         }
 
-        $isLeader = $this->isLeaderOf($guild);
-
+        $isLeader            = $currentUser && $guild->isLeaderOf($currentUser);
         $eligible            = $currentUser ? $this->charRepo->findEligibleForGuild($currentUser, $guild->getServer()) : [];
         $confirmedCharacters = $currentUser ? $this->charRepo->findConfirmedInGuild($currentUser, $guild) : [];
         $isMember            = $isLeader || !empty($confirmedCharacters);
-        $allRaids      = array_filter(
-            $raidRepo->findByGuild($guild),
-            fn($r) => $r->isPublic() || $isMember
-        );
-        $activeRaids   = array_values(array_filter($allRaids, fn($r) => $r->getStatus() === RaidStatus::Open));
-        $closedRaids   = array_values(array_filter($allRaids, fn($r) => $r->getStatus() === RaidStatus::Closed));
+
+        $allRaids    = array_filter($raidRepo->findByGuild($guild), fn($r) => $r->isPublic() || $isMember);
+        $activeRaids = array_values(array_filter($allRaids, fn($r) => $r->getStatus() === RaidStatus::Open));
+        $closedRaids = array_values(array_filter($allRaids, fn($r) => $r->getStatus() === RaidStatus::Closed));
 
         return $this->render('guild/show.html.twig', [
             'guild'               => $guild,
@@ -167,13 +163,11 @@ class GuildController extends AbstractController
     public function members(Guild $guild): Response
     {
         $currentUser = $this->getUser();
-        $isOwner     = $currentUser && $guild->getOwner()->getId() === $currentUser->getId();
-        $isLeader    = $this->isLeaderOf($guild);
 
         return $this->render('guild/members.html.twig', [
             'guild'    => $guild,
-            'isOwner'  => $isOwner,
-            'isLeader' => $isLeader,
+            'isOwner'  => $currentUser && $guild->getOwner()->getId() === $currentUser->getId(),
+            'isLeader' => $currentUser && $guild->isLeaderOf($currentUser),
         ]);
     }
 
@@ -212,17 +206,15 @@ class GuildController extends AbstractController
             default                          => MemberStatus::Pending,
         };
 
-        $membership = (new GuildMembership())->setGuild($guild)->setCharacter($character)->setStatus($status);
-        $em->persist($membership);
+        $em->persist((new GuildMembership())->setGuild($guild)->setCharacter($character)->setStatus($status));
         $em->flush();
 
-        $msg = match($status) {
+        $this->addFlash('success', match($status) {
             MemberStatus::Leader  => $character->getName() . ' est maintenant meneur de ' . $guild->getName() . ' !',
             MemberStatus::Member  => $character->getName() . ' a rejoint ' . $guild->getName() . ' !',
             MemberStatus::Pending => $character->getName() . ' a demandé à rejoindre ' . $guild->getName() . '. En attente de validation.',
-        };
+        });
 
-        $this->addFlash('success', $msg);
         return $this->redirectToRoute('app_guild_show', ['slug' => $guild->getSlug()]);
     }
 
@@ -231,12 +223,9 @@ class GuildController extends AbstractController
     public function approve(GuildMembership $membership, Request $request, EntityManagerInterface $em): Response
     {
         $guild = $membership->getGuild();
+        $this->requireCsrfToken('membership_' . $membership->getId(), $request);
 
-        if (!$this->isCsrfTokenValid('membership_' . $membership->getId(), $request->request->get('_token'))) {
-            throw $this->createAccessDeniedException();
-        }
-
-        if (!$this->isLeaderOf($guild)) {
+        if (!$guild->isLeaderOf($this->getUser())) {
             throw $this->createAccessDeniedException();
         }
 
@@ -252,12 +241,9 @@ class GuildController extends AbstractController
     public function reject(GuildMembership $membership, Request $request, EntityManagerInterface $em): Response
     {
         $guild = $membership->getGuild();
+        $this->requireCsrfToken('membership_' . $membership->getId(), $request);
 
-        if (!$this->isCsrfTokenValid('membership_' . $membership->getId(), $request->request->get('_token'))) {
-            throw $this->createAccessDeniedException();
-        }
-
-        if (!$this->isLeaderOf($guild)) {
+        if (!$guild->isLeaderOf($this->getUser())) {
             throw $this->createAccessDeniedException();
         }
 
@@ -275,14 +261,37 @@ class GuildController extends AbstractController
     }
 
     #[IsGranted('ROLE_USER')]
-    #[Route('/{slug}/supprimer', name: 'app_guild_delete', methods: ['POST'])]
-    public function delete(Guild $guild, Request $request, EntityManagerInterface $em): Response
+    #[Route('/membres/{id}/quitter', name: 'app_guild_leave', methods: ['POST'])]
+    public function leave(GuildMembership $membership, Request $request, EntityManagerInterface $em): Response
     {
-        if (!$this->isCsrfTokenValid('delete_guild_' . $guild->getId(), $request->request->get('_token'))) {
+        $this->requireCsrfToken('leave_' . $membership->getId(), $request);
+
+        if ($membership->getCharacter()->getUser()->getId() !== $this->getUser()->getId()) {
             throw $this->createAccessDeniedException();
         }
 
-        if (!$this->isLeaderOf($guild)) {
+        if ($membership->getStatus() === MemberStatus::Leader) {
+            $this->addFlash('error', 'Le meneur ne peut pas quitter la guilde.');
+            return $this->redirectToRoute('app_guild_show', ['slug' => $membership->getGuild()->getSlug()]);
+        }
+
+        $guildSlug = $membership->getGuild()->getSlug();
+        $em->remove($membership);
+        $em->flush();
+
+        $this->addFlash('success', 'Vous avez quitté la guilde.');
+
+        $referer = $request->headers->get('referer');
+        return $referer ? $this->redirect($referer) : $this->redirectToRoute('app_guild_show', ['slug' => $guildSlug]);
+    }
+
+    #[IsGranted('ROLE_USER')]
+    #[Route('/{slug}/supprimer', name: 'app_guild_delete', methods: ['POST'])]
+    public function delete(Guild $guild, Request $request, EntityManagerInterface $em): Response
+    {
+        $this->requireCsrfToken('delete_guild_' . $guild->getId(), $request);
+
+        if (!$guild->isLeaderOf($this->getUser())) {
             throw $this->createAccessDeniedException();
         }
 
@@ -301,7 +310,7 @@ class GuildController extends AbstractController
         EntityManagerInterface $em,
         #[Autowire('%kernel.project_dir%')] string $projectDir,
     ): Response {
-        if (!$this->isLeaderOf($guild)) {
+        if (!$guild->isLeaderOf($this->getUser())) {
             throw $this->createAccessDeniedException();
         }
 
@@ -309,24 +318,13 @@ class GuildController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $uploadDir = $projectDir . '/public/uploads/guildes/' . $guild->getSlug();
             $imageFile = $form->get('imageFile')->getData();
             if ($imageFile) {
-                if (!is_dir($uploadDir)) {
-                    mkdir($uploadDir, 0775, true);
+                $uploadDir = $projectDir . '/public/uploads/guildes/' . $guild->getSlug();
+                if ($guild->getImagePath() && file_exists($uploadDir . '/' . $guild->getImagePath())) {
+                    unlink($uploadDir . '/' . $guild->getImagePath());
                 }
-                $ext      = $imageFile->guessExtension() ?? 'png';
-                $filename = 'cover.' . $ext;
-
-                if ($guild->getImagePath()) {
-                    $old = $uploadDir . '/' . $guild->getImagePath();
-                    if (file_exists($old)) {
-                        unlink($old);
-                    }
-                }
-
-                $imageFile->move($uploadDir, $filename);
-                $guild->setImagePath($filename);
+                $guild->setImagePath($this->fileUpload->upload($imageFile, $uploadDir, 'cover'));
             }
 
             $em->flush();
@@ -349,45 +347,5 @@ class GuildController extends AbstractController
             }
             $slug = $base . '-' . $i++;
         }
-    }
-
-    private function isLeaderOf(Guild $guild): bool
-    {
-        $user = $this->getUser();
-        if (!$user) return false;
-        $userId = (int) $user->getId();
-        foreach ($guild->getMemberships() as $m) {
-            if ($m->getStatus() === MemberStatus::Leader && (int) $m->getCharacter()->getUser()->getId() === $userId) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    #[IsGranted('ROLE_USER')]
-    #[Route('/membres/{id}/quitter', name: 'app_guild_leave', methods: ['POST'])]
-    public function leave(GuildMembership $membership, Request $request, EntityManagerInterface $em): Response
-    {
-        if (!$this->isCsrfTokenValid('leave_' . $membership->getId(), $request->request->get('_token'))) {
-            throw $this->createAccessDeniedException();
-        }
-
-        if ($membership->getCharacter()->getUser() !== $this->getUser()) {
-            throw $this->createAccessDeniedException();
-        }
-
-        if ($membership->getStatus() === MemberStatus::Leader) {
-            $this->addFlash('error', 'Le meneur ne peut pas quitter la guilde.');
-            return $this->redirectToRoute('app_guild_show', ['slug' => $membership->getGuild()->getSlug()]);
-        }
-
-        $guildSlug = $membership->getGuild()->getSlug();
-        $em->remove($membership);
-        $em->flush();
-
-        $this->addFlash('success', 'Vous avez quitté la guilde.');
-
-        $referer = $request->headers->get('referer');
-        return $referer ? $this->redirect($referer) : $this->redirectToRoute('app_guild_show', ['slug' => $guildSlug]);
     }
 }

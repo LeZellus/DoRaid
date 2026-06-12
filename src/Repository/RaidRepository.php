@@ -120,6 +120,19 @@ class RaidRepository extends ServiceEntityRepository
             ->getQuery()->getResult();
     }
 
+    /** @return Raid[] Open raids with a scheduled date and a template duration (candidates for auto-close) */
+    public function findAllOpen(): array
+    {
+        return $this->createQueryBuilder('r')
+            ->join('r.raidTemplate', 'rt')
+            ->where('r.status = :open')
+            ->andWhere('r.scheduledAt IS NOT NULL')
+            ->andWhere('rt.duration IS NOT NULL')
+            ->setParameter('open', RaidStatus::Open)
+            ->getQuery()
+            ->getResult();
+    }
+
     private function buildVisibleQb(array $userGuildIds, ?string $serverName): \Doctrine\ORM\QueryBuilder
     {
         $qb = $this->createQueryBuilder('r')

@@ -11,14 +11,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
-    name: 'app:raids:auto-close',
-    description: 'Close raids that have exceeded their scheduled duration',
+    name: 'app:close-expired-raids',
+    description: 'Cloture les raids dont la duree planifiee est depassee.',
 )]
 class CloseExpiredRaidsCommand extends Command
 {
     public function __construct(
-        private RaidRepository $raidRepo,
-        private EntityManagerInterface $em,
+        private readonly RaidRepository $raidRepo,
+        private readonly EntityManagerInterface $em,
     ) {
         parent::__construct();
     }
@@ -26,10 +26,9 @@ class CloseExpiredRaidsCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $now   = new \DateTimeImmutable();
-        $raids = $this->raidRepo->findBy(['status' => RaidStatus::Open]);
         $count = 0;
 
-        foreach ($raids as $raid) {
+        foreach ($this->raidRepo->findAllOpen() as $raid) {
             $end = $raid->getExpectedEndTime();
             if ($end !== null && $end <= $now) {
                 $raid->setStatus(RaidStatus::Closed);
@@ -41,7 +40,8 @@ class CloseExpiredRaidsCommand extends Command
             $this->em->flush();
         }
 
-        $output->writeln(sprintf('%d raid(s) fermé(s).', $count));
+        $output->writeln(sprintf('<info>%d raid(s) clos.</info>', $count));
+
         return Command::SUCCESS;
     }
 }
