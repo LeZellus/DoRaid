@@ -27,19 +27,19 @@ class CharacterEditType extends AbstractType
                 ],
             ])
             ->add('level', IntegerType::class, [
-                'label'      => 'Niveau',
-                'required'   => false,
-                'empty_data' => null,
-                'attr'       => ['placeholder' => 'Ex : 200', 'min' => 1, 'max' => 200],
-                'constraints' => [new Range(min: 1, max: 200)],
+                'label'       => 'Niveau',
+                'attr'        => ['placeholder' => 'Ex : 200', 'min' => 1, 'max' => 200],
+                'constraints' => [
+                    new NotBlank(message: 'Entrez un niveau.'),
+                    new Range(min: 1, max: 200),
+                ],
             ])
             ->add('optimizationLevel', EnumType::class, [
                 'label'        => 'Optimisation',
                 'class'        => OptimizationLevel::class,
-                'required'     => false,
-                'empty_data'   => null,
-                'placeholder'  => '— Non renseigné —',
+                'placeholder'  => '— Choisir —',
                 'choice_label' => fn(OptimizationLevel $o) => $o->label(),
+                'constraints'  => [new NotBlank(message: 'Choisissez un niveau d\'optimisation.')],
             ]);
     }
 
