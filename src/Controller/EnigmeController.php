@@ -7,6 +7,7 @@ use App\Entity\Enigme;
 use App\Entity\EnigmeComment;
 use App\Entity\EnigmeImage;
 use App\Entity\Raid;
+use App\Entity\RaidParticipantStatus;
 use App\Entity\RaidStatus;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,11 +28,11 @@ class EnigmeController extends AbstractController
     #[Route('/enigmes/{id}', name: 'app_enigme_show', methods: ['GET'])]
     public function show(Enigme $enigme): Response
     {
-        $character = $this->getUser() ? $this->getParticipantCharacter($enigme->getRaid()) : null;
+        $canComment = $this->getUser() !== null && $this->getParticipantCharacter($enigme->getRaid()) !== null;
 
         return $this->render('enigme/show.html.twig', [
             'enigme'      => $enigme,
-            'character'   => $character,
+            'canComment'  => $canComment,
             'raidClosed'  => $enigme->getRaid()->getStatus() === RaidStatus::Closed,
         ]);
     }
@@ -99,7 +100,9 @@ class EnigmeController extends AbstractController
     #[Route('/enigmes/{id}/comments', name: 'app_enigme_add_comment', methods: ['POST'])]
     public function addComment(Enigme $enigme, Request $request, EntityManagerInterface $em): JsonResponse
     {
-        $this->ensureParticipant($enigme);
+        if ($this->getParticipantCharacter($enigme->getRaid()) === null) {
+            return new JsonResponse(['success' => false, 'error' => 'Seuls les participants acceptés peuvent commenter.']);
+        }
         $this->ensureRaidOpen($enigme);
 
         if (!$this->isCsrfTokenValid('comment_enigme_' . $enigme->getId(), $request->request->get('_token'))) {
@@ -189,7 +192,10 @@ class EnigmeController extends AbstractController
     {
         $userId = (int) $this->getUser()->getId();
         foreach ($raid->getParticipants() as $p) {
-            if ((int) $p->getCharacter()->getUser()->getId() === $userId) {
+            if (
+                $p->getStatus() === RaidParticipantStatus::Accepted
+                && (int) $p->getCharacter()->getUser()->getId() === $userId
+            ) {
                 return $p->getCharacter();
             }
         }

@@ -22,6 +22,10 @@ class RaidCommentController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
+        if (!$this->hasApplied($raid)) {
+            throw $this->createAccessDeniedException('Vous devez postuler au raid pour commenter.');
+        }
+
         $content = trim($request->request->get('content', ''));
         if ($content === '') {
             return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId(), '_fragment' => 'commentaires']);
@@ -44,6 +48,10 @@ class RaidCommentController extends AbstractController
 
         if (!$this->isCsrfTokenValid('reply_' . $parent->getId(), $request->request->get('_token'))) {
             throw $this->createAccessDeniedException();
+        }
+
+        if (!$this->hasApplied($raid)) {
+            throw $this->createAccessDeniedException('Vous devez postuler au raid pour commenter.');
         }
 
         // Replies only on root-level comments — prevents unbounded nesting
@@ -87,5 +95,16 @@ class RaidCommentController extends AbstractController
         $em->flush();
 
         return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId(), '_fragment' => 'commentaires']);
+    }
+
+    private function hasApplied(Raid $raid): bool
+    {
+        $userId = (int) $this->getUser()->getId();
+        foreach ($raid->getParticipants() as $p) {
+            if ((int) $p->getCharacter()->getUser()->getId() === $userId) {
+                return true;
+            }
+        }
+        return false;
     }
 }

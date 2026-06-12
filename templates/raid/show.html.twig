@@ -338,6 +338,7 @@
 
         {# ── Sidebar commentaires (sticky) ── #}
         <div class="sticky top-6" id="commentaires">
+            {% set currentUserApplied = app.user and (participantsByUser[app.user.id] ?? null) is not null %}
             {% set totalComments = 0 %}
             {% for c in rootComments %}{% set totalComments = totalComments + 1 + c.children|length %}{% endfor %}
 
@@ -390,7 +391,7 @@
                                             {% endif %}
                                         </div>
                                         <p class="text-xs text-gray-300 leading-relaxed whitespace-pre-line break-words">{{ comment.content }}</p>
-                                        {% if app.user %}
+                                        {% if currentUserApplied %}
                                             <button type="button"
                                                 onclick="var f=document.getElementById('rf-{{ comment.id }}');f.classList.toggle('hidden');f.querySelector('textarea').focus();"
                                                 class="mt-1.5 text-xs text-gray-600 hover:text-indigo-400 transition">Répondre</button>
@@ -452,7 +453,7 @@
                 </div>
 
                 <div class="shrink-0 p-4 border-t border-gray-800">
-                    {% if app.user %}
+                    {% if currentUserApplied %}
                         <form method="post" action="{{ path('app_raid_comment_new', {id: raid.id}) }}" class="space-y-2">
                             <input type="hidden" name="_token" value="{{ csrf_token('comment_' ~ raid.id) }}">
                             <textarea name="content" rows="3" placeholder="Partagez une info, discutez des horaires…"
@@ -461,6 +462,10 @@
                                 Commenter
                             </button>
                         </form>
+                    {% elseif app.user %}
+                        <p class="text-xs text-red-400 text-center py-2">
+                            Vous devez <a href="{{ path('app_raid_show', {id: raid.id}) }}#participer" class="underline hover:text-red-300">postuler au raid</a> pour pouvoir commenter.
+                        </p>
                     {% else %}
                         <a href="{{ path('app_login') }}"
                            class="block w-full text-center text-sm text-gray-500 hover:text-indigo-400 transition py-2 border border-gray-800 rounded-lg">
