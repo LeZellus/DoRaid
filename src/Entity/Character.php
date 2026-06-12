@@ -62,4 +62,11 @@ class Character
     public function setOptimizationLevel(?OptimizationLevel $o): static { $this->optimizationLevel = $o; return $this; }
 
     public function getMembership(): ?GuildMembership { return $this->membership; }
+
+    public function isConfirmedMemberOf(Guild $guild): bool
+    {
+        return $this->membership !== null
+            && $this->membership->getGuild()->getId() === $guild->getId()
+            && $this->membership->getStatus() !== MemberStatus::Pending;
+    }
 }

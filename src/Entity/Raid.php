@@ -126,6 +126,11 @@ class Raid
         );
     }
 
+    public function isCreatedBy(User $user): bool
+    {
+        return $this->creator->getUser()->getId() === $user->getId();
+    }
+
     public function __toString(): string
     {
         return $this->raidTemplate->getName() . ' — ' . $this->guild->getName();

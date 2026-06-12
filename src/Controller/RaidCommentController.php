@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Raid;
 use App\Entity\RaidComment;
+use App\Repository\RaidParticipantRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,6 +16,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/raids')]
 class RaidCommentController extends AbstractController
 {
+    public function __construct(private RaidParticipantRepository $participantRepo) {}
+
     #[Route('/{id}/commenter', name: 'app_raid_comment_new', methods: ['POST'])]
     public function new(Raid $raid, Request $request, EntityManagerInterface $em): Response
     {
@@ -85,7 +88,7 @@ class RaidCommentController extends AbstractController
         }
 
         $isAuthor  = $comment->getAuthor()->getId() === $this->getUser()->getId();
-        $isCreator = $raid->getCreator()->getUser()->getId() === $this->getUser()->getId();
+        $isCreator = $raid->isCreatedBy($this->getUser());
 
         if (!$isAuthor && !$isCreator) {
             throw $this->createAccessDeniedException();
@@ -99,12 +102,6 @@ class RaidCommentController extends AbstractController
 
     private function hasApplied(Raid $raid): bool
     {
-        $userId = (int) $this->getUser()->getId();
-        foreach ($raid->getParticipants() as $p) {
-            if ((int) $p->getCharacter()->getUser()->getId() === $userId) {
-                return true;
-            }
-        }
-        return false;
+        return $this->participantRepo->hasApplied($this->getUser(), $raid);
     }
 }

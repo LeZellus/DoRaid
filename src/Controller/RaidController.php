@@ -185,21 +185,10 @@ class RaidController extends AbstractController
     #[Route('/{id}/participants', name: 'app_raid_participants')]
     public function participants(Raid $raid, CharacterRepository $charRepo): Response
     {
-        if (!$raid->isPublic()) {
-            $viewer = $this->getUser();
-            if (!$viewer) {
-                $this->addFlash('error', 'Ce raid est privé. Connectez-vous pour y accéder.');
-                return $this->redirectToRoute('app_login');
-            }
-            $isMember = !empty($charRepo->findConfirmedInGuild($viewer, $raid->getGuild()));
-            if (!$isMember && $raid->getCreator()->getUser()->getId() !== $viewer->getId()) {
-                $this->addFlash('error', 'Ce raid est privé et réservé aux membres de la guilde.');
-                return $this->redirectToRoute('app_guild_show', ['slug' => $raid->getGuild()->getSlug()]);
-            }
-        }
+        if ($r = $this->checkRaidAccess($raid, $charRepo)) return $r;
 
         $currentUser = $this->getUser();
-        $isCreator   = $currentUser && (int) $raid->getCreator()->getUser()->getId() === (int) $currentUser->getId();
+        $isCreator   = $currentUser && $raid->isCreatedBy($currentUser);
 
         return $this->render('raid/participants.html.twig', [
             'raid'      => $raid,
@@ -215,20 +204,7 @@ class RaidController extends AbstractController
         RaidCommentRepository $commentRepo,
         EntityManagerInterface $em,
     ): Response {
-        // Visibility check: private raids are guild-member only
-        if (!$raid->isPublic()) {
-            $viewer = $this->getUser();
-            if (!$viewer) {
-                $this->addFlash('error', 'Ce raid est privé. Connectez-vous pour y accéder.');
-                return $this->redirectToRoute('app_login');
-            }
-            $isMember = !empty($charRepo->findConfirmedInGuild($viewer, $raid->getGuild()));
-            $isCreatorUser = $raid->getCreator()->getUser()->getId() === $viewer->getId();
-            if (!$isMember && !$isCreatorUser) {
-                $this->addFlash('error', 'Ce raid est privé et réservé aux membres de la guilde.');
-                return $this->redirectToRoute('app_guild_show', ['slug' => $raid->getGuild()->getSlug()]);
-            }
-        }
+        if ($r = $this->checkRaidAccess($raid, $charRepo)) return $r;
 
         // Sync: add any enigme templates added after the raid was created
         $existingIds = array_map(
@@ -253,7 +229,7 @@ class RaidController extends AbstractController
         $currentUser = $this->getUser();
         $userId      = $currentUser ? (int) $currentUser->getId() : null;
         $eligible    = $currentUser ? $charRepo->findAllEligibleForRaid($currentUser, $raid) : [];
-        $isCreator   = $userId && (int) $raid->getCreator()->getUser()->getId() === $userId;
+        $isCreator   = $currentUser && $raid->isCreatedBy($currentUser);
 
         $acceptedCharacters  = [];
         $pendingApplications = [];
@@ -280,11 +256,29 @@ class RaidController extends AbstractController
         ]);
     }
 
+    private function checkRaidAccess(Raid $raid, CharacterRepository $charRepo): ?Response
+    {
+        if ($raid->isPublic()) {
+            return null;
+        }
+        $viewer = $this->getUser();
+        if (!$viewer) {
+            $this->addFlash('error', 'Ce raid est privé. Connectez-vous pour y accéder.');
+            return $this->redirectToRoute('app_login');
+        }
+        $isMember = !empty($charRepo->findConfirmedInGuild($viewer, $raid->getGuild()));
+        if (!$isMember && !$raid->isCreatedBy($viewer)) {
+            $this->addFlash('error', 'Ce raid est privé et réservé aux membres de la guilde.');
+            return $this->redirectToRoute('app_guild_show', ['slug' => $raid->getGuild()->getSlug()]);
+        }
+        return null;
+    }
+
     #[IsGranted('ROLE_USER')]
     #[Route('/{id}/modifier', name: 'app_raid_edit', methods: ['GET', 'POST'])]
     public function edit(Raid $raid, Request $request, EntityManagerInterface $em): Response
     {
-        if ($raid->getCreator()->getUser() !== $this->getUser()) {
+        if (!$raid->isCreatedBy($this->getUser())) {
             throw $this->createAccessDeniedException();
         }
 
@@ -357,7 +351,7 @@ class RaidController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        if ($raid->getCreator()->getUser() !== $this->getUser()) {
+        if (!$raid->isCreatedBy($this->getUser())) {
             throw $this->createAccessDeniedException();
         }
 
@@ -376,7 +370,7 @@ class RaidController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        if ($raid->getCreator()->getUser() !== $this->getUser()) {
+        if (!$raid->isCreatedBy($this->getUser())) {
             throw $this->createAccessDeniedException();
         }
 
@@ -397,7 +391,7 @@ class RaidController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        if ($raid->getCreator()->getUser() !== $this->getUser()) {
+        if (!$raid->isCreatedBy($this->getUser())) {
             throw $this->createAccessDeniedException();
         }
 
@@ -417,7 +411,7 @@ class RaidController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        if ($raid->getCreator()->getUser() !== $this->getUser()) {
+        if (!$raid->isCreatedBy($this->getUser())) {
             throw $this->createAccessDeniedException();
         }
 

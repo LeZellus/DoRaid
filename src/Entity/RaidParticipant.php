@@ -45,4 +45,9 @@ class RaidParticipant
     public function setStatus(RaidParticipantStatus $status): static { $this->status = $status; return $this; }
 
     public function getJoinedAt(): \DateTimeImmutable { return $this->joinedAt; }
+
+    public function isGuildMember(): bool
+    {
+        return $this->character->isConfirmedMemberOf($this->raid->getGuild());
+    }
 }

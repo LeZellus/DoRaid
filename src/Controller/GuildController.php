@@ -88,15 +88,7 @@ class GuildController extends AbstractController
             }
         }
 
-        $isLeader = false;
-        if ($currentUser) {
-            foreach ($guild->getMemberships() as $m) {
-                if ($m->getStatus() === MemberStatus::Leader && $m->getCharacter()->getUser()->getId() === $currentUser->getId()) {
-                    $isLeader = true;
-                    break;
-                }
-            }
-        }
+        $isLeader = $this->isLeaderOf($guild);
 
         $eligible            = $currentUser ? $charRepo->findEligibleForGuild($currentUser, $guild->getServer()) : [];
         $confirmedCharacters = $currentUser ? $charRepo->findConfirmedInGuild($currentUser, $guild) : [];
@@ -124,16 +116,7 @@ class GuildController extends AbstractController
     {
         $currentUser = $this->getUser();
         $isOwner     = $currentUser && $guild->getOwner()->getId() === $currentUser->getId();
-
-        $isLeader = false;
-        if ($currentUser) {
-            foreach ($guild->getMemberships() as $m) {
-                if ($m->getStatus() === MemberStatus::Leader && $m->getCharacter()->getUser()->getId() === $currentUser->getId()) {
-                    $isLeader = true;
-                    break;
-                }
-            }
-        }
+        $isLeader    = $this->isLeaderOf($guild);
 
         return $this->render('guild/members.html.twig', [
             'guild'    => $guild,
@@ -318,7 +301,9 @@ class GuildController extends AbstractController
 
     private function isLeaderOf(Guild $guild): bool
     {
-        $userId = (int) $this->getUser()->getId();
+        $user = $this->getUser();
+        if (!$user) return false;
+        $userId = (int) $user->getId();
         foreach ($guild->getMemberships() as $m) {
             if ($m->getStatus() === MemberStatus::Leader && (int) $m->getCharacter()->getUser()->getId() === $userId) {
                 return true;

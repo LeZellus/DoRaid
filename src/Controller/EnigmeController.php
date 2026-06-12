@@ -7,8 +7,8 @@ use App\Entity\Enigme;
 use App\Entity\EnigmeComment;
 use App\Entity\EnigmeImage;
 use App\Entity\Raid;
-use App\Entity\RaidParticipantStatus;
 use App\Entity\RaidStatus;
+use App\Repository\RaidParticipantRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -22,7 +22,8 @@ class EnigmeController extends AbstractController
 {
     public function __construct(
         #[Autowire('%kernel.project_dir%')]
-        private string $projectDir
+        private string $projectDir,
+        private RaidParticipantRepository $participantRepo,
     ) {}
 
     #[Route('/enigmes/{id}', name: 'app_enigme_show', methods: ['GET'])]
@@ -191,15 +192,7 @@ class EnigmeController extends AbstractController
 
     private function getParticipantCharacter(Raid $raid): ?Character
     {
-        $userId = (int) $this->getUser()->getId();
-        foreach ($raid->getParticipants() as $p) {
-            if (
-                $p->getStatus() === RaidParticipantStatus::Accepted
-                && (int) $p->getCharacter()->getUser()->getId() === $userId
-            ) {
-                return $p->getCharacter();
-            }
-        }
-        return null;
+        $p = $this->participantRepo->findAcceptedCharacterForUserAndRaid($this->getUser(), $raid);
+        return $p?->getCharacter();
     }
 }

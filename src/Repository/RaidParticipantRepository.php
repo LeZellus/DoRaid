@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Raid;
 use App\Entity\RaidParticipant;
 use App\Entity\RaidParticipantStatus;
 use App\Entity\User;
@@ -49,5 +50,37 @@ class RaidParticipantRepository extends ServiceEntityRepository
             ->orderBy('r.createdAt', 'DESC')
             ->getQuery()
             ->getResult();
+    }
+
+    /** Retourne le personnage accepté d'un utilisateur sur un raid (null si non-participant ou en attente) */
+    public function findAcceptedCharacterForUserAndRaid(User $user, Raid $raid): ?RaidParticipant
+    {
+        return $this->createQueryBuilder('rp')
+            ->addSelect('c')
+            ->join('rp.character', 'c')
+            ->where('c.user = :user')
+            ->andWhere('rp.raid = :raid')
+            ->andWhere('rp.status = :status')
+            ->setParameter('user', $user)
+            ->setParameter('raid', $raid)
+            ->setParameter('status', RaidParticipantStatus::Accepted)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /** Vérifie si un utilisateur a candidaté (peu importe le statut) sur un raid */
+    public function hasApplied(User $user, Raid $raid): bool
+    {
+        return (bool) $this->createQueryBuilder('rp')
+            ->select('1')
+            ->join('rp.character', 'c')
+            ->where('c.user = :user')
+            ->andWhere('rp.raid = :raid')
+            ->setParameter('user', $user)
+            ->setParameter('raid', $raid)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }
