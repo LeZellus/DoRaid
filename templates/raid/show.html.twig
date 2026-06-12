@@ -122,6 +122,44 @@
         </div>
     </div>
 
+    {# ── Énigmes (pleine largeur) ── #}
+    {% if raid.enigmes is not empty %}
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden mb-6">
+            <div class="px-6 py-4 border-b border-gray-800 flex items-center justify-between">
+                <h2 class="font-semibold text-white">Énigmes</h2>
+            </div>
+            <ul class="divide-y divide-gray-800/60">
+                {% for enigme in raid.enigmes %}
+                    <li>
+                        <a href="{{ path('app_enigme_show', {id: enigme.id}) }}"
+                           class="flex items-center justify-between px-6 py-4 hover:bg-gray-800/40 transition group">
+                            <div class="flex items-center gap-3">
+                                <span class="w-7 h-7 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center text-xs font-bold text-gray-400 shrink-0 group-hover:border-indigo-600/50 transition">
+                                    {{ enigme.orderNumber }}
+                                </span>
+                                <span class="font-medium text-white text-sm">{{ enigme.title }}</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                {% if enigme.resolved %}
+                                    <span class="text-xs font-medium bg-green-900/50 text-green-400 border border-green-800/50 rounded-full px-2.5 py-0.5">Résolue</span>
+                                {% endif %}
+                                {% if enigme.images|length > 0 %}
+                                    <span class="text-xs text-gray-500">{{ enigme.images|length }} image{{ enigme.images|length > 1 ? 's' : '' }}</span>
+                                {% endif %}
+                                {% if enigme.comments|length > 0 %}
+                                    <span class="text-xs text-gray-500">{{ enigme.comments|length }} commentaire{{ enigme.comments|length > 1 ? 's' : '' }}</span>
+                                {% endif %}
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-600 group-hover:text-gray-400 transition" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
     {# ── Grid : contenu principal (50%) + sidebar commentaires (50%) ── #}
     <div class="grid gap-6 lg:grid-cols-2 items-start">
 
@@ -283,44 +321,6 @@
                     {% endif %}
                 {% endif %}
             </div>
-
-            {# ── Énigmes ── #}
-            {% if raid.enigmes is not empty %}
-                <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
-                    <div class="px-6 py-4 border-b border-gray-800 flex items-center justify-between">
-                        <h2 class="font-semibold text-white">Énigmes</h2>
-                    </div>
-                    <ul class="divide-y divide-gray-800/60">
-                        {% for enigme in raid.enigmes %}
-                            <li>
-                                <a href="{{ path('app_enigme_show', {id: enigme.id}) }}"
-                                   class="flex items-center justify-between px-6 py-4 hover:bg-gray-800/40 transition group">
-                                    <div class="flex items-center gap-3">
-                                        <span class="w-7 h-7 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center text-xs font-bold text-gray-400 shrink-0 group-hover:border-indigo-600/50 transition">
-                                            {{ enigme.orderNumber }}
-                                        </span>
-                                        <span class="font-medium text-white text-sm">{{ enigme.title }}</span>
-                                    </div>
-                                    <div class="flex items-center gap-3">
-                                        {% if enigme.resolved %}
-                                            <span class="text-xs font-medium bg-green-900/50 text-green-400 border border-green-800/50 rounded-full px-2.5 py-0.5">Résolue</span>
-                                        {% endif %}
-                                        {% if enigme.images|length > 0 %}
-                                            <span class="text-xs text-gray-500">{{ enigme.images|length }} image{{ enigme.images|length > 1 ? 's' : '' }}</span>
-                                        {% endif %}
-                                        {% if enigme.comments|length > 0 %}
-                                            <span class="text-xs text-gray-500">{{ enigme.comments|length }} commentaire{{ enigme.comments|length > 1 ? 's' : '' }}</span>
-                                        {% endif %}
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-600 group-hover:text-gray-400 transition" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
-                                        </svg>
-                                    </div>
-                                </a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            {% endif %}
 
         </div>{# /col-gauche #}
 
