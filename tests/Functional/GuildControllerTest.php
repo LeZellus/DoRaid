@@ -136,6 +136,71 @@ class GuildControllerTest extends WebTestCaseBase
         $this->assertStringContainsString('Sélectionnez un personnage', $this->client->getResponse()->getContent());
     }
 
+    public function testGuildCreationRedirectsWhenAllCharactersAreInGuilds(): void
+    {
+        $server  = $this->makeServer();
+        $user    = $this->makeUser('busy@test.com');
+        $char    = $this->makeCharacter($user, $server);
+        $owner   = $this->makeUser('owner@test.com');
+        $guild   = $this->makeGuild($owner, $server);
+        $this->makeMembership($guild, $char, MemberStatus::Member);
+        $this->flush();
+        $this->em->clear();
+
+        $this->client->loginUser($user);
+        $this->client->request('GET', '/guildes/creer');
+
+        $this->assertResponseRedirects();
+        $this->assertStringContainsString('/guildes', $this->client->getResponse()->headers->get('location'));
+    }
+
+    public function testGuildCreationFormExcludesCharactersAlreadyInGuild(): void
+    {
+        $server    = $this->makeServer();
+        $user      = $this->makeUser('mixed@test.com');
+        $charFree  = $this->makeCharacter($user, $server);
+        $charTaken = $this->makeCharacter($user, $server);
+        $owner     = $this->makeUser('owner2@test.com');
+        $guild     = $this->makeGuild($owner, $server);
+        $this->makeMembership($guild, $charTaken, MemberStatus::Member);
+        $this->flush();
+        $this->em->clear();
+
+        $this->client->loginUser($user);
+        $this->client->request('GET', '/guildes/creer');
+
+        $this->assertResponseIsSuccessful();
+        $content = $this->client->getResponse()->getContent();
+        $this->assertStringContainsString($charFree->getName(), $content);
+        $this->assertStringNotContainsString($charTaken->getName(), $content);
+    }
+
+    public function testGuildCreationRejectsCharacterAlreadyInGuildOnPost(): void
+    {
+        $server    = $this->makeServer();
+        $user      = $this->makeUser('tricky@test.com');
+        $charFree  = $this->makeCharacter($user, $server);
+        $charTaken = $this->makeCharacter($user, $server);
+        $owner     = $this->makeUser('owner3@test.com');
+        $guild     = $this->makeGuild($owner, $server);
+        $this->makeMembership($guild, $charTaken, MemberStatus::Member);
+        $this->flush();
+        $this->em->clear();
+
+        $this->client->loginUser($user);
+        $crawler = $this->client->request('GET', '/guildes/creer');
+        $token   = $crawler->filter('input[name="guild[_token]"]')->attr('value');
+
+        // Soumet avec un character_id manipulé pointant vers un personnage déjà en guilde
+        $this->client->request('POST', '/guildes/creer', [
+            'guild'        => ['name' => 'Guilde Piratée', 'server' => $server->getId(), '_token' => $token],
+            'character_id' => $charTaken->getId(),
+        ]);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertStringContainsString('déjà dans une guilde', $this->client->getResponse()->getContent());
+    }
+
     // ─── Helpers ───────────────────────────────────────────────────────────────
 
     /**
