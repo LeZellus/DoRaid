@@ -182,6 +182,30 @@ class RaidController extends AbstractController
         ]);
     }
 
+    #[Route('/{id}/participants', name: 'app_raid_participants')]
+    public function participants(Raid $raid, CharacterRepository $charRepo): Response
+    {
+        if (!$raid->isPublic()) {
+            $viewer = $this->getUser();
+            if (!$viewer) {
+                $this->addFlash('error', 'Ce raid est privé. Connectez-vous pour y accéder.');
+                return $this->redirectToRoute('app_login');
+            }
+            $isMember = !empty($charRepo->findConfirmedInGuild($viewer, $raid->getGuild()));
+            if (!$isMember && $raid->getCreator()->getUser()->getId() !== $viewer->getId()) {
+                throw $this->createAccessDeniedException('Ce raid est privé.');
+            }
+        }
+
+        $currentUser = $this->getUser();
+        $isCreator   = $currentUser && (int) $raid->getCreator()->getUser()->getId() === (int) $currentUser->getId();
+
+        return $this->render('raid/participants.html.twig', [
+            'raid'      => $raid,
+            'isCreator' => $isCreator,
+        ]);
+    }
+
     #[Route('/{id}', name: 'app_raid_show')]
     public function show(
         Raid $raid,

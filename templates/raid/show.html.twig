@@ -181,7 +181,7 @@
                         <p class="text-gray-500 text-sm">Aucun participant confirmé pour l'instant.</p>
                     </div>
                 {% else %}
-                    <ul class="divide-y divide-gray-800/60 overflow-y-auto max-h-[32rem]">
+                    <ul class="divide-y divide-gray-800/60 overflow-y-auto max-h-[16rem]">
                         {% for p in raid.acceptedParticipants %}
                             {% set isGuildMember = p.character.membership is not null
                                 and p.character.membership.guild.id == raid.guild.id
@@ -226,6 +226,12 @@
                             </li>
                         {% endfor %}
                     </ul>
+                    <div class="border-t border-gray-800/60 px-6 py-3">
+                        <a href="{{ path('app_raid_participants', {id: raid.id}) }}"
+                           class="text-xs text-gray-500 hover:text-indigo-400 transition">
+                            Voir tous les participants →
+                        </a>
+                    </div>
                 {% endif %}
             </div>
 
@@ -243,7 +249,7 @@
                         <p class="text-gray-500 text-sm">Personne n'a encore candidaté.</p>
                     </div>
                 {% else %}
-                    <ul class="divide-y divide-gray-800/60 overflow-y-auto max-h-[32rem]">
+                    <ul class="divide-y divide-gray-800/60 overflow-y-auto max-h-[16rem]">
                         {% for p in raid.pendingParticipants %}
                             {% set isGuildMember = p.character.membership is not null
                                 and p.character.membership.guild.id == raid.guild.id
@@ -295,6 +301,12 @@
                             </li>
                         {% endfor %}
                     </ul>
+                    <div class="border-t border-gray-800/60 px-6 py-3">
+                        <a href="{{ path('app_raid_participants', {id: raid.id}) }}"
+                           class="text-xs text-gray-500 hover:text-indigo-400 transition">
+                            Voir tous les intéressés →
+                        </a>
+                    </div>
                 {% endif %}
 
                 {% if raid.status == constant('App\\Entity\\RaidStatus::Open') %}
