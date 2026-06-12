@@ -57,11 +57,17 @@ class GuildController extends AbstractController
     public function new(Request $request, EntityManagerInterface $em, GuildRepository $repo): Response
     {
         $user       = $this->getUser();
-        $characters = $this->charRepo->findByUser($user);
+        $allChars   = $this->charRepo->findByUser($user);
+        $characters = array_values(array_filter($allChars, fn($c) => $c->getMembership() === null));
 
-        if (empty($characters)) {
+        if (empty($allChars)) {
             $this->addFlash('error', 'Vous devez d\'abord créer un personnage avant de pouvoir fonder une guilde.');
             return $this->redirectToRoute('app_character_new');
+        }
+
+        if (empty($characters)) {
+            $this->addFlash('error', 'Tous vos personnages sont déjà membres d\'une guilde. Créez un nouveau personnage ou quittez une guilde pour en fonder une.');
+            return $this->redirectToRoute('app_guild_index');
         }
 
         $charsByServerId = [];
@@ -79,6 +85,13 @@ class GuildController extends AbstractController
 
             if (!$character || (int) $character->getUser()->getId() !== (int) $user->getId()) {
                 $this->addFlash('error', 'Sélectionnez un personnage meneur pour cette guilde.');
+                return $this->render('guild/new.html.twig', [
+                    'form' => $form, 'charsByServerId' => $charsByServerId, 'submittedCharId' => $characterId,
+                ]);
+            }
+
+            if ($character->getMembership() !== null) {
+                $this->addFlash('error', 'Ce personnage est déjà dans une guilde.');
                 return $this->render('guild/new.html.twig', [
                     'form' => $form, 'charsByServerId' => $charsByServerId, 'submittedCharId' => $characterId,
                 ]);
