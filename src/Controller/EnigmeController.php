@@ -153,11 +153,12 @@ class EnigmeController extends AbstractController
         ]);
     }
 
-    #[IsGranted('ROLE_USER')]
     #[Route('/enigmes/{id}/partial', name: 'app_enigme_partial', methods: ['GET'])]
     public function partial(Enigme $enigme, Request $request): JsonResponse
     {
-        $this->ensureParticipant($enigme);
+        if (!$this->getUser() || $this->getParticipantCharacter($enigme->getRaid()) === null) {
+            return new JsonResponse(['changed' => false]);
+        }
 
         $updatedAt = $enigme->getUpdatedAt()->format(\DateTimeInterface::ATOM);
 

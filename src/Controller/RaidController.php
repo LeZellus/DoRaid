@@ -193,7 +193,8 @@ class RaidController extends AbstractController
             }
             $isMember = !empty($charRepo->findConfirmedInGuild($viewer, $raid->getGuild()));
             if (!$isMember && $raid->getCreator()->getUser()->getId() !== $viewer->getId()) {
-                throw $this->createAccessDeniedException('Ce raid est privé.');
+                $this->addFlash('error', 'Ce raid est privé et réservé aux membres de la guilde.');
+                return $this->redirectToRoute('app_guild_show', ['slug' => $raid->getGuild()->getSlug()]);
             }
         }
 
