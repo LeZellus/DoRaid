@@ -5,10 +5,10 @@
 {% block meta_description %}Retrouvez toutes les guildes Dofus présentes sur Zeminal, classées par serveur. Rejoignez une guilde et organisez vos raids ensemble.{% endblock %}
 
 {% block body %}
-<div class="max-w-6xl mx-auto px-6 py-12">
+<div class="max-w-6xl mx-auto px-6 py-12" data-controller="reveal">
 
     {# ── En-tête ── #}
-    <div class="flex items-center justify-between mb-8">
+    <div class="flex items-center justify-between mb-8" data-reveal>
         <div>
             <h1 class="text-3xl font-bold text-white">Guildes</h1>
             {% set total = 0 %}
@@ -26,7 +26,7 @@
     {% else %}
 
         {# ── Barre de recherche + filtres serveur ── #}
-        <div class="flex flex-col sm:flex-row gap-3 mb-6">
+        <div class="flex flex-col sm:flex-row gap-3 mb-6" data-reveal data-reveal-delay="1">
             <div class="relative flex-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
@@ -54,7 +54,7 @@
         </div>
 
         {# ── Grille des guildes ── #}
-        <div id="guild-grid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div id="guild-grid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-reveal data-reveal-delay="2">
             {% for serverName, guilds in byServer %}
                 {% for guild in guilds %}
                     {% set memberCount = guild.confirmed|length %}
@@ -62,12 +62,12 @@
                     {% set isLeaderOfThis = guild.id in leaderGuildIds %}
                     {% if isLeaderOfThis %}
                     <a href="{{ path('app_guild_show', {slug: guild.slug}) }}"
-                       class="guild-card group block rounded-2xl bg-gray-900 border border-indigo-500 hover:border-indigo-400 transition-all hover:shadow-lg hover:shadow-indigo-950/30"
+                       class="guild-card group block rounded-2xl bg-gray-900 border border-indigo-500 hover:border-indigo-400 transition-all hover:shadow-lg hover:shadow-indigo-950/30 hover:-translate-y-0.5"
                        data-name="{{ guild.name|lower }}"
                        data-server="{{ serverName }}">
                     {% else %}
                     <a href="{{ path('app_guild_show', {slug: guild.slug}) }}"
-                       class="guild-card group block rounded-2xl bg-gray-900 border border-gray-800 hover:border-indigo-700/60 transition-all hover:shadow-lg hover:shadow-indigo-950/30"
+                       class="guild-card group block rounded-2xl bg-gray-900 border border-gray-800 hover:border-indigo-700/60 transition-all hover:shadow-lg hover:shadow-indigo-950/30 hover:-translate-y-0.5"
                        data-name="{{ guild.name|lower }}"
                        data-server="{{ serverName }}">
                     {% endif %}

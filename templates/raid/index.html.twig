@@ -5,17 +5,17 @@
 {% block meta_description %}Tous les raids Dofus publics, ouverts sur tous les serveurs. Rejoignez un groupe ou publiez votre propre raid pour recruter des joueurs.{% endblock %}
 
 {% block body %}
-<div class="max-w-6xl mx-auto px-6 py-12">
+<div class="max-w-6xl mx-auto px-6 py-12" data-controller="reveal">
 
-    <div class="flex items-center justify-between mb-3">
+    <div class="flex items-center justify-between mb-3" data-reveal>
         <h1 class="text-3xl font-bold text-white">Raids Dofus</h1>
     </div>
-    <p class="text-gray-500 text-sm mb-8 max-w-2xl">Retrouvez tous les raids publics ouverts sur Zeminal, tous serveurs Dofus confondus. Filtrez par serveur ou par type pour trouver un groupe qui correspond à votre personnage.</p>
+    <p class="text-gray-500 text-sm mb-8 max-w-2xl" data-reveal data-reveal-delay="1">Retrouvez tous les raids publics ouverts sur Zeminal, tous serveurs Dofus confondus. Filtrez par serveur ou par type pour trouver un groupe qui correspond à votre personnage.</p>
 
     {# ── Filtres ── #}
     {% set anyFilter = currentServer or filterNotFull or filterSoon or filterType %}
     <form method="get" action="{{ path('app_raid_index') }}" id="raid-filters"
-          class="bg-gray-900/60 border border-gray-800/50 rounded-2xl p-5 mb-8">
+          class="bg-gray-900/60 border border-gray-800/50 rounded-2xl p-5 mb-8" data-reveal data-reveal-delay="2">
 
         {# Ligne serveur #}
         <div class="flex items-center gap-3 flex-wrap">
@@ -102,7 +102,7 @@
 
     {# ── Mes raids ── #}
     {% if myParticipations is not empty %}
-        <div class="{{ ui.card_classes('overflow-hidden mb-8') }}">
+        <div class="{{ ui.card_classes('overflow-hidden mb-8') }}" data-reveal>
             <div class="{{ ui.card_header_classes('flex items-center justify-between') }}">
                 <h2 class="font-semibold text-white flex items-center gap-2">👤 Mes raids</h2>
                 <span class="text-xs text-gray-500">{{ myParticipations|length }} raid{{ myParticipations|length > 1 ? 's' : '' }}</span>
@@ -288,7 +288,7 @@
 
         {# ── À venir ── #}
         {% if upcomingRaids is not empty %}
-            <div class="{{ ui.card_classes('overflow-hidden mb-6') }}">
+            <div class="{{ ui.card_classes('overflow-hidden mb-6') }}" data-reveal>
                 <div class="{{ ui.card_header_classes('flex items-center justify-between') }}">
                     <h2 class="font-semibold text-white flex items-center gap-2">🕐 À venir</h2>
                     <span class="text-xs text-gray-500">{{ upcomingRaids|length }} raid{{ upcomingRaids|length > 1 ? 's' : '' }}</span>
@@ -303,7 +303,7 @@
 
         {# ── Commencés ── #}
         {% if startedRaids is not empty %}
-            <div class="{{ ui.card_classes('overflow-hidden mb-6') }}">
+            <div class="{{ ui.card_classes('overflow-hidden mb-6') }}" data-reveal>
                 <div class="{{ ui.card_header_classes('flex items-center justify-between') }}">
                     <h2 class="font-semibold text-green-400 flex items-center gap-2">⚔ Commencés</h2>
                     <span class="text-xs text-gray-500">{{ startedRaids|length }} raid{{ startedRaids|length > 1 ? 's' : '' }}</span>
@@ -318,7 +318,7 @@
 
         {# ── En cours (sans date) ── #}
         {% if ongoingRaids is not empty %}
-            <div class="{{ ui.card_classes('overflow-hidden') }}">
+            <div class="{{ ui.card_classes('overflow-hidden') }}" data-reveal>
                 <div class="{{ ui.card_header_classes('flex items-center justify-between') }}">
                     <h2 class="font-semibold text-indigo-400 flex items-center gap-2">En cours</h2>
                     <span class="text-xs text-gray-500">{{ ongoingRaids|length }} raid{{ ongoingRaids|length > 1 ? 's' : '' }}</span>

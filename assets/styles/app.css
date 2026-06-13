@@ -84,3 +84,9 @@
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
     background-color: #4B5563;
 }
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+    [data-reveal], [data-reveal].is-revealed { transition: none !important; }
+    .hero-animate, .hero-glow-animated { animation: none !important; opacity: 1 !important; transform: none !important; }
+}

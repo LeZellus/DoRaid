@@ -5,7 +5,7 @@
 {% block meta_description %}Raid Dofus {{ raid.raidTemplate.name }} organisé par {{ raid.guild.name }} sur {{ raid.guild.server.name }}{% if raid.scheduledAt %}, prévu le {{ raid.scheduledAt|date('d/m/Y à H:i') }}{% endif %}. {{ raid.acceptedParticipants|length }}/{{ raid.raidTemplate.maxParticipants }} participants.{% endblock %}
 
 {% block body %}
-<div class="max-w-6xl mx-auto px-6 py-10">
+<div class="max-w-6xl mx-auto px-6 py-10" data-controller="reveal">
 
     <a href="{{ path('app_guild_show', {slug: raid.guild.slug}) }}"
        class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-300 transition mb-6">
@@ -16,7 +16,7 @@
     </a>
 
     {# ── Hero ── #}
-    <div class="rounded-2xl border border-indigo-900/30 bg-gradient-to-br from-indigo-950/60 via-gray-900 to-gray-950 overflow-hidden mb-8">
+    <div class="rounded-2xl border border-indigo-900/30 bg-gradient-to-br from-indigo-950/60 via-gray-900 to-gray-950 overflow-hidden mb-8" data-reveal>
 
         {# Bande supérieure : statut + serveur + actions créateur #}
         <div class="flex items-center justify-between gap-4 px-8 py-3 border-b border-indigo-900/20 bg-indigo-950/20">
@@ -125,7 +125,7 @@
 
     {# ── Énigmes (pleine largeur) ── #}
     {% if raid.enigmes is not empty %}
-        <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden mb-6">
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden mb-6" data-reveal data-reveal-delay="1">
             <div class="px-6 py-4 border-b border-gray-800 flex items-center justify-between">
                 <h2 class="font-semibold text-white">Énigmes</h2>
             </div>
@@ -162,7 +162,7 @@
     {% endif %}
 
     {# ── Grid : contenu principal (50%) + sidebar commentaires (50%) ── #}
-    <div class="grid gap-6 lg:grid-cols-2 items-start">
+    <div class="grid gap-6 lg:grid-cols-2 items-start" data-reveal data-reveal-delay="2">
 
         {# ── Colonne gauche ── #}
         <div class="space-y-6">
