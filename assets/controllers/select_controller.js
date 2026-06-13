@@ -51,7 +51,7 @@ export default class extends Controller {
     const ul = this._list = document.createElement('ul')
     ul.setAttribute('role', 'listbox')
     ul.hidden = true
-    ul.className = 'absolute z-50 left-0 right-0 mt-1 bg-gray-800 border border-gray-700 rounded-xl shadow-2xl overflow-auto max-h-60 py-1'
+    ul.className = 'absolute z-50 left-0 right-0 mt-1 bg-gray-800 border border-gray-700 rounded-xl shadow-2xl overflow-y-auto max-h-60 py-1'
 
     Array.from(this._native.options).forEach(opt => {
       const li = document.createElement('li')
