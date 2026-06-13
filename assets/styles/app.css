@@ -85,8 +85,15 @@
     background-color: #4B5563;
 }
 
+/* ── Navbar CTA pulse ── */
+@keyframes nav-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.5); }
+    60%       { box-shadow: 0 0 0 7px rgba(234, 179, 8, 0); }
+}
+.nav-cta-pulse { animation: nav-pulse 2s ease-in-out infinite; }
+
 /* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
     [data-reveal], [data-reveal].is-revealed { transition: none !important; }
-    .hero-animate, .hero-glow-animated { animation: none !important; opacity: 1 !important; transform: none !important; }
+    .hero-animate, .hero-glow-animated, .nav-cta-pulse { animation: none !important; opacity: 1 !important; transform: none !important; }
 }

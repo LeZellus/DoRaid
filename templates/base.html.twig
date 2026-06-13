@@ -79,9 +79,9 @@
                         <a href="{{ path('app_guild_index') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition text-gray-400 hover:text-white hover:bg-gray-800/60">Guildes</a>
                     {% endif %}
                     {% if route starts with 'app_raid' %}
-                        <a href="{{ path('app_raid_index') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition text-white bg-gray-800">Raids</a>
+                        <a href="{{ path('app_raid_index') }}" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold transition bg-yellow-400 text-gray-950">⭐ Trouver un raid</a>
                     {% else %}
-                        <a href="{{ path('app_raid_index') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition text-gray-400 hover:text-white hover:bg-gray-800/60">Raids</a>
+                        <a href="{{ path('app_raid_index') }}" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold transition bg-yellow-500 hover:bg-yellow-400 text-gray-950 nav-cta-pulse">⭐ Trouver un raid</a>
                     {% endif %}
                 </div>
 
