@@ -101,14 +101,8 @@ class CharacterController extends AbstractController
 
         $membership = $character->getMembership();
         if ($membership !== null && $membership->getStatus() === MemberStatus::Leader) {
-            $guild = $membership->getGuild();
-            $otherMembers = $guild->getConfirmed()->filter(
-                fn($m) => $m->getCharacter()->getId() !== $character->getId()
-            );
-            if (!$otherMembers->isEmpty()) {
-                $this->addFlash('error', 'Impossible de supprimer ce personnage : il est meneur de « ' . $guild->getName() . ' » qui compte encore des membres. Supprimez la guilde ou transférez le rôle de meneur d\'abord.');
-                return $this->redirectToRoute('app_character_index');
-            }
+            $this->addFlash('error', 'Ce personnage est meneur de « ' . $membership->getGuild()->getName() . ' ». Supprimez la guilde avant de supprimer ce personnage.');
+            return $this->redirectToRoute('app_character_index');
         }
 
         $em->remove($character);
