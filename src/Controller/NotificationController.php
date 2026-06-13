@@ -9,9 +9,9 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_USER')]
-#[Route('/notifications', name: 'app_notifications')]
 class NotificationController extends AbstractController
 {
+    #[Route('/notifications', name: 'app_notifications')]
     public function index(NotificationRepository $repo): Response
     {
         $user = $this->getUser();
