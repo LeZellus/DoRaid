@@ -118,6 +118,7 @@
                             {% if raid.raidTemplate.imagePath %}
                                 <img src="{{ asset('uploads/raid-templates/' ~ raid.raidTemplate.imagePath) }}"
                                      alt="{{ raid.raidTemplate.name }}"
+                                     loading="lazy" decoding="async" width="44" height="44"
                                      class="w-11 h-11 rounded-xl object-cover shrink-0">
                             {% else %}
                                 <span class="w-11 h-11 rounded-xl bg-indigo-900/40 border border-indigo-800/30 flex items-center justify-center text-xl shrink-0">⚔</span>
@@ -141,6 +142,7 @@
                                     {% if raid.guild.imagePath %}
                                         <img src="{{ asset('uploads/guildes/' ~ raid.guild.slug ~ '/' ~ raid.guild.imagePath) }}"
                                              alt="{{ raid.guild.name }}"
+                                             loading="lazy" decoding="async" width="16" height="16"
                                              class="w-4 h-4 rounded object-cover">
                                     {% endif %}
                                     <span>{{ raid.guild.name }}</span>

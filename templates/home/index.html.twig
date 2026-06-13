@@ -312,6 +312,7 @@
                                         {% if item.guild.imagePath %}
                                             <img src="{{ asset('uploads/guildes/' ~ item.guild.slug ~ '/' ~ item.guild.imagePath) }}"
                                                  alt="{{ item.guild.name }}"
+                                                 loading="lazy" decoding="async" width="36" height="36"
                                                  class="w-9 h-9 rounded-lg object-cover shrink-0">
                                         {% else %}
                                             <div class="w-9 h-9 rounded-lg bg-indigo-900/40 flex items-center justify-center text-sm font-bold text-indigo-300 shrink-0">
@@ -354,6 +355,7 @@
                                         {% if m.guild.imagePath %}
                                             <img src="{{ asset('uploads/guildes/' ~ m.guild.slug ~ '/' ~ m.guild.imagePath) }}"
                                                  alt="{{ m.guild.name }}"
+                                                 loading="lazy" decoding="async" width="36" height="36"
                                                  class="w-9 h-9 rounded-lg object-cover shrink-0">
                                         {% else %}
                                             <div class="w-9 h-9 rounded-lg bg-gray-800 flex items-center justify-center text-sm font-bold text-gray-400 shrink-0">
@@ -365,6 +367,7 @@
                                             <div class="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
                                                 <img src="{{ asset('classes/' ~ m.character.gameClass.name|lower ~ '.png') }}"
                                                      alt="{{ m.character.gameClass.name }}"
+                                                     loading="lazy" decoding="async" width="16" height="16"
                                                      class="w-4 h-4 rounded-full object-cover shrink-0">
                                                 {{ m.character.name }}
                                                 <span class="mx-0.5 text-gray-700">·</span>
@@ -405,6 +408,7 @@
                                     {% if p.raid.raidTemplate.imagePath %}
                                         <img src="{{ asset('uploads/raid-templates/' ~ p.raid.raidTemplate.imagePath) }}"
                                              alt="{{ p.raid.raidTemplate.name }}"
+                                             loading="lazy" decoding="async" width="36" height="36"
                                              class="w-9 h-9 rounded-lg object-cover shrink-0">
                                     {% else %}
                                         <span class="w-9 h-9 rounded-lg bg-indigo-900/40 flex items-center justify-center text-lg shrink-0">⚔</span>
@@ -416,6 +420,7 @@
                                         <div class="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
                                             <img src="{{ asset('classes/' ~ p.character.gameClass.name|lower ~ '.png') }}"
                                                  alt="{{ p.character.gameClass.name }}"
+                                                 loading="lazy" decoding="async" width="16" height="16"
                                                  class="w-4 h-4 rounded-full object-cover shrink-0">
                                             {{ p.character.name }}
                                             <span class="mx-0.5 text-gray-700">·</span>
@@ -452,6 +457,7 @@
                                     {% if p.raid.raidTemplate.imagePath %}
                                         <img src="{{ asset('uploads/raid-templates/' ~ p.raid.raidTemplate.imagePath) }}"
                                              alt="{{ p.raid.raidTemplate.name }}"
+                                             loading="lazy" decoding="async" width="36" height="36"
                                              class="w-9 h-9 rounded-lg object-cover shrink-0">
                                     {% else %}
                                         <span class="w-9 h-9 rounded-lg bg-indigo-900/40 flex items-center justify-center text-lg shrink-0">⚔</span>
@@ -463,6 +469,7 @@
                                         <div class="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
                                             <img src="{{ asset('classes/' ~ p.character.gameClass.name|lower ~ '.png') }}"
                                                  alt="{{ p.character.gameClass.name }}"
+                                                 loading="lazy" decoding="async" width="16" height="16"
                                                  class="w-4 h-4 rounded-full object-cover shrink-0">
                                             {{ p.character.name }}
                                             <span class="mx-0.5 text-gray-700">·</span>
@@ -535,6 +542,7 @@
                         {% if raid.raidTemplate.imagePath %}
                             <img src="{{ asset('uploads/raid-templates/' ~ raid.raidTemplate.imagePath) }}"
                                  alt="{{ raid.raidTemplate.name }}"
+                                 loading="lazy" decoding="async" width="36" height="36"
                                  class="w-9 h-9 rounded-lg object-cover shrink-0">
                         {% else %}
                             <span class="w-9 h-9 rounded-lg bg-indigo-900/40 flex items-center justify-center text-lg shrink-0">⚔</span>
