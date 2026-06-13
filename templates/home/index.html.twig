@@ -83,26 +83,6 @@
     </div>
 </section>
 
-{# Stats #}
-<section class="border-y border-gray-800/40 bg-gray-900/30">
-    <div class="max-w-5xl mx-auto px-6 py-8">
-        <div class="grid grid-cols-3 gap-6 text-center">
-            <div>
-                <div class="text-3xl lg:text-4xl font-bold text-white tabular-nums">{{ platformStats.users }}</div>
-                <div class="text-xs text-gray-500 uppercase tracking-wider mt-1">Aventurier{{ platformStats.users > 1 ? 's' : '' }} inscrit{{ platformStats.users > 1 ? 's' : '' }}</div>
-            </div>
-            <div class="border-x border-gray-800/60">
-                <div class="text-3xl lg:text-4xl font-bold text-indigo-400 tabular-nums">{{ platformStats.raids }}</div>
-                <div class="text-xs text-gray-500 uppercase tracking-wider mt-1">Raid{{ platformStats.raids > 1 ? 's' : '' }} organisé{{ platformStats.raids > 1 ? 's' : '' }}</div>
-            </div>
-            <div>
-                <div class="text-3xl lg:text-4xl font-bold text-yellow-400 tabular-nums">{{ platformStats.guilds }}</div>
-                <div class="text-xs text-gray-500 uppercase tracking-wider mt-1">Guilde{{ platformStats.guilds > 1 ? 's' : '' }} active{{ platformStats.guilds > 1 ? 's' : '' }}</div>
-            </div>
-        </div>
-    </div>
-</section>
-
 {# ── Quick access ── #}
 <section class="max-w-5xl mx-auto px-6 pb-10" data-controller="reveal">
     <div class="grid gap-4 sm:grid-cols-2">
@@ -129,6 +109,26 @@
             <span class="text-indigo-600 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all shrink-0 text-lg font-bold">→</span>
         </a>
 
+    </div>
+</section>
+
+{# Stats #}
+<section class="border-y border-gray-800/40 bg-gray-900/30">
+    <div class="max-w-5xl mx-auto px-6 py-8">
+        <div class="grid grid-cols-3 gap-6 text-center">
+            <div>
+                <div class="text-3xl lg:text-4xl font-bold text-white tabular-nums">{{ platformStats.users }}</div>
+                <div class="text-xs text-gray-500 uppercase tracking-wider mt-1">Aventurier{{ platformStats.users > 1 ? 's' : '' }} inscrit{{ platformStats.users > 1 ? 's' : '' }}</div>
+            </div>
+            <div class="border-x border-gray-800/60">
+                <div class="text-3xl lg:text-4xl font-bold text-indigo-400 tabular-nums">{{ platformStats.raids }}</div>
+                <div class="text-xs text-gray-500 uppercase tracking-wider mt-1">Raid{{ platformStats.raids > 1 ? 's' : '' }} organisé{{ platformStats.raids > 1 ? 's' : '' }}</div>
+            </div>
+            <div>
+                <div class="text-3xl lg:text-4xl font-bold text-yellow-400 tabular-nums">{{ platformStats.guilds }}</div>
+                <div class="text-xs text-gray-500 uppercase tracking-wider mt-1">Guilde{{ platformStats.guilds > 1 ? 's' : '' }} active{{ platformStats.guilds > 1 ? 's' : '' }}</div>
+            </div>
+        </div>
     </div>
 </section>
 
