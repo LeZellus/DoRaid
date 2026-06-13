@@ -41,7 +41,15 @@ class GuildMembership
     public function setCharacter(Character $character): static { $this->character = $character; return $this; }
 
     public function getStatus(): MemberStatus { return $this->status; }
-    public function setStatus(MemberStatus $status): static { $this->status = $status; return $this; }
+    public function setStatus(MemberStatus|string $status): static
+    {
+        $this->status = is_string($status) ? MemberStatus::from($status) : $status;
+        return $this;
+    }
+
+    // Méthodes utilisées exclusivement par le composant Workflow (attend/retourne des strings)
+    public function getWorkflowStatus(): string { return $this->status->value; }
+    public function setWorkflowStatus(string $status): static { return $this->setStatus($status); }
 
     public function getRequestedAt(): \DateTimeImmutable { return $this->requestedAt; }
 }

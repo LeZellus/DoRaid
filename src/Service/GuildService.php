@@ -11,7 +11,9 @@ use App\Exception\BusinessRuleException;
 use App\Repository\GuildMembershipRepository;
 use App\Repository\GuildRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\String\Slugger\AsciiSlugger;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 class GuildService
 {
@@ -19,6 +21,8 @@ class GuildService
         private readonly GuildRepository $guildRepo,
         private readonly GuildMembershipRepository $membershipRepo,
         private readonly EntityManagerInterface $em,
+        #[Autowire(service: 'state_machine.guild_membership_status')]
+        private readonly WorkflowInterface $membershipWorkflow,
     ) {}
 
     /**
@@ -90,7 +94,11 @@ class GuildService
 
     public function approveMembership(GuildMembership $membership): void
     {
-        $membership->setStatus(MemberStatus::Member);
+        try {
+            $this->membershipWorkflow->apply($membership, 'approve');
+        } catch (\Symfony\Component\Workflow\Exception\NotEnabledTransitionException) {
+            throw new BusinessRuleException('Cette demande ne peut pas être approuvée dans son état actuel.');
+        }
         $this->em->flush();
     }
 

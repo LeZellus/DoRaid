@@ -13,6 +13,8 @@ use App\Entity\User;
 use App\Exception\BusinessRuleException;
 use App\Repository\CharacterRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 class RaidService
 {
@@ -21,6 +23,10 @@ class RaidService
         private readonly EnigmeSyncService $enigmeSyncService,
         private readonly DiscordNotifier $discord,
         private readonly EntityManagerInterface $em,
+        #[Autowire(service: 'state_machine.raid_status')]
+        private readonly WorkflowInterface $raidWorkflow,
+        #[Autowire(service: 'state_machine.raid_participant_status')]
+        private readonly WorkflowInterface $participantWorkflow,
     ) {}
 
     /**
@@ -75,7 +81,11 @@ class RaidService
 
     public function acceptParticipant(RaidParticipant $participant): void
     {
-        $participant->setStatus(RaidParticipantStatus::Accepted);
+        try {
+            $this->participantWorkflow->apply($participant, 'accept');
+        } catch (\Symfony\Component\Workflow\Exception\NotEnabledTransitionException) {
+            throw new BusinessRuleException('Ce participant ne peut pas être accepté dans son état actuel.');
+        }
         $this->em->flush();
     }
 
@@ -87,7 +97,11 @@ class RaidService
 
     public function closeRaid(Raid $raid): void
     {
-        $raid->setStatus(RaidStatus::Closed);
+        try {
+            $this->raidWorkflow->apply($raid, 'close');
+        } catch (\Symfony\Component\Workflow\Exception\NotEnabledTransitionException) {
+            throw new BusinessRuleException('Ce raid est déjà terminé.');
+        }
         $this->em->flush();
     }
 

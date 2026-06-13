@@ -42,7 +42,15 @@ class RaidParticipant
     public function setCharacter(Character $character): static { $this->character = $character; return $this; }
 
     public function getStatus(): RaidParticipantStatus { return $this->status; }
-    public function setStatus(RaidParticipantStatus $status): static { $this->status = $status; return $this; }
+    public function setStatus(RaidParticipantStatus|string $status): static
+    {
+        $this->status = is_string($status) ? RaidParticipantStatus::from($status) : $status;
+        return $this;
+    }
+
+    // Méthodes utilisées exclusivement par le composant Workflow (attend/retourne des strings)
+    public function getWorkflowStatus(): string { return $this->status->value; }
+    public function setWorkflowStatus(string $status): static { return $this->setStatus($status); }
 
     public function getJoinedAt(): \DateTimeImmutable { return $this->joinedAt; }
 

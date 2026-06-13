@@ -1,0 +1,51 @@
+framework:
+    workflows:
+
+        raid_status:
+            type: state_machine
+            marking_store:
+                type: method
+                property: workflowStatus
+            supports:
+                - App\Entity\Raid
+            initial_marking: open
+            places:
+                - open
+                - closed
+            transitions:
+                close:
+                    from: open
+                    to:   closed
+
+        raid_participant_status:
+            type: state_machine
+            marking_store:
+                type: method
+                property: workflowStatus
+            supports:
+                - App\Entity\RaidParticipant
+            initial_marking: pending
+            places:
+                - pending
+                - accepted
+            transitions:
+                accept:
+                    from: pending
+                    to:   accepted
+
+        guild_membership_status:
+            type: state_machine
+            marking_store:
+                type: method
+                property: workflowStatus
+            supports:
+                - App\Entity\GuildMembership
+            initial_marking: pending
+            places:
+                - pending
+                - member
+                - leader
+            transitions:
+                approve:
+                    from: pending
+                    to:   member

@@ -76,7 +76,15 @@ class Raid
     public function setDescription(?string $d): static { $this->description = $d; return $this; }
 
     public function getStatus(): RaidStatus { return $this->status; }
-    public function setStatus(RaidStatus $status): static { $this->status = $status; return $this; }
+    public function setStatus(RaidStatus|string $status): static
+    {
+        $this->status = is_string($status) ? RaidStatus::from($status) : $status;
+        return $this;
+    }
+
+    // Méthodes utilisées exclusivement par le composant Workflow (attend/retourne des strings)
+    public function getWorkflowStatus(): string { return $this->status->value; }
+    public function setWorkflowStatus(string $status): static { return $this->setStatus($status); }
 
     public function getScheduledAt(): ?\DateTimeImmutable { return $this->scheduledAt; }
     public function setScheduledAt(?\DateTimeImmutable $d): static { $this->scheduledAt = $d; return $this; }
