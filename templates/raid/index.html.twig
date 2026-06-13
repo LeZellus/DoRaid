@@ -1,14 +1,16 @@
 {% extends 'base.html.twig' %}
 {% import 'components/_ui.html.twig' as ui %}
 
-{% block title %}Raids – Zeminal{% endblock %}
+{% block title %}Raids Dofus publics – Tous serveurs – Zeminal{% endblock %}
+{% block meta_description %}Tous les raids Dofus publics, ouverts sur tous les serveurs. Rejoignez un groupe ou publiez votre propre raid pour recruter des joueurs.{% endblock %}
 
 {% block body %}
 <div class="max-w-6xl mx-auto px-6 py-12">
 
-    <div class="flex items-center justify-between mb-8">
-        <h1 class="text-3xl font-bold text-white">Raids</h1>
+    <div class="flex items-center justify-between mb-3">
+        <h1 class="text-3xl font-bold text-white">Raids Dofus</h1>
     </div>
+    <p class="text-gray-500 text-sm mb-8 max-w-2xl">Retrouvez tous les raids publics ouverts sur Zeminal, tous serveurs Dofus confondus. Filtrez par serveur ou par type pour trouver un groupe qui correspond à votre personnage.</p>
 
     {# ── Filtres ── #}
     {% set anyFilter = currentServer or filterNotFull or filterSoon or filterType %}
