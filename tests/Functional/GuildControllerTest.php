@@ -211,7 +211,10 @@ class GuildControllerTest extends WebTestCaseBase
         $guildA     = $this->makeGuild($owner, $server);
         $this->makeMembership($guildA, $ownerChar, MemberStatus::Leader);
 
-        $guildB    = $this->makeGuild($owner, $server);
+        $guildB      = $this->makeGuild($owner, $server);
+        $ownerCharB  = $this->makeCharacter($owner, $server);
+        $this->makeMembership($guildB, $ownerCharB, MemberStatus::Leader);
+
         $applicant = $this->makeUser('alreadyin@test.com');
         $appChar   = $this->makeCharacter($applicant, $server);
         $this->makeMembership($guildA, $appChar, MemberStatus::Member);

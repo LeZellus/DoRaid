@@ -130,6 +130,7 @@ abstract class WebTestCaseBase extends WebTestCase
     {
         $m = (new GuildMembership())->setGuild($guild)->setCharacter($char)->setStatus($status);
         $this->em->persist($m);
+        $guild->getMemberships()->add($m);
         return $m;
     }
 

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Character;
+use App\Entity\MemberStatus;
 use App\Form\CharacterEditType;
 use App\Form\CharacterType;
 use App\Repository\CharacterRepository;
@@ -97,6 +98,13 @@ class CharacterController extends AbstractController
         }
 
         $this->requireCsrfToken('delete_character_' . $character->getId(), $request);
+
+        $membership = $character->getMembership();
+        if ($membership !== null && $membership->getStatus() === MemberStatus::Leader) {
+            $this->addFlash('error', 'Impossible de supprimer ce personnage : il est meneur de la guilde « ' . $membership->getGuild()->getName() . ' ». Transférez le rôle de meneur avant de le supprimer.');
+            return $this->redirectToRoute('app_character_index');
+        }
+
         $em->remove($character);
         $em->flush();
         $this->addFlash('success', 'Personnage supprimé.');
