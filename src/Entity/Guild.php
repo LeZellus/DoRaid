@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Character;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -108,6 +109,16 @@ class Guild
         return $this->memberships->filter(
             fn(GuildMembership $m) => $m->getStatus() === MemberStatus::Pending
         );
+    }
+
+    public function getLeaderCharacter(): ?Character
+    {
+        foreach ($this->memberships as $m) {
+            if ($m->getStatus() === MemberStatus::Leader) {
+                return $m->getCharacter();
+            }
+        }
+        return null;
     }
 
     public function hasLeader(): bool

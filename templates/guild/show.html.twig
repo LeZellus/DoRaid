@@ -67,7 +67,8 @@
                     </div>
                     <h1 class="text-4xl font-bold text-white tracking-tight">{{ guild.name }}</h1>
                     <p class="text-gray-400 text-sm mt-2">
-                        Fondée par <span class="text-gray-200 font-medium">{{ guild.owner.username }}</span>
+                        {% set leader = guild.leaderCharacter %}
+                        Meneur · <span class="text-gray-200 font-medium">{{ leader ? leader.name : guild.owner.username }}</span>
                         <span class="text-gray-700 mx-2">·</span>
                         {{ guild.createdAt|date('d/m/Y') }}
                     </p>
