@@ -4,7 +4,7 @@
 {% block title %}Modifier {{ raid.raidTemplate.name }} – DoRaid{% endblock %}
 
 {% block body %}
-<div class="max-w-xl mx-auto px-6 py-12">
+<div class="max-w-2xl mx-auto px-6 py-10">
 
     <a href="{{ path('app_raid_show', {id: raid.id}) }}"
        class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-300 transition mb-6">
@@ -14,59 +14,89 @@
         Retour au raid
     </a>
 
-    {# En-tête avec image du template #}
-    <div class="flex items-center gap-4 mb-8">
-        {% if raid.raidTemplate.imagePath %}
-            <img src="{{ asset('uploads/raid-templates/' ~ raid.raidTemplate.imagePath) }}"
-                 alt="{{ raid.raidTemplate.name }}"
-                 class="w-12 h-12 rounded-xl object-cover shrink-0">
-        {% else %}
-            <span class="w-12 h-12 rounded-xl bg-indigo-900/40 border border-indigo-800/30 flex items-center justify-center text-2xl shrink-0">⚔</span>
-        {% endif %}
-        <div>
-            <h1 class="text-2xl font-bold text-white">Modifier le raid</h1>
-            <p class="text-sm text-gray-500 mt-0.5">{{ raid.raidTemplate.name }} · {{ raid.guild.name }}</p>
+    {# ── Hero ── #}
+    <div class="rounded-2xl bg-gradient-to-br from-indigo-950/60 via-gray-900 to-gray-950 border border-indigo-900/30 px-8 py-6 mb-8">
+        <div class="flex items-center gap-5">
+            {% if raid.raidTemplate.imagePath %}
+                <img src="{{ asset('uploads/raid-templates/' ~ raid.raidTemplate.imagePath) }}"
+                     alt="{{ raid.raidTemplate.name }}"
+                     class="w-16 h-16 rounded-2xl object-cover border border-indigo-800/30 shrink-0">
+            {% else %}
+                <div class="w-16 h-16 rounded-2xl bg-indigo-900/40 border border-indigo-800/30 flex items-center justify-center text-3xl shrink-0">⚔</div>
+            {% endif %}
+            <div>
+                <p class="text-xs font-semibold text-indigo-400 uppercase tracking-widest mb-1">Modifier le raid</p>
+                <h1 class="text-2xl font-bold text-white leading-tight">{{ raid.raidTemplate.name }}</h1>
+                <p class="text-sm text-gray-500 mt-1">{{ raid.guild.name }} · {{ raid.guild.server.name }}</p>
+            </div>
         </div>
     </div>
 
-    {{ form_start(form, {attr: {class: 'space-y-5'}}) }}
+    {{ form_start(form, {attr: {class: 'space-y-4'}}) }}
 
-        {{ form_row(form.description) }}
-
-        {# Date et heure #}
-        <div>
-            {{ form_label(form.scheduledAt, null, {
-                label_attr: { class: 'block text-sm font-medium text-gray-300 mb-2' }
-            }) }}
-            {{ form_widget(form.scheduledAt, {
-                attr: {
-                    class: 'w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent cursor-pointer',
-                    style: 'color-scheme: dark',
-                    id: 'scheduledAt'
-                }
-            }) }}
-            {{ form_errors(form.scheduledAt) }}
-        </div>
-
-        {# Visibilité #}
-        <div class="flex items-center justify-between bg-gray-800/40 border border-gray-700/50 rounded-xl px-4 py-3">
-            <div>
-                <p class="text-sm font-medium text-white">Raid public</p>
-                <p class="text-xs text-gray-500 mt-0.5">Visible par tous les membres du site</p>
+        {# ── Description ── #}
+        <div class="{{ ui.card_classes('overflow-hidden') }}">
+            <div class="{{ ui.card_header_classes() }}">
+                <h2 class="text-sm font-semibold text-white">Description</h2>
+                <p class="text-xs text-gray-500 mt-0.5">Prérequis, stratégie, contexte du raid</p>
             </div>
-            <label class="relative inline-flex items-center cursor-pointer">
-                {{ form_widget(form.isPublic, {attr: {class: 'sr-only peer', id: 'raid_isPublic'}}) }}
-                <div class="w-11 h-6 bg-gray-700 rounded-full peer peer-checked:bg-indigo-600
-                            after:content-[''] after:absolute after:top-[2px] after:left-[2px]
-                            after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all
-                            peer-checked:after:translate-x-5"></div>
-            </label>
+            <div class="{{ ui.card_body_classes() }}">
+                {{ form_widget(form.description, {attr: {
+                    placeholder: 'Décrivez vos attentes, prérequis, stratégie…',
+                    rows: 4
+                }}) }}
+                {{ form_errors(form.description) }}
+            </div>
         </div>
 
+        {# ── Planification ── #}
+        <div class="{{ ui.card_classes('overflow-hidden') }}">
+            <div class="{{ ui.card_header_classes() }}">
+                <h2 class="text-sm font-semibold text-white">Planification</h2>
+                <p class="text-xs text-gray-500 mt-0.5">Date et heure de départ</p>
+            </div>
+            <div class="{{ ui.card_body_classes() }}">
+                {{ form_label(form.scheduledAt, null, {
+                    label_attr: { class: 'block text-sm font-medium text-gray-300 mb-2' }
+                }) }}
+                {{ form_widget(form.scheduledAt, {
+                    attr: {
+                        class: 'w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent cursor-pointer',
+                        style: 'color-scheme: dark',
+                        id: 'scheduledAt'
+                    }
+                }) }}
+                {{ form_errors(form.scheduledAt) }}
+            </div>
+        </div>
+
+        {# ── Visibilité ── #}
+        <div class="{{ ui.card_classes('overflow-hidden') }}">
+            <div class="{{ ui.card_header_classes() }}">
+                <h2 class="text-sm font-semibold text-white">Visibilité</h2>
+            </div>
+            <div class="{{ ui.card_body_classes() }}">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-white">Raid public</p>
+                        <p class="text-xs text-gray-500 mt-0.5">Visible et accessible à tous les joueurs du site</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer shrink-0 ml-4">
+                        {{ form_widget(form.isPublic, {attr: {class: 'sr-only peer', id: 'raid_isPublic'}}) }}
+                        <div class="w-11 h-6 bg-gray-700 rounded-full peer peer-checked:bg-indigo-600
+                                    after:content-[''] after:absolute after:top-[2px] after:left-[2px]
+                                    after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all
+                                    peer-checked:after:translate-x-5"></div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        {# ── Actions ── #}
         <div class="flex items-center gap-3 pt-2">
             {{ ui.button('Enregistrer', 'primary', 'submit', 'flex-1') }}
             <a href="{{ path('app_raid_show', {id: raid.id}) }}"
-               class="flex-1 inline-flex items-center justify-center gap-2 font-semibold rounded-xl transition border border-gray-600 hover:border-gray-400 text-gray-300 hover:text-white py-2.5 px-5 text-sm">
+               class="flex-1 inline-flex items-center justify-center gap-2 font-semibold rounded-xl transition border border-gray-700 hover:border-gray-500 text-gray-400 hover:text-white py-2.5 px-5 text-sm">
                 Annuler
             </a>
         </div>
