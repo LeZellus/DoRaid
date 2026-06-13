@@ -105,6 +105,21 @@
                 {% if raid.description %}
                     <p class="text-gray-400 text-sm mt-3 leading-relaxed border-t border-gray-800/60 pt-3">{{ raid.description }}</p>
                 {% endif %}
+                {% if app.user %}
+                    {% set _myChar = participantsByUser[app.user.id] ?? null %}
+                    {% if _myChar %}
+                        {% set _myAccepted = false %}
+                        {% for _p in raid.acceptedParticipants %}
+                            {% if _p.character.id == _myChar.id %}{% set _myAccepted = true %}{% endif %}
+                        {% endfor %}
+                        <div class="flex items-center gap-2 text-xs mt-3 border-t border-gray-800/60 pt-3 {{ _myAccepted ? 'text-emerald-400' : 'text-yellow-400' }}">
+                            <img src="{{ asset('classes/' ~ _myChar.gameClass.name|lower ~ '.png') }}" alt="{{ _myChar.gameClass.name }}" class="w-4 h-4 rounded-full object-cover shrink-0">
+                            {{ _myAccepted ? 'Vous participez avec' : 'Candidature en attente avec' }}
+                            <span class="font-semibold {{ _myAccepted ? 'text-emerald-300' : 'text-yellow-300' }}">{{ _myChar.name }}</span>
+                            <span class="text-gray-500">— {{ _myChar.gameClass.name }}</span>
+                        </div>
+                    {% endif %}
+                {% endif %}
             </div>
 
             {# Compteurs #}
