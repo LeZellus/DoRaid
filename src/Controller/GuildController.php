@@ -6,13 +6,16 @@ use App\Entity\Guild;
 use App\Entity\GuildMembership;
 use App\Entity\MemberStatus;
 use App\Entity\RaidStatus;
+use App\Exception\BusinessRuleException;
 use App\Form\GuildEditType;
 use App\Form\GuildType;
 use App\Repository\CharacterRepository;
 use App\Repository\GuildMembershipRepository;
 use App\Repository\GuildRepository;
 use App\Repository\RaidRepository;
+use App\Security\GuildVoter;
 use App\Service\FileUploadService;
+use App\Service\GuildService;
 use App\Traits\CsrfGuardTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,6 +32,7 @@ class GuildController extends AbstractController
 
     public function __construct(
         private readonly CharacterRepository $charRepo,
+        private readonly GuildService $guildService,
         private readonly FileUploadService $fileUpload,
     ) {}
 
@@ -53,7 +57,7 @@ class GuildController extends AbstractController
 
     #[IsGranted('ROLE_USER')]
     #[Route('/creer', name: 'app_guild_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $em, GuildRepository $repo): Response
+    public function new(Request $request): Response
     {
         $user       = $this->getUser();
         $allChars   = $this->charRepo->findByUser($user);
@@ -89,30 +93,16 @@ class GuildController extends AbstractController
                 ]);
             }
 
-            if ($character->getMembership() !== null) {
-                $this->addFlash('error', 'Ce personnage est déjà dans une guilde.');
+            try {
+                $this->guildService->createGuild($guild, $character, $user);
+                $this->addFlash('success', $character->getName() . ' est maintenant meneur de ' . $guild->getName() . ' !');
+                return $this->redirectToRoute('app_guild_show', ['slug' => $guild->getSlug()]);
+            } catch (BusinessRuleException $e) {
+                $this->addFlash('error', $e->getMessage());
                 return $this->render('guild/new.html.twig', [
                     'form' => $form, 'charsByServerId' => $charsByServerId, 'submittedCharId' => $characterId,
                 ]);
             }
-
-            if ((int) $character->getServer()->getId() !== (int) $guild->getServer()->getId()) {
-                $this->addFlash('error', 'Ce personnage n\'est pas sur le serveur sélectionné pour la guilde.');
-                return $this->render('guild/new.html.twig', [
-                    'form' => $form, 'charsByServerId' => $charsByServerId, 'submittedCharId' => $characterId,
-                ]);
-            }
-
-            $guild->setOwner($user);
-            $guild->setSlug($this->uniqueSlug($guild->getName(), $repo));
-            $em->persist($guild);
-            $em->persist(
-                (new GuildMembership())->setGuild($guild)->setCharacter($character)->setStatus(MemberStatus::Leader)
-            );
-            $em->flush();
-
-            $this->addFlash('success', $character->getName() . ' est maintenant meneur de ' . $guild->getName() . ' !');
-            return $this->redirectToRoute('app_guild_show', ['slug' => $guild->getSlug()]);
         }
 
         return $this->render('guild/new.html.twig', [
@@ -124,12 +114,12 @@ class GuildController extends AbstractController
     public function show(Guild $guild, RaidRepository $raidRepo, EntityManagerInterface $em): Response
     {
         $currentUser = $this->getUser();
-        $isOwner     = $currentUser && $guild->getOwner()->getId() === $currentUser->getId();
+        $isOwner     = $currentUser && (int) $guild->getOwner()->getId() === (int) $currentUser->getId();
 
         if ($isOwner) {
             $changed = false;
             foreach ($guild->getPending() as $membership) {
-                if ($membership->getCharacter()->getUser()->getId() === $currentUser->getId()) {
+                if ((int) $membership->getCharacter()->getUser()->getId() === (int) $currentUser->getId()) {
                     $membership->setStatus(MemberStatus::Member);
                     $changed = true;
                 }
@@ -166,14 +156,14 @@ class GuildController extends AbstractController
 
         return $this->render('guild/members.html.twig', [
             'guild'    => $guild,
-            'isOwner'  => $currentUser && $guild->getOwner()->getId() === $currentUser->getId(),
+            'isOwner'  => $currentUser && (int) $guild->getOwner()->getId() === (int) $currentUser->getId(),
             'isLeader' => $currentUser && $guild->isLeaderOf($currentUser),
         ]);
     }
 
     #[IsGranted('ROLE_USER')]
     #[Route('/{slug}/rejoindre', name: 'app_guild_join', methods: ['POST'])]
-    public function join(Guild $guild, Request $request, GuildMembershipRepository $membershipRepo, EntityManagerInterface $em): Response
+    public function join(Guild $guild, Request $request): Response
     {
         if (!$this->isCsrfTokenValid('join_guild_' . $guild->getId(), $request->request->get('_token'))) {
             $this->addFlash('error', 'Token de sécurité invalide. Rechargez la page et réessayez.');
@@ -189,48 +179,29 @@ class GuildController extends AbstractController
             return $this->redirectToRoute('app_guild_show', ['slug' => $guild->getSlug()]);
         }
 
-        if ((int) $character->getServer()->getId() !== (int) $guild->getServer()->getId()) {
-            $this->addFlash('error', 'Ce personnage n\'est pas sur le même serveur que la guilde.');
-            return $this->redirectToRoute('app_guild_show', ['slug' => $guild->getSlug()]);
+        try {
+            $status = $this->guildService->joinGuild($guild, $character, $currentUser);
+            $this->addFlash('success', match($status) {
+                MemberStatus::Leader  => $character->getName() . ' est maintenant meneur de ' . $guild->getName() . ' !',
+                MemberStatus::Member  => $character->getName() . ' a rejoint ' . $guild->getName() . ' !',
+                MemberStatus::Pending => $character->getName() . ' a demandé à rejoindre ' . $guild->getName() . '. En attente de validation.',
+            });
+        } catch (BusinessRuleException $e) {
+            $this->addFlash('error', $e->getMessage());
         }
-
-        if ($membershipRepo->findOneBy(['character' => $character]) !== null) {
-            $this->addFlash('error', 'Ce personnage est déjà dans une guilde.');
-            return $this->redirectToRoute('app_guild_show', ['slug' => $guild->getSlug()]);
-        }
-
-        $isOwner = (int) $guild->getOwner()->getId() === (int) $currentUser->getId();
-        $status  = match(true) {
-            $isOwner && !$guild->hasLeader() => MemberStatus::Leader,
-            $isOwner                         => MemberStatus::Member,
-            default                          => MemberStatus::Pending,
-        };
-
-        $em->persist((new GuildMembership())->setGuild($guild)->setCharacter($character)->setStatus($status));
-        $em->flush();
-
-        $this->addFlash('success', match($status) {
-            MemberStatus::Leader  => $character->getName() . ' est maintenant meneur de ' . $guild->getName() . ' !',
-            MemberStatus::Member  => $character->getName() . ' a rejoint ' . $guild->getName() . ' !',
-            MemberStatus::Pending => $character->getName() . ' a demandé à rejoindre ' . $guild->getName() . '. En attente de validation.',
-        });
 
         return $this->redirectToRoute('app_guild_show', ['slug' => $guild->getSlug()]);
     }
 
     #[IsGranted('ROLE_USER')]
     #[Route('/membres/{id}/approuver', name: 'app_guild_approve', methods: ['POST'])]
-    public function approve(GuildMembership $membership, Request $request, EntityManagerInterface $em): Response
+    public function approve(GuildMembership $membership, Request $request): Response
     {
         $guild = $membership->getGuild();
         $this->requireCsrfToken('membership_' . $membership->getId(), $request);
+        $this->denyAccessUnlessGranted(GuildVoter::LEADER, $guild);
 
-        if (!$guild->isLeaderOf($this->getUser())) {
-            throw $this->createAccessDeniedException();
-        }
-
-        $membership->setStatus(MemberStatus::Member);
-        $em->flush();
+        $this->guildService->approveMembership($membership);
 
         $this->addFlash('success', $membership->getCharacter()->getName() . ' est maintenant membre.');
         return $this->redirectToRoute('app_guild_members', ['slug' => $guild->getSlug()]);
@@ -238,70 +209,60 @@ class GuildController extends AbstractController
 
     #[IsGranted('ROLE_USER')]
     #[Route('/membres/{id}/refuser', name: 'app_guild_reject', methods: ['POST'])]
-    public function reject(GuildMembership $membership, Request $request, EntityManagerInterface $em): Response
+    public function reject(GuildMembership $membership, Request $request): Response
     {
         $guild = $membership->getGuild();
         $this->requireCsrfToken('membership_' . $membership->getId(), $request);
+        $this->denyAccessUnlessGranted(GuildVoter::LEADER, $guild);
 
-        if (!$guild->isLeaderOf($this->getUser())) {
-            throw $this->createAccessDeniedException();
+        try {
+            $name = $membership->getCharacter()->getName();
+            $this->guildService->rejectMembership($membership);
+            $this->addFlash('success', $name . ' a été retiré de la guilde.');
+        } catch (BusinessRuleException $e) {
+            $this->addFlash('error', $e->getMessage());
         }
 
-        if ($membership->getStatus() === MemberStatus::Leader) {
-            $this->addFlash('error', 'Le meneur ne peut pas être exclu.');
-            return $this->redirectToRoute('app_guild_members', ['slug' => $guild->getSlug()]);
-        }
-
-        $name = $membership->getCharacter()->getName();
-        $em->remove($membership);
-        $em->flush();
-
-        $this->addFlash('success', $name . ' a été retiré de la guilde.');
         return $this->redirectToRoute('app_guild_members', ['slug' => $guild->getSlug()]);
     }
 
     #[IsGranted('ROLE_USER')]
     #[Route('/membres/{id}/quitter', name: 'app_guild_leave', methods: ['POST'])]
-    public function leave(GuildMembership $membership, Request $request, EntityManagerInterface $em): Response
+    public function leave(GuildMembership $membership, Request $request): Response
     {
         $this->requireCsrfToken('leave_' . $membership->getId(), $request);
 
-        if ($membership->getCharacter()->getUser()->getId() !== $this->getUser()->getId()) {
+        if ((int) $membership->getCharacter()->getUser()->getId() !== (int) $this->getUser()->getId()) {
             throw $this->createAccessDeniedException();
         }
 
-        if ($membership->getStatus() === MemberStatus::Leader) {
-            $this->addFlash('error', 'Le meneur ne peut pas quitter la guilde.');
-            return $this->redirectToRoute('app_guild_show', ['slug' => $membership->getGuild()->getSlug()]);
+        try {
+            $guildSlug = $membership->getGuild()->getSlug();
+            $this->guildService->leaveGuild($membership);
+            $this->addFlash('success', 'Vous avez quitté la guilde.');
+        } catch (BusinessRuleException $e) {
+            $guildSlug = $membership->getGuild()->getSlug();
+            $this->addFlash('error', $e->getMessage());
+            return $this->redirectToRoute('app_guild_show', ['slug' => $guildSlug]);
         }
-
-        $guildSlug = $membership->getGuild()->getSlug();
-        $em->remove($membership);
-        $em->flush();
-
-        $this->addFlash('success', 'Vous avez quitté la guilde.');
 
         $referer = $request->headers->get('referer');
         return $referer ? $this->redirect($referer) : $this->redirectToRoute('app_guild_show', ['slug' => $guildSlug]);
     }
 
+    #[IsGranted('GUILD_LEADER', subject: 'guild')]
     #[IsGranted('ROLE_USER')]
     #[Route('/{slug}/supprimer', name: 'app_guild_delete', methods: ['POST'])]
-    public function delete(Guild $guild, Request $request, EntityManagerInterface $em): Response
+    public function delete(Guild $guild, Request $request): Response
     {
         $this->requireCsrfToken('delete_guild_' . $guild->getId(), $request);
-
-        if (!$guild->isLeaderOf($this->getUser())) {
-            throw $this->createAccessDeniedException();
-        }
-
-        $em->remove($guild);
-        $em->flush();
+        $this->guildService->deleteGuild($guild);
 
         $this->addFlash('success', 'La guilde a été supprimée.');
         return $this->redirectToRoute('app_guild_index');
     }
 
+    #[IsGranted('GUILD_LEADER', subject: 'guild')]
     #[IsGranted('ROLE_USER')]
     #[Route('/{slug}/modifier', name: 'app_guild_edit', methods: ['GET', 'POST'])]
     public function edit(
@@ -310,10 +271,6 @@ class GuildController extends AbstractController
         EntityManagerInterface $em,
         #[Autowire('%kernel.project_dir%')] string $projectDir,
     ): Response {
-        if (!$guild->isLeaderOf($this->getUser())) {
-            throw $this->createAccessDeniedException();
-        }
-
         $form = $this->createForm(GuildEditType::class, $guild);
         $form->handleRequest($request);
 
@@ -333,19 +290,5 @@ class GuildController extends AbstractController
         }
 
         return $this->render('guild/edit.html.twig', ['guild' => $guild, 'form' => $form]);
-    }
-
-    private function uniqueSlug(string $name, GuildRepository $repo, ?int $excludeId = null): string
-    {
-        $base = (new \Symfony\Component\String\Slugger\AsciiSlugger('fr'))->slug($name)->lower()->toString();
-        $slug = $base;
-        $i    = 2;
-        while (true) {
-            $existing = $repo->findOneBy(['slug' => $slug]);
-            if ($existing === null || $existing->getId() === $excludeId) {
-                return $slug;
-            }
-            $slug = $base . '-' . $i++;
-        }
     }
 }

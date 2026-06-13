@@ -122,7 +122,8 @@ class Raid
     public function isParticipant(Character $character): bool
     {
         return $this->participants->exists(
-            fn($_, RaidParticipant $p) => $p->getCharacter()->getId() === $character->getId()
+            fn($_, RaidParticipant $p) => $p->getCharacter() === $character
+                || ($character->getId() !== null && $p->getCharacter()->getId() === $character->getId())
         );
     }
 
