@@ -143,8 +143,50 @@
             {% block body %}{% endblock %}
         </main>
 
-        <footer class="border-t border-gray-800/60 text-center py-5 text-xs text-gray-600 mt-auto">
-            Zeminal &copy; {{ "now"|date("Y") }}
+        <footer class="border-t border-gray-800/60 mt-auto">
+            <div class="max-w-6xl mx-auto px-6 py-10">
+                <div class="grid gap-8 md:grid-cols-3">
+
+                    {# Branding #}
+                    <div>
+                        <a href="{{ path('app_home') }}" class="inline-flex items-center gap-2 group mb-3">
+                            <span class="text-indigo-400 text-lg group-hover:text-indigo-300 transition">⚔</span>
+                            <span class="font-bold text-white tracking-tight">Zeminal</span>
+                        </a>
+                        <p class="text-xs text-gray-500 leading-relaxed max-w-xs">
+                            La plateforme de gestion de raids pour les guildes Dofus. Gratuit, tous serveurs.
+                        </p>
+                    </div>
+
+                    {# Navigation #}
+                    <div>
+                        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Navigation</p>
+                        <ul class="space-y-2">
+                            <li><a href="{{ path('app_raid_index') }}" class="text-xs text-gray-500 hover:text-gray-300 transition">Raids Dofus</a></li>
+                            <li><a href="{{ path('app_guild_index') }}" class="text-xs text-gray-500 hover:text-gray-300 transition">Guildes</a></li>
+                            {% if not app.user %}
+                                <li><a href="{{ path('app_register') }}" class="text-xs text-gray-500 hover:text-gray-300 transition">Créer un compte</a></li>
+                                <li><a href="{{ path('app_login') }}" class="text-xs text-gray-500 hover:text-gray-300 transition">Connexion</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+
+                    {# Legal #}
+                    <div>
+                        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Légal</p>
+                        <ul class="space-y-2">
+                            <li><a href="{{ path('app_legal_mentions') }}" class="text-xs text-gray-500 hover:text-gray-300 transition">Mentions légales</a></li>
+                            <li><a href="mailto:contact@zeminal.tech" class="text-xs text-gray-500 hover:text-gray-300 transition">Contact</a></li>
+                        </ul>
+                    </div>
+
+                </div>
+
+                <div class="border-t border-gray-800/60 mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between gap-2">
+                    <p class="text-xs text-gray-600">Zeminal &copy; {{ "now"|date("Y") }} — Tous droits réservés</p>
+                    <p class="text-xs text-gray-700">Zeminal n'est pas affilié à Ankama Games</p>
+                </div>
+            </div>
         </footer>
 
     </body>
