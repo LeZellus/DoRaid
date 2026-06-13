@@ -3,7 +3,10 @@
 namespace App\Service;
 
 use App\Entity\Character;
+use App\Entity\Guild;
+use App\Entity\GuildMembership;
 use App\Entity\Notification;
+use App\Entity\MemberStatus;
 use App\Entity\Raid;
 use App\Entity\RaidParticipant;
 use App\Entity\User;
@@ -54,6 +57,46 @@ class NotificationService
             'Retiré d\'un raid',
             'Votre personnage ' . $participant->getCharacter()->getName() . ' a été retiré du raid ' . $raid->getRaidTemplate()->getName() . ' (' . $raid->getGuild()->getName() . ')',
             $this->router->generate('app_raid_show', ['id' => $raid->getId()]),
+        );
+    }
+
+    public function notifyMembershipRequested(GuildMembership $membership): void
+    {
+        $character = $membership->getCharacter();
+        $guild     = $membership->getGuild();
+
+        foreach ($guild->getMemberships() as $m) {
+            if ($m->getStatus() === MemberStatus::Leader) {
+                $this->persist(
+                    $m->getCharacter()->getUser(),
+                    'membership_pending',
+                    'Nouvelle demande d\'adhésion',
+                    $character->getName() . ' demande à rejoindre ' . $guild->getName(),
+                    $this->router->generate('app_guild_members', ['slug' => $guild->getSlug()]),
+                );
+            }
+        }
+    }
+
+    public function notifyMembershipApproved(GuildMembership $membership): void
+    {
+        $this->persist(
+            $membership->getCharacter()->getUser(),
+            'membership_approved',
+            'Demande acceptée',
+            'Votre personnage ' . $membership->getCharacter()->getName() . ' a rejoint ' . $membership->getGuild()->getName(),
+            $this->router->generate('app_guild_show', ['slug' => $membership->getGuild()->getSlug()]),
+        );
+    }
+
+    public function notifyMembershipRejected(GuildMembership $membership): void
+    {
+        $this->persist(
+            $membership->getCharacter()->getUser(),
+            'membership_rejected',
+            'Demande refusée',
+            'La demande de ' . $membership->getCharacter()->getName() . ' pour rejoindre ' . $membership->getGuild()->getName() . ' a été refusée',
+            $this->router->generate('app_guild_index'),
         );
     }
 

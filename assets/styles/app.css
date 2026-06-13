@@ -98,8 +98,20 @@
 }
 .nav-cta-star { animation: star-pop 2s ease-in-out infinite; }
 
+/* ── Bell ring (notifications non-lues) ── */
+@keyframes bell-ring {
+    0%   { transform: rotate(0); }
+    6%   { transform: rotate(20deg); }
+    12%  { transform: rotate(-18deg); }
+    18%  { transform: rotate(14deg); }
+    24%  { transform: rotate(-8deg); }
+    30%  { transform: rotate(0); }
+    100% { transform: rotate(0); }
+}
+.bell-active svg { animation: bell-ring 4s ease-in-out infinite; transform-origin: top center; }
+
 /* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
     [data-reveal], [data-reveal].is-revealed { transition: none !important; }
-    .hero-animate, .hero-glow-animated, .nav-cta-pulse, .nav-cta-star { animation: none !important; opacity: 1 !important; transform: none !important; }
+    .hero-animate, .hero-glow-animated, .nav-cta-pulse, .nav-cta-star, .bell-active svg { animation: none !important; opacity: 1 !important; transform: none !important; }
 }

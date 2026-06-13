@@ -10,6 +10,7 @@ use App\Entity\Character;
 use App\Exception\BusinessRuleException;
 use App\Repository\GuildMembershipRepository;
 use App\Repository\GuildRepository;
+use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\String\Slugger\AsciiSlugger;
@@ -20,6 +21,7 @@ class GuildService
     public function __construct(
         private readonly GuildRepository $guildRepo,
         private readonly GuildMembershipRepository $membershipRepo,
+        private readonly NotificationService $notificationService,
         private readonly EntityManagerInterface $em,
         #[Autowire(service: 'state_machine.guild_membership_status')]
         private readonly WorkflowInterface $membershipWorkflow,
@@ -72,7 +74,13 @@ class GuildService
             default                          => MemberStatus::Pending,
         };
 
-        $this->em->persist((new GuildMembership())->setGuild($guild)->setCharacter($character)->setStatus($status));
+        $membership = (new GuildMembership())->setGuild($guild)->setCharacter($character)->setStatus($status);
+        $this->em->persist($membership);
+
+        if ($status === MemberStatus::Pending) {
+            $this->notificationService->notifyMembershipRequested($membership);
+        }
+
         $this->em->flush();
 
         return $status;
@@ -99,6 +107,7 @@ class GuildService
         } catch (\Symfony\Component\Workflow\Exception\NotEnabledTransitionException) {
             throw new BusinessRuleException('Cette demande ne peut pas être approuvée dans son état actuel.');
         }
+        $this->notificationService->notifyMembershipApproved($membership);
         $this->em->flush();
     }
 
@@ -108,6 +117,7 @@ class GuildService
             throw new BusinessRuleException('Le meneur ne peut pas être exclu.');
         }
 
+        $this->notificationService->notifyMembershipRejected($membership);
         $this->em->remove($membership);
         $this->em->flush();
     }

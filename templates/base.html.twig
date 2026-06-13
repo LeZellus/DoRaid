@@ -107,15 +107,16 @@
                     {% set _unread = notification_unread_count() %}
                     <a href="{{ path('app_notifications') }}"
                        title="Notifications"
-                       class="relative flex items-center justify-center w-9 h-9 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800/60 transition ml-auto">
+                       data-controller="notification-poll"
+                       data-notification-poll-url-value="{{ path('api_notifications_unread') }}"
+                       class="relative flex items-center justify-center w-9 h-9 rounded-lg transition ml-auto {{ _unread > 0 ? 'text-indigo-300 hover:text-indigo-200 hover:bg-indigo-900/20 bell-active' : 'text-gray-400 hover:text-white hover:bg-gray-800/60' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-2.83-2h5.66A3 3 0 0110 18z"/>
                         </svg>
-                        {% if _unread > 0 %}
-                            <span class="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 bg-indigo-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-0.5 leading-none">
-                                {{ _unread > 9 ? '9+' : _unread }}
-                            </span>
-                        {% endif %}
+                        <span data-notification-poll-target="badge"
+                              class="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-indigo-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-0.5 leading-none ring-2 ring-gray-900 {{ _unread == 0 ? 'hidden' : '' }}">
+                            {{ _unread > 9 ? '9+' : _unread }}
+                        </span>
                     </a>
 
                     {# Profil + déconnexion #}

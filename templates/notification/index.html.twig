@@ -27,6 +27,15 @@
                 {% elseif n.type == 'participation_kicked' %}
                     {% set icon = '✕' %}
                     {% set iconCls = 'bg-red-950/50 border-red-800/40 text-red-400' %}
+                {% elseif n.type == 'membership_pending' %}
+                    {% set icon = '🛡' %}
+                    {% set iconCls = 'bg-yellow-950/50 border-yellow-800/40 text-yellow-400' %}
+                {% elseif n.type == 'membership_approved' %}
+                    {% set icon = '✓' %}
+                    {% set iconCls = 'bg-emerald-950/50 border-emerald-800/40 text-emerald-400' %}
+                {% elseif n.type == 'membership_rejected' %}
+                    {% set icon = '✕' %}
+                    {% set iconCls = 'bg-red-950/50 border-red-800/40 text-red-400' %}
                 {% else %}
                     {% set icon = '🔔' %}
                     {% set iconCls = 'bg-indigo-950/50 border-indigo-800/40 text-indigo-400' %}
