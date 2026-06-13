@@ -14,11 +14,12 @@
     {{ parent() }}
 {% endblock %}
 
-{# ── Select ── #}
+{# ── Select (le controller Stimulus `select` gère le rendu custom) ── #}
 {% block choice_widget_collapsed %}
-    {% set input_class = 'select-styled w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent' %}
-    {% set attr = attr|merge({class: input_class ~ (attr.class is defined ? ' ' ~ attr.class : '')}) %}
-    {{ parent() }}
+    {% set attr = attr|merge({class: 'hidden'}) %}
+    <div class="relative" data-controller="select">
+        {{- parent() -}}
+    </div>
 {% endblock %}
 
 {# ── Checkbox ── #}

@@ -314,15 +314,14 @@
                         <div class="border-t border-gray-800/60 px-6 py-3">
                             <form method="post" action="{{ path('app_raid_apply', {id: raid.id}) }}" class="flex items-center gap-3">
                                 <input type="hidden" name="_token" value="{{ csrf_token('apply_raid_' ~ raid.id) }}">
-                                <select name="character_id"
-                                    class="select-styled flex-1 min-w-0 bg-gray-800 border border-gray-700 text-white rounded-lg pl-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                                <div class="flex-1 min-w-0 relative" data-controller="select"><select name="character_id" class="hidden">
                                     {% for c in eligible %}
                                         {% set isMember = c.membership is not null and c.membership.guild.id == raid.guild.id and c.membership.status != constant('App\\Entity\\MemberStatus::Pending') %}
                                         {% set levelInfo = c.level ? ' · Niv. ' ~ c.level : '' %}
                                         {% set optiInfo  = c.optimizationLevel ? ' · Opti ' ~ c.optimizationLevel.label() : '' %}
                                         <option value="{{ c.id }}">{{ c.name }} — {{ c.gameClass.name }}{{ levelInfo }}{{ optiInfo }}{{ isMember ? ' [Guilde]' : ' [Externe]' }}</option>
                                     {% endfor %}
-                                </select>
+                                </select></div>
                                 {{ ui.button('Candidater', 'primary', 'submit', 'py-2 px-4 text-sm shrink-0') }}
                             </form>
                         </div>

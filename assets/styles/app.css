@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @source "../../templates";
 @source "../../src";
+@source "../../assets";
 
 @theme {
     --color-discord: #5865F2;

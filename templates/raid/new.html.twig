@@ -50,12 +50,13 @@
         {# Personnage créateur #}
         <div>
             {{ ui.label('character_id', 'Votre personnage') }}
-            <select name="character_id" id="character_id"
-                    class="select-styled w-full bg-gray-800 border border-gray-700 text-white rounded-lg pl-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                {% for character in characters %}
-                    <option value="{{ character.id }}">{{ character.name }} — {{ character.gameClass.name }}</option>
-                {% endfor %}
-            </select>
+            <div class="relative" data-controller="select">
+                <select name="character_id" id="character_id" class="hidden">
+                    {% for character in characters %}
+                        <option value="{{ character.id }}">{{ character.name }} — {{ character.gameClass.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
 
         {{ form_row(form.description) }}
