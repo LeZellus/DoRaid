@@ -4,39 +4,59 @@
 {% block title %}Connexion – Zeminal{% endblock %}
 
 {% block body %}
-<div class="flex items-center justify-center py-16 px-4">
-    <div class="w-full max-w-md">
-        <h1 class="text-3xl font-bold text-white text-center mb-8">Connexion</h1>
+<div class="relative min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12">
 
-        {% if error %}
-            {{ ui.alert(error.messageKey|trans(error.messageData, 'security'), 'error') }}
-            <div class="mb-6"></div>
-        {% endif %}
+    {# Gradient background #}
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.12)_0%,transparent_60%)] pointer-events-none"></div>
 
-        <form method="post" action="{{ path('app_login') }}" class="space-y-5">
-            <div>
-                {{ ui.label('email', 'Email') }}
-                {{ ui.input('email', 'email', 'email', last_username, 'vous@exemple.com', '', {required: 'required', autofocus: 'autofocus'}) }}
-            </div>
-            <div>
-                {{ ui.label('password', 'Mot de passe') }}
-                {{ ui.input('password', 'password', 'password', '', '••••••••', '', {required: 'required', autocomplete: 'current-password'}) }}
-            </div>
+    <div class="relative w-full max-w-md">
 
-            {{ ui.checkbox('remember_me', '_remember_me', 'Se souvenir de moi') }}
+        {# Logo #}
+        <div class="text-center mb-8">
+            <a href="{{ path('app_home') }}" class="inline-flex items-center gap-2 group">
+                <span class="text-indigo-400 text-2xl group-hover:text-indigo-300 transition">⚔</span>
+                <span class="text-2xl font-bold text-white tracking-tight">Zeminal</span>
+            </a>
+            <p class="text-gray-500 text-sm mt-2">Bon retour parmi nous !</p>
+        </div>
 
-            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+        {# Card #}
+        <div class="bg-gray-900/80 border border-gray-800/60 rounded-2xl p-8 shadow-2xl backdrop-blur-sm">
 
-            {{ ui.button('Se connecter', 'primary', 'submit', 'w-full') }}
-        </form>
+            {% if error %}
+                <div class="mb-6">
+                    {{ ui.alert(error.messageKey|trans(error.messageData, 'security'), 'error') }}
+                </div>
+            {% endif %}
 
-        {{ ui.divider('ou') }}
+            {# Discord en premier #}
+            {{ ui.discord_button('Continuer avec Discord', path('app_discord_connect')) }}
 
-        {{ ui.discord_button('Se connecter avec Discord', path('app_discord_connect')) }}
+            {{ ui.divider('ou avec votre email') }}
+
+            <form method="post" action="{{ path('app_login') }}" class="space-y-5">
+                <div>
+                    {{ ui.label('email', 'Email') }}
+                    {{ ui.input('email', 'email', 'email', last_username, 'vous@exemple.com', '', {required: 'required', autofocus: 'autofocus'}) }}
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        {{ ui.label('password', 'Mot de passe') }}
+                    </div>
+                    {{ ui.input('password', 'password', 'password', '', '••••••••', '', {required: 'required', autocomplete: 'current-password'}) }}
+                </div>
+
+                {{ ui.checkbox('remember_me', '_remember_me', 'Se souvenir de moi') }}
+
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                {{ ui.button('Se connecter', 'primary', 'submit', 'w-full py-3') }}
+            </form>
+        </div>
 
         <p class="text-center text-sm text-gray-500 mt-6">
             Pas encore de compte ?
-            <a href="{{ path('app_register') }}" class="text-indigo-400 hover:text-indigo-300">Créer un compte</a>
+            <a href="{{ path('app_register') }}" class="text-indigo-400 hover:text-indigo-300 font-medium transition">Créer un compte</a>
         </p>
     </div>
 </div>
