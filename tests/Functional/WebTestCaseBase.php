@@ -7,6 +7,7 @@ use App\Entity\GameClass;
 use App\Entity\Guild;
 use App\Entity\GuildMembership;
 use App\Entity\MemberStatus;
+use App\Entity\Notification;
 use App\Entity\OptimizationLevel;
 use App\Entity\Raid;
 use App\Entity\RaidParticipant;
@@ -53,6 +54,7 @@ abstract class WebTestCaseBase extends WebTestCase
         $conn = $this->em->getConnection();
         $conn->executeStatement('PRAGMA foreign_keys = OFF');
         foreach ([
+            'notification',
             'enigme_comment', 'enigme_image', 'enigme',
             'raid_comment', 'raid_participant', 'raid',
             'guild_membership', 'game_character', 'guild',
@@ -103,12 +105,25 @@ abstract class WebTestCaseBase extends WebTestCase
 
     protected function makeGuild(User $owner, Server $server): Guild
     {
+        $name  = 'Guilde-' . uniqid('', true);
         $guild = (new Guild())
-            ->setName('Guilde-' . uniqid('', true))
+            ->setName($name)
+            ->setSlug('guilde-' . uniqid('', true))
             ->setServer($server)
             ->setOwner($owner);
         $this->em->persist($guild);
         return $guild;
+    }
+
+    protected function makeNotification(User $user, string $type = 'participation_pending'): Notification
+    {
+        $n = (new Notification())
+            ->setUser($user)
+            ->setType($type)
+            ->setTitle('Titre test')
+            ->setMessage('Message test');
+        $this->em->persist($n);
+        return $n;
     }
 
     protected function makeMembership(Guild $guild, Character $char, MemberStatus $status): GuildMembership
