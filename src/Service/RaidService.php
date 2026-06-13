@@ -80,6 +80,8 @@ class RaidService
         $this->em->persist($participant);
         $this->notificationService->notifyParticipationReceived($participant);
         $this->em->flush();
+
+        $this->discord->notifyParticipationReceived($participant);
     }
 
     public function acceptParticipant(RaidParticipant $participant): void

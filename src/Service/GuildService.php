@@ -10,6 +10,7 @@ use App\Entity\Character;
 use App\Exception\BusinessRuleException;
 use App\Repository\GuildMembershipRepository;
 use App\Repository\GuildRepository;
+use App\Service\DiscordNotifier;
 use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -22,6 +23,7 @@ class GuildService
         private readonly GuildRepository $guildRepo,
         private readonly GuildMembershipRepository $membershipRepo,
         private readonly NotificationService $notificationService,
+        private readonly DiscordNotifier $discord,
         private readonly EntityManagerInterface $em,
         #[Autowire(service: 'state_machine.guild_membership_status')]
         private readonly WorkflowInterface $membershipWorkflow,
@@ -79,9 +81,11 @@ class GuildService
 
         if ($status === MemberStatus::Pending) {
             $this->notificationService->notifyMembershipRequested($membership);
+            $this->em->flush();
+            $this->discord->notifyMembershipRequested($membership);
+        } else {
+            $this->em->flush();
         }
-
-        $this->em->flush();
 
         return $status;
     }
