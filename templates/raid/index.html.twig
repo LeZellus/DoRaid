@@ -5,7 +5,7 @@
 {% block meta_description %}Tous les raids Dofus publics, ouverts sur tous les serveurs. Rejoignez un groupe ou publiez votre propre raid pour recruter des joueurs.{% endblock %}
 
 {% block body %}
-<div class="max-w-6xl mx-auto px-6 py-12" data-controller="reveal">
+<div class="max-w-6xl mx-auto px-6 py-12" data-controller="reveal countdown">
 
     <div class="flex items-center justify-between mb-3" data-reveal>
         <h1 class="text-3xl font-bold text-white">Raids Dofus</h1>
@@ -376,71 +376,7 @@
         });
     }
 
-    // ── Countdown ──
-    function pad(n) { return String(n).padStart(2, '0'); }
-
-    function formatBefore(sec) {
-        if (sec <= 0) return 'Le raid vient de commencer !';
-        var d = Math.floor(sec / 86400);
-        var h = Math.floor((sec % 86400) / 3600);
-        var m = Math.floor((sec % 3600) / 60);
-        var s = sec % 60;
-        var parts = [];
-        if (d > 0) parts.push(d + ' jour' + (d > 1 ? 's' : ''));
-        if (h > 0) parts.push(h + 'h');
-        parts.push(pad(m) + 'min');
-        parts.push(pad(s) + 's');
-        return 'Le raid commence dans ' + parts.join(' ');
-    }
-
-    function formatAfter(elapsed) {
-        var h = Math.floor(elapsed / 3600);
-        var m = Math.floor((elapsed % 3600) / 60);
-        if (h > 0 && m > 0) return 'Le raid a commencé il y a ' + h + 'h ' + m + 'min';
-        if (h > 0)           return 'Le raid a commencé il y a ' + h + ' heure' + (h > 1 ? 's' : '');
-        if (m > 0)           return 'Le raid a commencé il y a ' + m + ' minute' + (m > 1 ? 's' : '');
-        return 'Le raid vient de commencer';
-    }
-
-    function formatEnd(sec) {
-        if (sec > 0) {
-            var h = Math.floor(sec / 3600);
-            var m = Math.floor((sec % 3600) / 60);
-            var s = sec % 60;
-            if (h > 0) return 'Fin dans ' + h + 'h ' + pad(m) + 'min';
-            if (m > 0) return 'Fin dans ' + m + 'min ' + pad(s) + 's';
-            return 'Fin dans ' + s + 's';
-        }
-        var over = -sec;
-        var h = Math.floor(over / 3600);
-        var m = Math.floor((over % 3600) / 60);
-        if (h > 0) return 'Dépassé de ' + h + 'h' + (m > 0 ? ' ' + m + 'min' : '');
-        if (m > 0) return 'Dépassé de ' + m + 'min';
-        return 'Durée dépassée';
-    }
-
-    function tick() {
-        var now = Math.floor(Date.now() / 1000);
-        document.querySelectorAll('[data-countdown]').forEach(function (el) {
-            var target  = parseInt(el.dataset.countdown, 10);
-            var mode    = el.dataset.mode;
-            var diff    = target - now;
-            var textEl  = el.querySelector('.countdown-text');
-            if (!textEl) return;
-            if (mode === 'before') {
-                textEl.textContent = formatBefore(diff);
-            } else if (mode === 'after') {
-                textEl.textContent = formatAfter(-diff);
-                var endEl = el.querySelector('.countdown-end-text');
-                if (endEl && el.dataset.end) {
-                    endEl.textContent = formatEnd(parseInt(el.dataset.end, 10) - now);
-                }
-            }
-        });
-    }
-
-    tick();
-    setInterval(tick, 1000);
+    // Countdown géré par le controller Stimulus 'countdown'
 })();
 </script>
 {% endblock %}

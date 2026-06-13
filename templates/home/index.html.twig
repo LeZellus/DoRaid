@@ -250,7 +250,7 @@
 {% else %}
 
 {# ── Dashboard ── #}
-<div class="max-w-6xl mx-auto px-6 py-10">
+<div class="max-w-6xl mx-auto px-6 py-10" data-controller="countdown">
 
     {# ── Header ── #}
     <div class="flex items-center justify-between mb-8">
@@ -621,54 +621,6 @@
 
 </div>
 
-<script>
-(function () {
-    function pad(n) { return String(n).padStart(2, '0'); }
-    function formatBefore(sec) {
-        if (sec <= 0) return 'Le raid vient de commencer !';
-        var d = Math.floor(sec / 86400), h = Math.floor((sec % 86400) / 3600),
-            m = Math.floor((sec % 3600) / 60), s = sec % 60, parts = [];
-        if (d > 0) parts.push(d + ' jour' + (d > 1 ? 's' : ''));
-        if (h > 0) parts.push(h + 'h');
-        parts.push(pad(m) + 'min'); parts.push(pad(s) + 's');
-        return 'Le raid commence dans ' + parts.join(' ');
-    }
-    function formatAfter(elapsed) {
-        var h = Math.floor(elapsed / 3600), m = Math.floor((elapsed % 3600) / 60);
-        if (h > 0 && m > 0) return 'Le raid a commencé il y a ' + h + 'h ' + m + 'min';
-        if (h > 0) return 'Le raid a commencé il y a ' + h + ' heure' + (h > 1 ? 's' : '');
-        if (m > 0) return 'Le raid a commencé il y a ' + m + ' minute' + (m > 1 ? 's' : '');
-        return 'Le raid vient de commencer';
-    }
-    function formatEnd(sec) {
-        if (sec > 0) {
-            var h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
-            if (h > 0) return 'Fin dans ' + h + 'h ' + pad(m) + 'min';
-            if (m > 0) return 'Fin dans ' + m + 'min ' + pad(s) + 's';
-            return 'Fin dans ' + s + 's';
-        }
-        var over = -sec, h = Math.floor(over / 3600), m = Math.floor((over % 3600) / 60);
-        if (h > 0) return 'Dépassé de ' + h + 'h' + (m > 0 ? ' ' + m + 'min' : '');
-        if (m > 0) return 'Dépassé de ' + m + 'min';
-        return 'Durée dépassée';
-    }
-    function tick() {
-        var now = Math.floor(Date.now() / 1000);
-        document.querySelectorAll('[data-countdown]').forEach(function (el) {
-            var target = parseInt(el.dataset.countdown, 10), mode = el.dataset.mode, diff = target - now;
-            var textEl = el.querySelector('.countdown-text');
-            if (!textEl) return;
-            if (mode === 'before') { textEl.textContent = formatBefore(diff); }
-            else if (mode === 'after') {
-                textEl.textContent = formatAfter(-diff);
-                var endEl = el.querySelector('.countdown-end-text');
-                if (endEl && el.dataset.end) endEl.textContent = formatEnd(parseInt(el.dataset.end, 10) - now);
-            }
-        });
-    }
-    tick(); setInterval(tick, 1000);
-})();
-</script>
 {% endif %}
 
 {% endblock %}
