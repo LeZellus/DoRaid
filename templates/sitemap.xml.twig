@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+    <url>
+        <loc>{{ url('app_home') }}</loc>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+    </url>
+
+    <url>
+        <loc>{{ url('app_raid_index') }}</loc>
+        <changefreq>hourly</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <url>
+        <loc>{{ url('app_guild_index') }}</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    {% for raid in raids %}
+    <url>
+        <loc>{{ url('app_raid_show', {id: raid.id}) }}</loc>
+        <lastmod>{{ raid.createdAt|date('Y-m-d') }}</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.7</priority>
+    </url>
+    {% endfor %}
+
+    {% for guild in guilds %}
+    <url>
+        <loc>{{ url('app_guild_show', {slug: guild.slug}) }}</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    {% endfor %}
+
+</urlset>

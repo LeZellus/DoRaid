@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /connexion
+Disallow: /inscription
+Disallow: /oauth/
+
+Sitemap: https://zeminal.tech/sitemap.xml

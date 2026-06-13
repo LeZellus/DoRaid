@@ -4,6 +4,50 @@
 {% block title %}Zeminal – Organisez vos raids Dofus en guilde{% endblock %}
 {% block meta_description %}Zeminal est la plateforme de gestion de raids pour les guildes Dofus. Planifiez vos donjons et raids, gérez vos personnages et trouvez des groupes sur tous les serveurs.{% endblock %}
 
+{% block javascripts %}
+{{ parent() }}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+        {
+            "@type": "Question",
+            "name": "Comment organiser un raid sur Dofus avec Zeminal ?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Créez un compte, ajoutez votre personnage Dofus, puis rejoignez ou créez une guilde. Depuis la page de votre guilde, vous pouvez créer un raid en choisissant un template de donjon, une date et une composition. Vos membres reçoivent une notification et peuvent candidater directement."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Comment trouver un raid Dofus sur Zeminal ?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Rendez-vous sur la page Raids — tous les raids publics y sont listés, tous serveurs Dofus confondus. Vous pouvez filtrer par serveur ou par type de donjon pour trouver un groupe qui correspond à votre personnage."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Zeminal fonctionne-t-il sur tous les serveurs Dofus ?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Oui. Zeminal supporte tous les serveurs Dofus. Les raids publics sont visibles par tous les joueurs, quel que soit leur serveur. Idéal pour recruter des joueurs extérieurs à votre guilde."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Zeminal est-il gratuit ?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Oui, Zeminal est entièrement gratuit. Inscription, création de guilde, planification de raids — tout est accessible sans abonnement ni carte bancaire."
+            }
+        }
+    ]
+}
+</script>
+{% endblock %}
+
 {% block body %}
 
 {# ── Page non connectée ── #}
@@ -110,6 +154,51 @@
                 <p class="text-sm text-gray-500">Planifiez, gérez les candidatures et partez à l'aventure avec votre guilde.</p>
             </div>
         </div>
+    </div>
+</section>
+
+{# FAQ #}
+<section class="max-w-3xl mx-auto px-6 py-16 lg:py-24">
+    <div class="text-center mb-12">
+        <h2 class="text-2xl lg:text-3xl font-bold text-white mb-3">Questions fréquentes</h2>
+    </div>
+    <div class="space-y-4">
+        <details class="group bg-gray-900/50 border border-gray-800/60 rounded-xl overflow-hidden">
+            <summary class="flex items-center justify-between px-6 py-4 cursor-pointer text-white font-medium list-none hover:bg-gray-800/30 transition">
+                Comment organiser un raid sur Dofus avec Zeminal ?
+                <span class="text-gray-500 group-open:rotate-180 transition-transform shrink-0 ml-4">▾</span>
+            </summary>
+            <p class="px-6 pb-5 text-sm text-gray-400 leading-relaxed">
+                Créez un compte, ajoutez votre personnage Dofus, puis rejoignez ou créez une guilde. Depuis la page de votre guilde, vous pouvez créer un raid en choisissant un template de donjon, une date et une composition. Vos membres reçoivent une notification et peuvent candidater directement.
+            </p>
+        </details>
+        <details class="group bg-gray-900/50 border border-gray-800/60 rounded-xl overflow-hidden">
+            <summary class="flex items-center justify-between px-6 py-4 cursor-pointer text-white font-medium list-none hover:bg-gray-800/30 transition">
+                Comment trouver un raid Dofus sur Zeminal ?
+                <span class="text-gray-500 group-open:rotate-180 transition-transform shrink-0 ml-4">▾</span>
+            </summary>
+            <p class="px-6 pb-5 text-sm text-gray-400 leading-relaxed">
+                Rendez-vous sur la page <a href="{{ path('app_raid_index') }}" class="text-indigo-400 hover:underline">Raids</a> — tous les raids publics y sont listés, tous serveurs Dofus confondus. Vous pouvez filtrer par serveur ou par type de donjon pour trouver un groupe qui correspond à votre personnage.
+            </p>
+        </details>
+        <details class="group bg-gray-900/50 border border-gray-800/60 rounded-xl overflow-hidden">
+            <summary class="flex items-center justify-between px-6 py-4 cursor-pointer text-white font-medium list-none hover:bg-gray-800/30 transition">
+                Zeminal fonctionne-t-il sur tous les serveurs Dofus ?
+                <span class="text-gray-500 group-open:rotate-180 transition-transform shrink-0 ml-4">▾</span>
+            </summary>
+            <p class="px-6 pb-5 text-sm text-gray-400 leading-relaxed">
+                Oui. Zeminal supporte tous les serveurs Dofus. Vous pouvez créer votre guilde sur n'importe quel serveur, et les raids publics sont visibles par tous les joueurs, quel que soit leur serveur. Idéal pour recruter des joueurs extérieurs à votre guilde pour compléter un groupe.
+            </p>
+        </details>
+        <details class="group bg-gray-900/50 border border-gray-800/60 rounded-xl overflow-hidden">
+            <summary class="flex items-center justify-between px-6 py-4 cursor-pointer text-white font-medium list-none hover:bg-gray-800/30 transition">
+                Zeminal est-il gratuit ?
+                <span class="text-gray-500 group-open:rotate-180 transition-transform shrink-0 ml-4">▾</span>
+            </summary>
+            <p class="px-6 pb-5 text-sm text-gray-400 leading-relaxed">
+                Oui, Zeminal est entièrement gratuit. Inscription, création de guilde, planification de raids — tout est accessible sans abonnement ni carte bancaire.
+            </p>
+        </details>
     </div>
 </section>
 

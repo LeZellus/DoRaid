@@ -154,6 +154,16 @@ class RaidRepository extends ServiceEntityRepository
         return ['upcoming' => $upcoming, 'started' => $started, 'ongoing' => $ongoing];
     }
 
+    /** @return Raid[] All public raids with minimal joins, for sitemap generation */
+    public function findPublicForSitemap(): array
+    {
+        return $this->createQueryBuilder('r')
+            ->where('r.isPublic = true')
+            ->orderBy('r.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
     /** @return Raid[] Open raids with a scheduled date and a template duration (candidates for auto-close) */
     public function findAllOpen(): array
     {
