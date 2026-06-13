@@ -12,7 +12,7 @@ doctrine:
             Doctrine\DBAL\Platforms\MySQLPlatform: identity
         auto_mapping: true
         controller_resolver:
-            auto_mapping: false
+            auto_mapping: true
         mappings:
             App:
                 type: attribute

@@ -58,7 +58,8 @@ class RaidCommentController extends AbstractController
 
         // Replies only on root-level comments — prevents unbounded nesting
         if ($parent->getParent() !== null) {
-            throw $this->createAccessDeniedException();
+            $this->addFlash('error', 'Impossible de répondre à une réponse.');
+            return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId(), '_fragment' => 'commentaires']);
         }
 
         $content = trim($request->request->get('content', ''));
@@ -88,7 +89,7 @@ class RaidCommentController extends AbstractController
         $isCreator = $raid->isCreatedBy($this->getUser());
 
         if (!$isAuthor && !$isCreator) {
-            throw $this->createAccessDeniedException();
+            throw $this->createAccessDeniedException('Vous ne pouvez pas supprimer ce commentaire.');
         }
 
         $em->remove($comment);
