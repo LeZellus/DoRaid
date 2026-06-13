@@ -1,3 +1,8 @@
+# Ajout de Git au PATH PowerShell si nécessaire
+if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
+    $env:PATH = "C:\Program Files\Git\cmd;$env:PATH"
+}
+
 # 1. Build du CSS Tailwind en local
 Write-Host "Compilation Tailwind..." -ForegroundColor Cyan
 php bin/console tailwind:build --minify
