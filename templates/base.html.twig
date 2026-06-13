@@ -67,6 +67,11 @@
                 {# Liens de navigation — visibles pour tous #}
                 <div class="flex items-center gap-1">
                     {% if app.user %}
+                        {% if route == 'app_home' %}
+                            <a href="{{ path('app_home') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition text-white bg-gray-800">Dashboard</a>
+                        {% else %}
+                            <a href="{{ path('app_home') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition text-gray-400 hover:text-white hover:bg-gray-800/60">Dashboard</a>
+                        {% endif %}
                         {% if route starts with 'app_character' %}
                             <a href="{{ path('app_character_index') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition text-white bg-gray-800">Personnages</a>
                         {% else %}

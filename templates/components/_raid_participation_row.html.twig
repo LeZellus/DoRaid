@@ -1,0 +1,125 @@
+{#
+  Ligne de participation à un raid (countdown + lien).
+  Variables:
+    participation — RaidParticipant
+    compact       — bool, default false  (mode dashboard : image plus petite, moins de détails)
+#}
+{% set raid     = participation.raid %}
+{% set accepted = participation.status.value == 'Accepted' %}
+{% set compact  = compact ?? false %}
+{% set px       = compact ? 'px-5' : 'px-6' %}
+{% set imgCls   = compact ? 'w-9 h-9 rounded-lg' : 'w-11 h-11 rounded-xl' %}
+{% set imgSize  = compact ? 36 : 44 %}
+
+<li>
+
+    {# ── Bandeau countdown ── #}
+    {% if raid.scheduledAt %}
+        {% if raid.scheduledAt > date() %}
+            <div class="flex items-center gap-2 {{ px }} py-1.5 bg-yellow-950/50 border-b border-yellow-900/40 text-xs font-medium text-yellow-400"
+                 data-countdown="{{ raid.scheduledAt|date('U') }}" data-mode="before">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                </svg>
+                <span class="countdown-text">…</span>
+            </div>
+        {% else %}
+            <div class="flex items-center gap-2 {{ px }} py-1.5 bg-green-950/40 border-b border-green-900/30 text-xs font-medium text-green-400"
+                 data-countdown="{{ raid.scheduledAt|date('U') }}" data-mode="after"
+                 {% if raid.expectedEndTime %}data-end="{{ raid.expectedEndTime|date('U') }}"{% endif %}>
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                <span class="countdown-text">…</span>
+                {% if raid.expectedEndTime %}<span class="ml-auto countdown-end-text text-green-700">…</span>{% endif %}
+            </div>
+        {% endif %}
+    {% endif %}
+
+    {# ── Ligne principale ── #}
+    <a href="{{ path('app_raid_show', {id: raid.id}) }}"
+       class="flex items-center gap-4 {{ px }} {{ compact ? 'py-3.5' : 'py-4' }} transition group hover:bg-gray-800/30">
+
+        {% if raid.raidTemplate.imagePath %}
+            <img src="{{ asset('uploads/raid-templates/' ~ raid.raidTemplate.imagePath) }}"
+                 alt="{{ raid.raidTemplate.name }}"
+                 loading="lazy" decoding="async" width="{{ imgSize }}" height="{{ imgSize }}"
+                 class="{{ imgCls }} object-cover shrink-0">
+        {% else %}
+            <span class="{{ imgCls }} bg-indigo-900/40 border border-indigo-800/30 flex items-center justify-center text-xl shrink-0">⚔</span>
+        {% endif %}
+
+        <div class="flex-1 min-w-0">
+
+            {# Nom + badges #}
+            <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-semibold text-white group-hover:text-indigo-300 transition truncate">
+                    {{ raid.raidTemplate.name }}
+                </span>
+                {% if accepted %}
+                    <span class="text-xs font-medium bg-emerald-900/50 text-emerald-400 border border-emerald-800/40 rounded-full px-2 py-0.5 shrink-0">Accepté</span>
+                {% else %}
+                    <span class="text-xs font-medium bg-yellow-900/40 text-yellow-400 border border-yellow-800/40 rounded-full px-2 py-0.5 shrink-0">En attente</span>
+                {% endif %}
+                {% if not raid.public %}
+                    <span class="text-xs font-medium bg-gray-800 text-gray-500 border border-gray-700/40 rounded-full px-2 py-0.5 shrink-0">🔒 Privé</span>
+                {% endif %}
+            </div>
+
+            {# Guilde · serveur · date · durée #}
+            <div class="flex items-center gap-2 text-xs text-gray-500 mt-0.5 flex-wrap">
+                {% if not compact and raid.guild.imagePath %}
+                    <img src="{{ asset('uploads/guildes/' ~ raid.guild.slug ~ '/' ~ raid.guild.imagePath) }}"
+                         alt="{{ raid.guild.name }}"
+                         loading="lazy" decoding="async" width="16" height="16"
+                         class="w-4 h-4 rounded object-cover">
+                {% endif %}
+                <span>{{ raid.guild.name }}</span>
+                {% if not compact %}
+                    <span class="text-gray-700">·</span>
+                    <span>{{ raid.guild.server.name }}</span>
+                {% endif %}
+                {% if raid.scheduledAt %}
+                    <span class="text-gray-700">·</span>
+                    <span class="{{ compact ? 'text-indigo-400' : 'text-gray-400' }}">{{ raid.scheduledAt|date('d/m à H:i') }}</span>
+                {% endif %}
+                {% if not compact and raid.raidTemplate.formattedDuration %}
+                    <span class="text-gray-700">·</span>
+                    <span class="inline-flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                        </svg>
+                        {{ raid.raidTemplate.formattedDuration }}
+                    </span>
+                {% endif %}
+            </div>
+
+            {# Personnage #}
+            <div class="flex items-center gap-1.5 text-xs text-indigo-300/80 mt-0.5">
+                <img src="{{ asset('classes/' ~ participation.character.gameClass.name|lower ~ '.png') }}"
+                     alt="{{ participation.character.gameClass.name }}"
+                     loading="lazy" decoding="async" width="14" height="14"
+                     class="w-3.5 h-3.5 rounded-full object-cover shrink-0">
+                <span class="font-medium">{{ participation.character.name }}</span>
+                <span class="text-gray-600">— {{ participation.character.gameClass.name }}</span>
+            </div>
+
+        </div>
+
+        {# Places #}
+        {% set pendingCount = raid.pendingParticipants|length %}
+        <div class="text-right shrink-0">
+            <div class="text-sm font-medium {{ raid.isFull() ? 'text-red-400' : 'text-indigo-400' }}">
+                {{ raid.acceptedParticipants|length }}<span class="text-gray-600 font-normal">/{{ raid.raidTemplate.maxParticipants }}</span>
+            </div>
+            {% if not compact %}
+                <div class="text-xs text-gray-600 mt-0.5">joueurs</div>
+            {% endif %}
+            {% if pendingCount > 0 %}
+                <div class="text-xs text-yellow-500/70 mt-0.5">+{{ pendingCount }} intéressé{{ pendingCount > 1 ? 's' : '' }}</div>
+            {% endif %}
+        </div>
+
+    </a>
+
+</li>
