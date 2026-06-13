@@ -22,3 +22,4 @@
 ###< symfony/asset-mapper ###
 
 /public/uploads/
+/deploy.config.ps1

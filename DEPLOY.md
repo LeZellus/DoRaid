@@ -6,8 +6,7 @@
 La clé SSH locale doit être copiée sur le serveur pour se connecter sans mot de passe.
 
 ```powershell
-# Dans PowerShell, une seule fois :
-Get-Content $env:USERPROFILE\.ssh\id_ed25519.pub | ssh -p 65002 u359351136@147.93.88.127 "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
+Get-Content $env:USERPROFILE\.ssh\id_ed25519.pub | ssh -p <PORT> <USER>@<HOST> "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
 ```
 
 ### 2. Execution policy PowerShell débloquée
@@ -40,17 +39,6 @@ C'est tout.
    - `php bin/console doctrine:migrations:migrate` — applique les migrations BDD
    - `php bin/console cache:clear --env=prod` — vide le cache Symfony
    - `php bin/console asset-map:compile` — compile les assets JS/CSS
-
----
-
-## Infos serveur
-
-| | |
-|---|---|
-| **Hôte** | 147.93.88.127 |
-| **Port SSH** | 65002 |
-| **User** | u359351136 |
-| **Chemin projet** | `~/domains/zeminal.tech/public_html` |
 
 ---
 

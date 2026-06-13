@@ -1,3 +1,6 @@
+# Charger la config SSH depuis deploy.config.ps1 (non versionné)
+. "$PSScriptRoot\deploy.config.ps1"
+
 # Ajout de Git au PATH PowerShell si nécessaire
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
     $env:PATH = "C:\Program Files\Git\cmd;$env:PATH"
@@ -20,6 +23,6 @@ git push origin main
 
 # 4. Déploiement sur le serveur
 Write-Host "Déploiement sur le serveur..." -ForegroundColor Cyan
-ssh -p 65002 u359351136@147.93.88.127 "cd ~/domains/zeminal.tech/public_html && git pull origin main && chmod +x bin/console && COMPOSER_ALLOW_SUPERUSER=1 composer2 install --no-dev --optimize-autoloader && php bin/console doctrine:migrations:migrate --no-interaction --env=prod && php bin/console cache:clear --env=prod && php bin/console asset-map:compile"
+ssh -p $SSH_PORT $SSH_USER@$SSH_HOST "cd $DEPLOY_PATH && git pull origin main && chmod +x bin/console && COMPOSER_ALLOW_SUPERUSER=1 composer2 install --no-dev --optimize-autoloader && php bin/console doctrine:migrations:migrate --no-interaction --env=prod && php bin/console cache:clear --env=prod && php bin/console asset-map:compile"
 
 Write-Host "Déploiement terminé." -ForegroundColor Green
