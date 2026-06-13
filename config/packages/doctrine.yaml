@@ -2,7 +2,7 @@ doctrine:
     dbal:
         url: '%env(resolve:DATABASE_URL)%'
 
-        # server_version: décommenter avec la version exacte de MySQL en prod (SELECT VERSION())
+        server_version: 'mariadb-11.8.6'
 
         profiling_collect_backtrace: '%kernel.debug%'
     orm:
