@@ -432,6 +432,23 @@
                     <ul class="divide-y divide-gray-800/60 overflow-y-auto" style="max-height: 20rem">
                         {% for p in activeRaids %}
                             <li>
+                                {% if p.raid.scheduledAt %}
+                                    {% if p.raid.scheduledAt > date() %}
+                                        <div class="flex items-center gap-2 px-5 py-1.5 bg-yellow-950/50 border-b border-yellow-900/40 text-xs font-medium text-yellow-400"
+                                             data-countdown="{{ p.raid.scheduledAt|date('U') }}" data-mode="before">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
+                                            <span class="countdown-text">…</span>
+                                        </div>
+                                    {% else %}
+                                        <div class="flex items-center gap-2 px-5 py-1.5 bg-green-950/40 border-b border-green-900/30 text-xs font-medium text-green-400"
+                                             data-countdown="{{ p.raid.scheduledAt|date('U') }}" data-mode="after"
+                                             {% if p.raid.expectedEndTime %}data-end="{{ p.raid.expectedEndTime|date('U') }}"{% endif %}>
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                            <span class="countdown-text">…</span>
+                                            {% if p.raid.expectedEndTime %}<span class="ml-auto countdown-end-text text-green-700">…</span>{% endif %}
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
                                 <a href="{{ path('app_raid_show', {id: p.raid.id}) }}"
                                    class="flex items-center gap-4 px-5 py-3.5 hover:bg-gray-800/30 transition group">
                                     {% if p.raid.raidTemplate.imagePath %}
@@ -601,6 +618,55 @@
     {% endif %}
 
 </div>
+
+<script>
+(function () {
+    function pad(n) { return String(n).padStart(2, '0'); }
+    function formatBefore(sec) {
+        if (sec <= 0) return 'Le raid vient de commencer !';
+        var d = Math.floor(sec / 86400), h = Math.floor((sec % 86400) / 3600),
+            m = Math.floor((sec % 3600) / 60), s = sec % 60, parts = [];
+        if (d > 0) parts.push(d + ' jour' + (d > 1 ? 's' : ''));
+        if (h > 0) parts.push(h + 'h');
+        parts.push(pad(m) + 'min'); parts.push(pad(s) + 's');
+        return 'Le raid commence dans ' + parts.join(' ');
+    }
+    function formatAfter(elapsed) {
+        var h = Math.floor(elapsed / 3600), m = Math.floor((elapsed % 3600) / 60);
+        if (h > 0 && m > 0) return 'Le raid a commencé il y a ' + h + 'h ' + m + 'min';
+        if (h > 0) return 'Le raid a commencé il y a ' + h + ' heure' + (h > 1 ? 's' : '');
+        if (m > 0) return 'Le raid a commencé il y a ' + m + ' minute' + (m > 1 ? 's' : '');
+        return 'Le raid vient de commencer';
+    }
+    function formatEnd(sec) {
+        if (sec > 0) {
+            var h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+            if (h > 0) return 'Fin dans ' + h + 'h ' + pad(m) + 'min';
+            if (m > 0) return 'Fin dans ' + m + 'min ' + pad(s) + 's';
+            return 'Fin dans ' + s + 's';
+        }
+        var over = -sec, h = Math.floor(over / 3600), m = Math.floor((over % 3600) / 60);
+        if (h > 0) return 'Dépassé de ' + h + 'h' + (m > 0 ? ' ' + m + 'min' : '');
+        if (m > 0) return 'Dépassé de ' + m + 'min';
+        return 'Durée dépassée';
+    }
+    function tick() {
+        var now = Math.floor(Date.now() / 1000);
+        document.querySelectorAll('[data-countdown]').forEach(function (el) {
+            var target = parseInt(el.dataset.countdown, 10), mode = el.dataset.mode, diff = target - now;
+            var textEl = el.querySelector('.countdown-text');
+            if (!textEl) return;
+            if (mode === 'before') { textEl.textContent = formatBefore(diff); }
+            else if (mode === 'after') {
+                textEl.textContent = formatAfter(-diff);
+                var endEl = el.querySelector('.countdown-end-text');
+                if (endEl && el.dataset.end) endEl.textContent = formatEnd(parseInt(el.dataset.end, 10) - now);
+            }
+        });
+    }
+    tick(); setInterval(tick, 1000);
+})();
+</script>
 {% endif %}
 
 {% endblock %}
