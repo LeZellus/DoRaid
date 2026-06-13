@@ -217,6 +217,7 @@
                             {{ raid.acceptedParticipants|length }}<span class="text-gray-600 font-normal">/{{ raid.raidTemplate.maxParticipants }}</span>
                         </div>
                         <div class="text-xs text-gray-600 mt-0.5">joueurs</div>
+                        <div class="text-xs text-yellow-500/70 mt-0.5">+{{ raid.pendingParticipants|length }} intéressé{{ raid.pendingParticipants|length > 1 ? 's' : '' }}</div>
                     </div>
 
                 </a>
@@ -227,7 +228,7 @@
         {% if upcomingRaids is not empty %}
             <div class="{{ ui.card_classes('overflow-hidden mb-6') }}" data-reveal>
                 <div class="{{ ui.card_header_classes('flex items-center justify-between') }}">
-                    <h2 class="font-semibold text-white flex items-center gap-2">🕐 À venir</h2>
+                    <h2 class="font-semibold text-white flex items-center gap-2">🌐 Raids de la communauté</h2>
                     <span class="text-xs text-gray-500">{{ upcomingRaids|length }} raid{{ upcomingRaids|length > 1 ? 's' : '' }}</span>
                 </div>
                 <ul class="divide-y divide-gray-800/60">
