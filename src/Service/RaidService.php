@@ -22,6 +22,7 @@ class RaidService
         private readonly CharacterRepository $charRepo,
         private readonly EnigmeSyncService $enigmeSyncService,
         private readonly DiscordNotifier $discord,
+        private readonly NotificationService $notificationService,
         private readonly EntityManagerInterface $em,
         #[Autowire(service: 'state_machine.raid_status')]
         private readonly WorkflowInterface $raidWorkflow,
@@ -75,7 +76,9 @@ class RaidService
             throw new BusinessRuleException('Ce raid est complet.');
         }
 
-        $this->em->persist((new RaidParticipant())->setRaid($raid)->setCharacter($character));
+        $participant = (new RaidParticipant())->setRaid($raid)->setCharacter($character);
+        $this->em->persist($participant);
+        $this->notificationService->notifyParticipationReceived($participant);
         $this->em->flush();
     }
 
@@ -86,11 +89,13 @@ class RaidService
         } catch (\Symfony\Component\Workflow\Exception\NotEnabledTransitionException) {
             throw new BusinessRuleException('Ce participant ne peut pas être accepté dans son état actuel.');
         }
+        $this->notificationService->notifyParticipationAccepted($participant);
         $this->em->flush();
     }
 
     public function kickParticipant(RaidParticipant $participant): void
     {
+        $this->notificationService->notifyParticipationKicked($participant);
         $this->em->remove($participant);
         $this->em->flush();
     }

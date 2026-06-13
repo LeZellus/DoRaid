@@ -103,8 +103,23 @@
                         </a>
                     {% endif %}
 
+                    {# Cloche notifications #}
+                    {% set _unread = notification_unread_count() %}
+                    <a href="{{ path('app_notifications') }}"
+                       title="Notifications"
+                       class="relative flex items-center justify-center w-9 h-9 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800/60 transition ml-auto">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-2.83-2h5.66A3 3 0 0110 18z"/>
+                        </svg>
+                        {% if _unread > 0 %}
+                            <span class="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 bg-indigo-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-0.5 leading-none">
+                                {{ _unread > 9 ? '9+' : _unread }}
+                            </span>
+                        {% endif %}
+                    </a>
+
                     {# Profil + déconnexion #}
-                    <div class="flex items-center gap-2 ml-auto">
+                    <div class="flex items-center gap-2">
                         <div class="flex items-center gap-2.5 bg-gray-800/60 border border-gray-700/50 rounded-xl px-3 py-1.5">
                             <div class="w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
                                 {{ app.user.username|slice(0,1)|upper|default('?') }}

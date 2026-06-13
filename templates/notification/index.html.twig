@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+{% import 'components/_ui.html.twig' as ui %}
+
+{% block title %}Notifications – Zeminal{% endblock %}
+
+{% block body %}
+<div class="max-w-2xl mx-auto px-6 py-10">
+
+    <h1 class="text-2xl font-bold text-white mb-6">Notifications</h1>
+
+    {% if notifications is empty %}
+        <div class="text-center py-16 text-gray-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 mx-auto mb-3 opacity-40" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-2.83-2h5.66A3 3 0 0110 18z"/>
+            </svg>
+            <p class="text-sm">Aucune notification pour le moment</p>
+        </div>
+    {% else %}
+        <div class="space-y-2">
+            {% for n in notifications %}
+                {% if n.type == 'participation_pending' %}
+                    {% set icon = '⚔' %}
+                    {% set iconCls = 'bg-yellow-950/50 border-yellow-800/40 text-yellow-400' %}
+                {% elseif n.type == 'participation_accepted' %}
+                    {% set icon = '✓' %}
+                    {% set iconCls = 'bg-emerald-950/50 border-emerald-800/40 text-emerald-400' %}
+                {% elseif n.type == 'participation_kicked' %}
+                    {% set icon = '✕' %}
+                    {% set iconCls = 'bg-red-950/50 border-red-800/40 text-red-400' %}
+                {% else %}
+                    {% set icon = '🔔' %}
+                    {% set iconCls = 'bg-indigo-950/50 border-indigo-800/40 text-indigo-400' %}
+                {% endif %}
+
+                {% if n.link %}
+                    <a href="{{ n.link }}" class="flex items-start gap-4 bg-gray-900 border border-gray-800 rounded-xl px-5 py-4 hover:bg-gray-800/60 transition group">
+                {% else %}
+                    <div class="flex items-start gap-4 bg-gray-900 border border-gray-800 rounded-xl px-5 py-4">
+                {% endif %}
+
+                        <span class="w-9 h-9 rounded-lg border {{ iconCls }} flex items-center justify-center font-bold shrink-0">{{ icon }}</span>
+
+                        <div class="flex-1 min-w-0">
+                            <div class="font-medium text-white text-sm {% if n.link %}group-hover:text-indigo-300 transition{% endif %}">{{ n.title }}</div>
+                            <div class="text-xs text-gray-400 mt-0.5">{{ n.message }}</div>
+                            <div class="text-xs text-gray-600 mt-1">{{ n.createdAt|date('d/m/Y à H:i') }}</div>
+                        </div>
+
+                        {% if n.link %}
+                            <span class="text-gray-600 group-hover:text-indigo-400 transition shrink-0 text-sm">→</span>
+                        {% endif %}
+
+                {% if n.link %}
+                    </a>
+                {% else %}
+                    </div>
+                {% endif %}
+
+            {% endfor %}
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}
