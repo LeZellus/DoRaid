@@ -175,7 +175,7 @@
                         <div>
                             {{ ui.label('character_id', 'Personnage') }}
                             <select id="character_id" name="character_id"
-                                class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                class="select-styled w-full bg-gray-800 border border-gray-700 text-white rounded-lg pl-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                                 {% for c in eligible %}
                                     <option value="{{ c.id }}">{{ c.name }} — {{ c.gameClass.name }}</option>
                                 {% endfor %}

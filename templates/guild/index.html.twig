@@ -41,7 +41,7 @@
 
             {% set preselectedServer = app.request.query.get('server', '') %}
             <select id="guild-server-filter"
-                class="bg-gray-900 border border-gray-700 text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                class="select-styled bg-gray-900 border border-gray-700 text-white rounded-lg pl-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                 <option value="">Tous les serveurs</option>
                 {% for serverName, guilds in byServer %}
                     <option value="{{ serverName }}" {{ serverName == preselectedServer ? 'selected' : '' }}>

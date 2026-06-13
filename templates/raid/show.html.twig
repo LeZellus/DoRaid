@@ -315,7 +315,7 @@
                             <form method="post" action="{{ path('app_raid_apply', {id: raid.id}) }}" class="flex items-center gap-3">
                                 <input type="hidden" name="_token" value="{{ csrf_token('apply_raid_' ~ raid.id) }}">
                                 <select name="character_id"
-                                    class="flex-1 min-w-0 bg-gray-800 border border-gray-700 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                                    class="select-styled flex-1 min-w-0 bg-gray-800 border border-gray-700 text-white rounded-lg pl-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
                                     {% for c in eligible %}
                                         {% set isMember = c.membership is not null and c.membership.guild.id == raid.guild.id and c.membership.status != constant('App\\Entity\\MemberStatus::Pending') %}
                                         {% set levelInfo = c.level ? ' · Niv. ' ~ c.level : '' %}
