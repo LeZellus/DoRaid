@@ -112,6 +112,23 @@
                     {% set raid = participation.raid %}
                     {% set accepted = participation.status.value == 'Accepted' %}
                     <li>
+                        {% if raid.scheduledAt %}
+                            {% if raid.scheduledAt > date() %}
+                                <div class="flex items-center gap-2 px-6 py-1.5 bg-yellow-950/50 border-b border-yellow-900/40 text-xs font-medium text-yellow-400"
+                                     data-countdown="{{ raid.scheduledAt|date('U') }}" data-mode="before">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
+                                    <span class="countdown-text">…</span>
+                                </div>
+                            {% else %}
+                                <div class="flex items-center gap-2 px-6 py-1.5 bg-green-950/40 border-b border-green-900/30 text-xs font-medium text-green-400"
+                                     data-countdown="{{ raid.scheduledAt|date('U') }}" data-mode="after"
+                                     {% if raid.expectedEndTime %}data-end="{{ raid.expectedEndTime|date('U') }}"{% endif %}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                    <span class="countdown-text">…</span>
+                                    {% if raid.expectedEndTime %}<span class="ml-auto countdown-end-text text-green-700">…</span>{% endif %}
+                                </div>
+                            {% endif %}
+                        {% endif %}
                         <a href="{{ path('app_raid_show', {id: raid.id}) }}"
                            class="flex items-center gap-4 px-6 py-4 transition group hover:bg-gray-800/30">
 
@@ -161,6 +178,13 @@
                                             {{ raid.raidTemplate.formattedDuration }}
                                         </span>
                                     {% endif %}
+                                </div>
+                                <div class="flex items-center gap-1.5 text-xs text-indigo-300/80 mt-0.5">
+                                    <img src="{{ asset('classes/' ~ participation.character.gameClass.name|lower ~ '.png') }}"
+                                         alt="{{ participation.character.gameClass.name }}"
+                                         class="w-3.5 h-3.5 rounded-full object-cover shrink-0">
+                                    <span class="font-medium">{{ participation.character.name }}</span>
+                                    <span class="text-gray-600">— {{ participation.character.gameClass.name }}</span>
                                 </div>
                             </div>
 
