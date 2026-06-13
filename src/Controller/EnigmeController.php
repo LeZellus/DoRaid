@@ -4,16 +4,13 @@ namespace App\Controller;
 
 use App\Entity\Character;
 use App\Entity\Enigme;
-use App\Entity\EnigmeComment;
-use App\Entity\EnigmeImage;
 use App\Entity\Raid;
 use App\Entity\RaidStatus;
+use App\Exception\BusinessRuleException;
 use App\Repository\RaidParticipantRepository;
-use App\Service\FileUploadService;
+use App\Service\EnigmeService;
 use App\Traits\CsrfGuardTrait;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,10 +22,8 @@ class EnigmeController extends AbstractController
     use CsrfGuardTrait;
 
     public function __construct(
-        #[Autowire('%kernel.project_dir%')]
-        private readonly string $projectDir,
         private readonly RaidParticipantRepository $participantRepo,
-        private readonly FileUploadService $fileUpload,
+        private readonly EnigmeService $enigmeService,
     ) {}
 
     #[Route('/enigmes/{id}', name: 'app_enigme_show', methods: ['GET'])]
@@ -37,17 +32,20 @@ class EnigmeController extends AbstractController
         $canComment = $this->getUser() !== null && $this->getParticipantCharacter($enigme->getRaid()) !== null;
 
         return $this->render('enigme/show.html.twig', [
-            'enigme'      => $enigme,
-            'canComment'  => $canComment,
-            'raidClosed'  => $enigme->getRaid()->getStatus() === RaidStatus::Closed,
+            'enigme'     => $enigme,
+            'canComment' => $canComment,
+            'raidClosed' => $enigme->getRaid()->getStatus() === RaidStatus::Closed,
         ]);
     }
 
     #[IsGranted('ROLE_USER')]
     #[Route('/enigmes/{id}/images', name: 'app_enigme_upload_image', methods: ['POST'])]
-    public function uploadImage(Enigme $enigme, Request $request, EntityManagerInterface $em): JsonResponse
+    public function uploadImage(Enigme $enigme, Request $request): JsonResponse
     {
-        $this->ensureParticipant($enigme);
+        $character = $this->getParticipantCharacter($enigme->getRaid());
+        if ($character === null) {
+            throw $this->createAccessDeniedException('Vous ne participez pas à ce raid.');
+        }
         $this->ensureRaidOpen($enigme);
 
         if (!$this->isCsrfTokenValid('enigme_' . $enigme->getId(), $request->request->get('_token'))) {
@@ -73,22 +71,11 @@ class EnigmeController extends AbstractController
             return new JsonResponse(['success' => false, 'error' => 'Type non supporté : ' . $mime], 400);
         }
 
-        if ($enigme->getImages()->count() >= 20) {
-            return new JsonResponse(['success' => false, 'error' => 'Limite de 20 images par énigme atteinte.'], 400);
+        try {
+            $this->enigmeService->uploadImage($enigme, $file, $character);
+        } catch (BusinessRuleException $e) {
+            return new JsonResponse(['success' => false, 'error' => $e->getMessage()], 400);
         }
-
-        $uploadDir = $this->projectDir . '/public/uploads/enigmes/' . $enigme->getId();
-        $filename  = $this->fileUpload->upload($file, $uploadDir, uniqid('img_', true));
-
-        $image = (new EnigmeImage())
-            ->setEnigme($enigme)
-            ->setFilePath($filename)
-            ->setAddedBy($this->getParticipantCharacter($enigme->getRaid()));
-
-        $em->persist($image);
-        $enigme->touch();
-        $em->flush();
-        $em->refresh($enigme);
 
         return new JsonResponse([
             'success'    => true,
@@ -99,9 +86,10 @@ class EnigmeController extends AbstractController
 
     #[IsGranted('ROLE_USER')]
     #[Route('/enigmes/{id}/comments', name: 'app_enigme_add_comment', methods: ['POST'])]
-    public function addComment(Enigme $enigme, Request $request, EntityManagerInterface $em): JsonResponse
+    public function addComment(Enigme $enigme, Request $request): JsonResponse
     {
-        if ($this->getParticipantCharacter($enigme->getRaid()) === null) {
+        $author = $this->getParticipantCharacter($enigme->getRaid());
+        if ($author === null) {
             return new JsonResponse(['success' => false, 'error' => 'Seuls les participants acceptés peuvent commenter.']);
         }
         $this->ensureRaidOpen($enigme);
@@ -115,15 +103,7 @@ class EnigmeController extends AbstractController
             return new JsonResponse(['success' => false, 'error' => 'Commentaire vide'], 400);
         }
 
-        $comment = (new EnigmeComment())
-            ->setEnigme($enigme)
-            ->setContent($content)
-            ->setAuthor($this->getParticipantCharacter($enigme->getRaid()));
-
-        $em->persist($comment);
-        $enigme->touch();
-        $em->flush();
-        $em->refresh($enigme);
+        $this->enigmeService->addComment($enigme, $content, $author);
 
         return new JsonResponse([
             'success'      => true,
@@ -134,22 +114,22 @@ class EnigmeController extends AbstractController
 
     #[IsGranted('ROLE_USER')]
     #[Route('/enigmes/{id}/resolve', name: 'app_enigme_resolve', methods: ['POST'])]
-    public function resolve(Enigme $enigme, Request $request, EntityManagerInterface $em): JsonResponse
+    public function resolve(Enigme $enigme, Request $request): JsonResponse
     {
-        $this->ensureParticipant($enigme);
+        if ($this->getParticipantCharacter($enigme->getRaid()) === null) {
+            throw $this->createAccessDeniedException('Vous ne participez pas à ce raid.');
+        }
         $this->ensureRaidOpen($enigme);
 
         if (!$this->isCsrfTokenValid('enigme_' . $enigme->getId(), $request->request->get('_token'))) {
             return new JsonResponse(['success' => false, 'error' => 'Token CSRF invalide'], 403);
         }
 
-        $enigme->setResolved(!$enigme->isResolved());
-        $enigme->touch();
-        $em->flush();
+        $resolved = $this->enigmeService->toggleResolved($enigme);
 
         return new JsonResponse([
             'success'   => true,
-            'resolved'  => $enigme->isResolved(),
+            'resolved'  => $resolved,
             'updatedAt' => $enigme->getUpdatedAt()->format(\DateTimeInterface::ATOM),
         ]);
     }
@@ -174,13 +154,6 @@ class EnigmeController extends AbstractController
             'imagesHtml'   => $this->renderView('enigme/_images.html.twig', ['enigme' => $enigme]),
             'commentsHtml' => $this->renderView('enigme/_comments.html.twig', ['enigme' => $enigme]),
         ]);
-    }
-
-    private function ensureParticipant(Enigme $enigme): void
-    {
-        if ($this->getParticipantCharacter($enigme->getRaid()) === null) {
-            throw $this->createAccessDeniedException('Vous ne participez pas à ce raid.');
-        }
     }
 
     private function ensureRaidOpen(Enigme $enigme): void

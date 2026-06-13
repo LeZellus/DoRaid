@@ -4,9 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Raid;
 use App\Entity\RaidComment;
+use App\Exception\BusinessRuleException;
 use App\Repository\RaidParticipantRepository;
+use App\Service\RaidCommentService;
 use App\Traits\CsrfGuardTrait;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,87 +20,63 @@ class RaidCommentController extends AbstractController
 {
     use CsrfGuardTrait;
 
-    public function __construct(private readonly RaidParticipantRepository $participantRepo) {}
+    public function __construct(
+        private readonly RaidParticipantRepository $participantRepo,
+        private readonly RaidCommentService $commentService,
+    ) {}
 
     #[Route('/{id}/commenter', name: 'app_raid_comment_new', methods: ['POST'])]
-    public function new(Raid $raid, Request $request, EntityManagerInterface $em): Response
+    public function new(Raid $raid, Request $request): Response
     {
         $this->requireCsrfToken('comment_' . $raid->getId(), $request);
 
-        if (!$this->hasApplied($raid)) {
+        if (!$this->participantRepo->hasApplied($this->getUser(), $raid)) {
             throw $this->createAccessDeniedException('Vous devez postuler au raid pour commenter.');
         }
 
         $content = trim($request->request->get('content', ''));
-        if ($content === '') {
-            return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId(), '_fragment' => 'commentaires']);
+        if ($content !== '') {
+            $this->commentService->addComment($raid, $this->getUser(), $content);
         }
-
-        $em->persist((new RaidComment())
-            ->setRaid($raid)
-            ->setAuthor($this->getUser())
-            ->setContent($content)
-        );
-        $em->flush();
 
         return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId(), '_fragment' => 'commentaires']);
     }
 
     #[Route('/commentaires/{id}/repondre', name: 'app_raid_comment_reply', methods: ['POST'])]
-    public function reply(RaidComment $parent, Request $request, EntityManagerInterface $em): Response
+    public function reply(RaidComment $parent, Request $request): Response
     {
-        $raid = $parent->getRaid();
-
         $this->requireCsrfToken('reply_' . $parent->getId(), $request);
 
-        if (!$this->hasApplied($raid)) {
+        if (!$this->participantRepo->hasApplied($this->getUser(), $parent->getRaid())) {
             throw $this->createAccessDeniedException('Vous devez postuler au raid pour commenter.');
         }
 
-        // Replies only on root-level comments — prevents unbounded nesting
-        if ($parent->getParent() !== null) {
-            $this->addFlash('error', 'Impossible de répondre à une réponse.');
-            return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId(), '_fragment' => 'commentaires']);
-        }
-
         $content = trim($request->request->get('content', ''));
-        if ($content === '') {
-            return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId(), '_fragment' => 'commentaires']);
+        if ($content !== '') {
+            try {
+                $this->commentService->addReply($parent, $this->getUser(), $content);
+            } catch (BusinessRuleException $e) {
+                $this->addFlash('error', $e->getMessage());
+            }
         }
 
-        $em->persist((new RaidComment())
-            ->setRaid($raid)
-            ->setAuthor($this->getUser())
-            ->setContent($content)
-            ->setParent($parent)
-        );
-        $em->flush();
-
-        return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId(), '_fragment' => 'commentaires']);
+        return $this->redirectToRoute('app_raid_show', ['id' => $parent->getRaid()->getId(), '_fragment' => 'commentaires']);
     }
 
     #[Route('/commentaires/{id}/supprimer', name: 'app_raid_comment_delete', methods: ['POST'])]
-    public function delete(RaidComment $comment, Request $request, EntityManagerInterface $em): Response
+    public function delete(RaidComment $comment, Request $request): Response
     {
-        $raid = $comment->getRaid();
-
         $this->requireCsrfToken('delete_comment_' . $comment->getId(), $request);
 
         $isAuthor  = $comment->getAuthor()->getId() === $this->getUser()->getId();
-        $isCreator = $raid->isCreatedBy($this->getUser());
+        $isCreator = $comment->getRaid()->isCreatedBy($this->getUser());
 
         if (!$isAuthor && !$isCreator) {
             throw $this->createAccessDeniedException('Vous ne pouvez pas supprimer ce commentaire.');
         }
 
-        $em->remove($comment);
-        $em->flush();
+        $this->commentService->deleteComment($comment);
 
-        return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId(), '_fragment' => 'commentaires']);
-    }
-
-    private function hasApplied(Raid $raid): bool
-    {
-        return $this->participantRepo->hasApplied($this->getUser(), $raid);
+        return $this->redirectToRoute('app_raid_show', ['id' => $comment->getRaid()->getId(), '_fragment' => 'commentaires']);
     }
 }

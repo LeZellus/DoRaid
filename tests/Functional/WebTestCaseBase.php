@@ -147,6 +147,16 @@ abstract class WebTestCaseBase extends WebTestCase
         return $p;
     }
 
+    protected function makeRaidComment(Raid $raid, User $author, string $content = 'Commentaire', ?\App\Entity\RaidComment $parent = null): \App\Entity\RaidComment
+    {
+        $c = (new \App\Entity\RaidComment())->setRaid($raid)->setAuthor($author)->setContent($content);
+        if ($parent !== null) {
+            $c->setParent($parent);
+        }
+        $this->em->persist($c);
+        return $c;
+    }
+
     /** Flush sans clear : les entités restent managées, les IDs sont disponibles. */
     protected function flush(): void
     {

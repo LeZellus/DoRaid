@@ -169,6 +169,49 @@ class RaidServiceTest extends WebTestCaseBase
         $this->assertNull($this->em->find(RaidParticipant::class, $participantId));
     }
 
+    public function testApplyToPrivateRaidSucceedsForConfirmedGuildMember(): void
+    {
+        $server    = $this->makeServer();
+        $owner     = $this->makeUser('owner@test.com');
+        $ownerChar = $this->makeCharacter($owner, $server);
+        $guild     = $this->makeGuild($owner, $server);
+        $raid      = $this->makeRaid($guild, $ownerChar, isPublic: false);
+
+        $member     = $this->makeUser('member@test.com');
+        $memberChar = $this->makeCharacter($member, $server);
+        $this->makeMembership($guild, $memberChar, \App\Entity\MemberStatus::Member);
+        $this->flush();
+        $this->em->refresh($raid);
+
+        $this->service()->applyToRaid($raid, $memberChar, $member);
+
+        $this->em->refresh($raid);
+        $this->assertTrue($raid->isParticipant($memberChar));
+    }
+
+    // ─── createRaid ───────────────────────────────────────────────────────────
+
+    public function testCreateRaidPersistsRaidAndAddsCreatorAsAcceptedParticipant(): void
+    {
+        $server   = $this->makeServer();
+        $owner    = $this->makeUser('creator@test.com');
+        $char     = $this->makeCharacter($owner, $server);
+        $guild    = $this->makeGuild($owner, $server);
+        $template = $this->makeRaidTemplate('Raid Alpha');
+        $this->flush();
+
+        $raid = new \App\Entity\Raid();
+        $this->service()->createRaid($raid, $guild, $char, $template);
+
+        $this->assertNotNull($raid->getId());
+        // La collection inversée Raid.participants n'est pas peuplée en mémoire → refresh depuis la DB
+        $this->em->refresh($raid);
+        $participants = $raid->getParticipants();
+        $this->assertCount(1, $participants);
+        $this->assertSame(RaidParticipantStatus::Accepted, $participants->first()->getStatus());
+        $this->assertSame($char->getId(), $participants->first()->getCharacter()->getId());
+    }
+
     // ─── closeRaid / deleteRaid ───────────────────────────────────────────────
 
     public function testCloseRaidSetsClosedStatus(): void
@@ -183,6 +226,37 @@ class RaidServiceTest extends WebTestCaseBase
         $this->service()->closeRaid($raid);
 
         $this->assertSame(RaidStatus::Closed, $raid->getStatus());
+    }
+
+    public function testCloseRaidFailsWhenAlreadyClosed(): void
+    {
+        $server    = $this->makeServer();
+        $owner     = $this->makeUser('owner@test.com');
+        $ownerChar = $this->makeCharacter($owner, $server);
+        $guild     = $this->makeGuild($owner, $server);
+        $raid      = $this->makeRaid($guild, $ownerChar, isPublic: true);
+        $raid->setStatus(RaidStatus::Closed);
+        $this->flush();
+
+        $this->expectException(BusinessRuleException::class);
+        $this->service()->closeRaid($raid);
+    }
+
+    public function testAcceptParticipantFailsWhenAlreadyAccepted(): void
+    {
+        $server    = $this->makeServer();
+        $owner     = $this->makeUser('owner@test.com');
+        $ownerChar = $this->makeCharacter($owner, $server);
+        $guild     = $this->makeGuild($owner, $server);
+        $raid      = $this->makeRaid($guild, $ownerChar, isPublic: true);
+
+        $user        = $this->makeUser('already@test.com');
+        $char        = $this->makeCharacter($user, $server);
+        $participant = $this->makeParticipant($raid, $char, RaidParticipantStatus::Accepted);
+        $this->flush();
+
+        $this->expectException(BusinessRuleException::class);
+        $this->service()->acceptParticipant($participant);
     }
 
     public function testDeleteRaidRemovesIt(): void

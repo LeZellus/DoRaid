@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Raid;
 use App\Entity\RaidParticipant;
-use App\Entity\RaidStatus;
+use App\Entity\RaidParticipantStatus;
 use App\Exception\BusinessRuleException;
 use App\Form\RaidType;
 use App\Repository\CharacterRepository;
@@ -18,6 +18,7 @@ use App\Repository\ServerRepository;
 use App\Security\RaidVoter;
 use App\Service\RaidService;
 use App\Traits\CsrfGuardTrait;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -39,55 +40,45 @@ class RaidController extends AbstractController
         GuildMembershipRepository $membershipRepo,
         RaidParticipantRepository $participantRepo,
     ): Response {
-        $user       = $this->getUser();
-        $serverName = $request->query->get('server');
-        $filterType = $request->query->get('type');
-
-        $userGuildIds = [];
-        if ($user) {
-            foreach ($membershipRepo->findConfirmedForUser($user) as $m) {
-                $userGuildIds[] = $m->getGuild()->getId();
-            }
-        }
-
+        $user          = $this->getUser();
+        $serverName    = $request->query->get('server') ?: null;
+        $filterType    = $request->query->get('type');
         $filterNotFull = (bool) $request->query->get('not_full');
         $filterSoon    = (bool) $request->query->get('soon');
 
-        $now   = new \DateTimeImmutable();
-        $raids = $raidRepo->findVisibleForUser($userGuildIds, $serverName ?: null);
+        $userGuildIds = $user
+            ? array_map(fn($m) => $m->getGuild()->getId(), $membershipRepo->findConfirmedForUser($user))
+            : [];
 
-        $raidTypes = [];
-        foreach ($raids as $r) {
-            $name = $r->getRaidTemplate()->getName();
-            if (!isset($raidTypes[$name])) {
-                $raidTypes[$name] = $name;
-            }
-        }
-        ksort($raidTypes);
+        $grouped = $raidRepo->findGroupedOpen($userGuildIds, $serverName);
 
-        $open = array_filter($raids, fn($r) => $r->getStatus() === RaidStatus::Open);
+        $upcomingRaids = $grouped['upcoming'];
+        $startedRaids  = $grouped['started'];
+        $ongoingRaids  = $grouped['ongoing'];
+
+        // Collect available types from all open raids before applying the type filter
+        $raidTypes = array_unique(array_map(
+            fn($r) => $r->getRaidTemplate()->getName(),
+            array_merge($upcomingRaids, $startedRaids, $ongoingRaids)
+        ));
+        sort($raidTypes);
 
         if ($filterType) {
-            $open = array_filter($open, fn($r) => $r->getRaidTemplate()->getName() === $filterType);
+            $byType        = fn($r) => $r->getRaidTemplate()->getName() === $filterType;
+            $upcomingRaids = array_values(array_filter($upcomingRaids, $byType));
+            $startedRaids  = array_values(array_filter($startedRaids,  $byType));
+            $ongoingRaids  = array_values(array_filter($ongoingRaids,  $byType));
         }
 
-        $upcomingRaids = array_values(array_filter($open, fn($r) => $r->getScheduledAt() && $r->getScheduledAt() > $now));
-        usort($upcomingRaids, fn($a, $b) => $a->getScheduledAt() <=> $b->getScheduledAt());
-
-        $startedRaids = array_values(array_filter($open, fn($r) => $r->getScheduledAt() && $r->getScheduledAt() <= $now));
-        usort($startedRaids, fn($a, $b) => $b->getScheduledAt() <=> $a->getScheduledAt());
-
-        $ongoingRaids = array_values(array_filter($open, fn($r) => !$r->getScheduledAt()));
-        usort($ongoingRaids, fn($a, $b) => $b->getCreatedAt() <=> $a->getCreatedAt());
-
         if ($filterNotFull) {
-            $upcomingRaids = array_values(array_filter($upcomingRaids, fn($r) => !$r->isFull()));
-            $startedRaids  = array_values(array_filter($startedRaids,  fn($r) => !$r->isFull()));
-            $ongoingRaids  = array_values(array_filter($ongoingRaids,  fn($r) => !$r->isFull()));
+            $notFull       = fn($r) => !$r->isFull();
+            $upcomingRaids = array_values(array_filter($upcomingRaids, $notFull));
+            $startedRaids  = array_values(array_filter($startedRaids,  $notFull));
+            $ongoingRaids  = array_values(array_filter($ongoingRaids,  $notFull));
         }
 
         if ($filterSoon) {
-            $threshold     = $now->modify('+48 hours');
+            $threshold     = (new \DateTimeImmutable())->modify('+48 hours');
             $upcomingRaids = array_values(array_filter($upcomingRaids, fn($r) => $r->getScheduledAt() <= $threshold));
             $startedRaids  = [];
             $ongoingRaids  = [];
@@ -104,7 +95,7 @@ class RaidController extends AbstractController
             'filterNotFull'    => $filterNotFull,
             'filterSoon'       => $filterSoon,
             'filterType'       => $filterType,
-            'raidTypes'        => array_keys($raidTypes),
+            'raidTypes'        => $raidTypes,
             'userGuildIds'     => $userGuildIds,
             'myParticipations' => $myParticipations,
         ]);
@@ -174,9 +165,9 @@ class RaidController extends AbstractController
     }
 
     #[Route('/{id}/participants', name: 'app_raid_participants')]
-    public function participants(Raid $raid, CharacterRepository $charRepo): Response
+    public function participants(Raid $raid): Response
     {
-        if ($r = $this->checkRaidAccess($raid, $charRepo)) return $r;
+        if ($r = $this->checkRaidAccess($raid)) return $r;
 
         return $this->render('raid/participants.html.twig', [
             'raid'      => $raid,
@@ -190,7 +181,7 @@ class RaidController extends AbstractController
         CharacterRepository $charRepo,
         RaidCommentRepository $commentRepo,
     ): Response {
-        if ($r = $this->checkRaidAccess($raid, $charRepo)) return $r;
+        if ($r = $this->checkRaidAccess($raid)) return $r;
 
         $this->raidService->syncEnigmes($raid);
 
@@ -205,7 +196,7 @@ class RaidController extends AbstractController
         foreach ($raid->getParticipants() as $p) {
             $participantsByUser[(int) $p->getCharacter()->getUser()->getId()] = $p->getCharacter();
             if ($userId && (int) $p->getCharacter()->getUser()->getId() === $userId) {
-                if ($p->getStatus() === \App\Entity\RaidParticipantStatus::Accepted) {
+                if ($p->getStatus() === RaidParticipantStatus::Accepted) {
                     $acceptedCharacters[] = $p->getCharacter();
                 } else {
                     $pendingApplications[] = $p;
@@ -224,7 +215,7 @@ class RaidController extends AbstractController
         ]);
     }
 
-    private function checkRaidAccess(Raid $raid, CharacterRepository $charRepo): ?Response
+    private function checkRaidAccess(Raid $raid): ?Response
     {
         if ($this->isGranted(RaidVoter::VIEW, $raid)) {
             return null;
@@ -240,7 +231,7 @@ class RaidController extends AbstractController
     #[IsGranted('RAID_CREATOR', subject: 'raid')]
     #[IsGranted('ROLE_USER')]
     #[Route('/{id}/modifier', name: 'app_raid_edit', methods: ['GET', 'POST'])]
-    public function edit(Raid $raid, Request $request, \Doctrine\ORM\EntityManagerInterface $em): Response
+    public function edit(Raid $raid, Request $request, EntityManagerInterface $em): Response
     {
         $form = $this->createForm(RaidType::class, $raid);
         $form->handleRequest($request);

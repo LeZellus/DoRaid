@@ -116,6 +116,122 @@ class RaidCommentControllerTest extends WebTestCaseBase
         );
     }
 
+    // ─── Répondre à un commentaire ─────────────────────────────────────────────
+
+    public function testAppliedUserCanReplyToRootComment(): void
+    {
+        $server    = $this->makeServer();
+        $owner     = $this->makeUser('owner@test.com');
+        $ownerChar = $this->makeCharacter($owner, $server);
+        $guild     = $this->makeGuild($owner, $server);
+        $this->makeMembership($guild, $ownerChar, \App\Entity\MemberStatus::Leader);
+        $raid   = $this->makeRaid($guild, $ownerChar, isPublic: true);
+        $parent = $this->makeRaidComment($raid, $owner, 'Commentaire racine');
+
+        $user = $this->makeUser('participant@test.com');
+        $char = $this->makeCharacter($user, $server);
+        $this->makeParticipant($raid, $char, \App\Entity\RaidParticipantStatus::Pending);
+        $this->flush();
+        $raidId   = $raid->getId();
+        $parentId = $parent->getId();
+        $this->em->clear();
+
+        $this->client->loginUser($user);
+        $crawler = $this->client->request('GET', '/raids/' . $raidId);
+        $token   = $crawler->filter('form[action$="repondre"] input[name="_token"]')->attr('value');
+
+        $this->client->request('POST', '/raids/commentaires/' . $parentId . '/repondre', [
+            '_token'  => $token,
+            'content' => 'Ma réponse',
+        ]);
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->assertStringContainsString('/raids/' . $raidId, $this->client->getResponse()->headers->get('location'));
+    }
+
+    // ─── Supprimer un commentaire ───────────────────────────────────────────────
+
+    public function testAuthorCanDeleteOwnComment(): void
+    {
+        $server    = $this->makeServer();
+        $owner     = $this->makeUser('owner@test.com');
+        $ownerChar = $this->makeCharacter($owner, $server);
+        $guild     = $this->makeGuild($owner, $server);
+        $this->makeMembership($guild, $ownerChar, \App\Entity\MemberStatus::Leader);
+        $raid = $this->makeRaid($guild, $ownerChar, isPublic: true);
+
+        $user    = $this->makeUser('author@test.com');
+        $char    = $this->makeCharacter($user, $server);
+        $this->makeParticipant($raid, $char, \App\Entity\RaidParticipantStatus::Pending);
+        $comment = $this->makeRaidComment($raid, $user, 'Mon commentaire');
+        $this->flush();
+        $raidId    = $raid->getId();
+        $commentId = $comment->getId();
+        $this->em->clear();
+
+        $this->client->loginUser($user);
+        $crawler = $this->client->request('GET', '/raids/' . $raidId);
+        $token   = $crawler->filter('form[action*="commentaires"][action$="supprimer"] input[name="_token"]')->attr('value');
+
+        $this->client->request('POST', '/raids/commentaires/' . $commentId . '/supprimer', [
+            '_token' => $token,
+        ]);
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->assertNull($this->em->find(\App\Entity\RaidComment::class, $commentId));
+    }
+
+    public function testRaidCreatorCanDeleteOtherUsersComment(): void
+    {
+        $server    = $this->makeServer();
+        $owner     = $this->makeUser('owner@test.com');
+        $ownerChar = $this->makeCharacter($owner, $server);
+        $guild     = $this->makeGuild($owner, $server);
+        $this->makeMembership($guild, $ownerChar, \App\Entity\MemberStatus::Leader);
+        $raid = $this->makeRaid($guild, $ownerChar, isPublic: true);
+
+        $other     = $this->makeUser('other@test.com');
+        $otherChar = $this->makeCharacter($other, $server);
+        $this->makeParticipant($raid, $otherChar, \App\Entity\RaidParticipantStatus::Pending);
+        $comment = $this->makeRaidComment($raid, $other, 'Commentaire de l\'autre');
+        $this->flush();
+        $raidId    = $raid->getId();
+        $commentId = $comment->getId();
+        $this->em->clear();
+
+        // Connexion en tant que créateur du raid
+        $this->client->loginUser($owner);
+        $crawler = $this->client->request('GET', '/raids/' . $raidId);
+        $token   = $crawler->filter('form[action*="commentaires"][action$="supprimer"] input[name="_token"]')->attr('value');
+
+        $this->client->request('POST', '/raids/commentaires/' . $commentId . '/supprimer', [
+            '_token' => $token,
+        ]);
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->assertNull($this->em->find(\App\Entity\RaidComment::class, $commentId));
+    }
+
+    public function testNonAuthorNonCreatorCannotDeleteComment(): void
+    {
+        [$raidId, , $server] = $this->createBaseRaidExtended();
+
+        $owner   = $this->makeUser('commentauthor@test.com');
+        $char    = $this->makeCharacter($owner, $server);
+        $raid    = $this->em->find(\App\Entity\Raid::class, $raidId);
+        $comment = $this->makeRaidComment($raid, $owner, 'Commentaire protégé');
+        $stranger = $this->makeUser('stranger@test.com');
+        $this->flush();
+        $commentId = $comment->getId();
+
+        $this->client->loginUser($stranger);
+        $this->client->request('POST', '/raids/commentaires/' . $commentId . '/supprimer', [
+            '_token' => 'invalid',
+        ]);
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
     // ─── Helpers ───────────────────────────────────────────────────────────────
 
     private function createBaseRaid(): int

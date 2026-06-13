@@ -120,6 +120,40 @@ class RaidRepository extends ServiceEntityRepository
             ->getQuery()->getResult();
     }
 
+    /**
+     * Returns open raids split into three pre-sorted groups for the index page.
+     * @return array{upcoming: Raid[], started: Raid[], ongoing: Raid[]}
+     */
+    public function findGroupedOpen(array $userGuildIds = [], ?string $serverName = null): array
+    {
+        $now   = new \DateTimeImmutable();
+        $raids = $this->buildVisibleQb($userGuildIds, $serverName)
+            ->andWhere('r.status = :open')
+            ->setParameter('open', RaidStatus::Open)
+            ->getQuery()->getResult();
+
+        $upcoming = [];
+        $started  = [];
+        $ongoing  = [];
+
+        foreach ($raids as $r) {
+            $scheduledAt = $r->getScheduledAt();
+            if ($scheduledAt === null) {
+                $ongoing[] = $r;
+            } elseif ($scheduledAt > $now) {
+                $upcoming[] = $r;
+            } else {
+                $started[] = $r;
+            }
+        }
+
+        usort($upcoming, fn($a, $b) => $a->getScheduledAt() <=> $b->getScheduledAt());
+        usort($started,  fn($a, $b) => $b->getScheduledAt() <=> $a->getScheduledAt());
+        usort($ongoing,  fn($a, $b) => $b->getCreatedAt() <=> $a->getCreatedAt());
+
+        return ['upcoming' => $upcoming, 'started' => $started, 'ongoing' => $ongoing];
+    }
+
     /** @return Raid[] Open raids with a scheduled date and a template duration (candidates for auto-close) */
     public function findAllOpen(): array
     {

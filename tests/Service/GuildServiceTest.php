@@ -219,4 +219,87 @@ class GuildServiceTest extends WebTestCaseBase
         $this->expectException(BusinessRuleException::class);
         $this->service()->rejectMembership($membership);
     }
+
+    public function testApproveMembershipFailsWhenAlreadyMember(): void
+    {
+        $server     = $this->makeServer();
+        $owner      = $this->makeUser('owner@test.com');
+        $user       = $this->makeUser('member@test.com');
+        $char       = $this->makeCharacter($user, $server);
+        $guild      = $this->makeGuild($owner, $server);
+        $membership = $this->makeMembership($guild, $char, MemberStatus::Member);
+        $this->flush();
+
+        $this->expectException(BusinessRuleException::class);
+        $this->service()->approveMembership($membership);
+    }
+
+    // ─── joinGuild (cas owner avec leader déjà présent) ──────────────────────
+
+    public function testJoinGuildCreatesMemberStatusForOwnerWhenGuildAlreadyHasLeader(): void
+    {
+        $server     = $this->makeServer();
+        $owner      = $this->makeUser('owner@test.com');
+        $leaderChar = $this->makeCharacter($owner, $server);
+        $guild      = $this->makeGuild($owner, $server);
+        $this->makeMembership($guild, $leaderChar, MemberStatus::Leader);
+        $secondChar = $this->makeCharacter($owner, $server);
+        $this->flush();
+        // La collection inversée Guild.memberships n'est pas peuplée en mémoire → refresh depuis la DB
+        $this->em->refresh($guild);
+
+        $status = $this->service()->joinGuild($guild, $secondChar, $owner);
+
+        $this->assertSame(MemberStatus::Member, $status);
+    }
+
+    // ─── autoPromoteOwner ────────────────────────────────────────────────────
+
+    public function testAutoPromoteOwnerApprovesPendingOwnerChars(): void
+    {
+        $server     = $this->makeServer();
+        $owner      = $this->makeUser('owner@test.com');
+        $char       = $this->makeCharacter($owner, $server);
+        $guild      = $this->makeGuild($owner, $server);
+        $membership = $this->makeMembership($guild, $char, MemberStatus::Pending);
+        $this->flush();
+        // La collection inversée Guild.memberships n'est pas peuplée en mémoire → refresh depuis la DB
+        $this->em->refresh($guild);
+
+        $this->service()->autoPromoteOwner($guild, $owner);
+
+        $this->em->refresh($membership);
+        $this->assertSame(MemberStatus::Member, $membership->getStatus());
+    }
+
+    public function testAutoPromoteOwnerDoesNotPromoteOtherUserChars(): void
+    {
+        $server     = $this->makeServer();
+        $owner      = $this->makeUser('owner@test.com');
+        $other      = $this->makeUser('other@test.com');
+        $otherChar  = $this->makeCharacter($other, $server);
+        $guild      = $this->makeGuild($owner, $server);
+        $membership = $this->makeMembership($guild, $otherChar, MemberStatus::Pending);
+        $this->flush();
+
+        $this->service()->autoPromoteOwner($guild, $owner);
+
+        $this->em->refresh($membership);
+        $this->assertSame(MemberStatus::Pending, $membership->getStatus());
+    }
+
+    // ─── deleteGuild ─────────────────────────────────────────────────────────
+
+    public function testDeleteGuildRemovesIt(): void
+    {
+        $server  = $this->makeServer();
+        $owner   = $this->makeUser('owner@test.com');
+        $guild   = $this->makeGuild($owner, $server);
+        $this->flush();
+        $guildId = $guild->getId();
+
+        $this->service()->deleteGuild($guild);
+
+        $this->assertNull($this->em->find(Guild::class, $guildId));
+    }
 }

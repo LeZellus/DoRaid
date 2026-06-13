@@ -111,22 +111,13 @@ class GuildController extends AbstractController
     }
 
     #[Route('/{slug}', name: 'app_guild_show')]
-    public function show(Guild $guild, RaidRepository $raidRepo, EntityManagerInterface $em): Response
+    public function show(Guild $guild, RaidRepository $raidRepo): Response
     {
         $currentUser = $this->getUser();
         $isOwner     = $currentUser && (int) $guild->getOwner()->getId() === (int) $currentUser->getId();
 
         if ($isOwner) {
-            $changed = false;
-            foreach ($guild->getPending() as $membership) {
-                if ((int) $membership->getCharacter()->getUser()->getId() === (int) $currentUser->getId()) {
-                    $membership->setStatus(MemberStatus::Member);
-                    $changed = true;
-                }
-            }
-            if ($changed) {
-                $em->flush();
-            }
+            $this->guildService->autoPromoteOwner($guild, $currentUser);
         }
 
         $isLeader            = $currentUser && $guild->isLeaderOf($currentUser);
@@ -165,10 +156,7 @@ class GuildController extends AbstractController
     #[Route('/{slug}/rejoindre', name: 'app_guild_join', methods: ['POST'])]
     public function join(Guild $guild, Request $request): Response
     {
-        if (!$this->isCsrfTokenValid('join_guild_' . $guild->getId(), $request->request->get('_token'))) {
-            $this->addFlash('error', 'Token de sécurité invalide. Rechargez la page et réessayez.');
-            return $this->redirectToRoute('app_guild_show', ['slug' => $guild->getSlug()]);
-        }
+        $this->requireCsrfToken('join_guild_' . $guild->getId(), $request);
 
         $currentUser = $this->getUser();
         $characterId = (int) $request->request->get('character_id');
@@ -236,12 +224,12 @@ class GuildController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
+        $guildSlug = $membership->getGuild()->getSlug();
+
         try {
-            $guildSlug = $membership->getGuild()->getSlug();
             $this->guildService->leaveGuild($membership);
             $this->addFlash('success', 'Vous avez quitté la guilde.');
         } catch (BusinessRuleException $e) {
-            $guildSlug = $membership->getGuild()->getSlug();
             $this->addFlash('error', $e->getMessage());
             return $this->redirectToRoute('app_guild_show', ['slug' => $guildSlug]);
         }
@@ -278,10 +266,7 @@ class GuildController extends AbstractController
             $imageFile = $form->get('imageFile')->getData();
             if ($imageFile) {
                 $uploadDir = $projectDir . '/public/uploads/guildes/' . $guild->getSlug();
-                if ($guild->getImagePath() && file_exists($uploadDir . '/' . $guild->getImagePath())) {
-                    unlink($uploadDir . '/' . $guild->getImagePath());
-                }
-                $guild->setImagePath($this->fileUpload->upload($imageFile, $uploadDir, 'cover'));
+                $guild->setImagePath($this->fileUpload->replace($uploadDir, $guild->getImagePath(), $imageFile, 'cover'));
             }
 
             $em->flush();

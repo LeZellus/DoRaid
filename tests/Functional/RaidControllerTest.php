@@ -291,6 +291,89 @@ class RaidControllerTest extends WebTestCaseBase
         $this->assertResponseStatusCodeSame(403);
     }
 
+    // ─── Actions créateur (close / delete / accept / kick) ────────────────────
+
+    public function testCreatorCanCloseRaid(): void
+    {
+        [$raidId, , $guild, $server] = $this->createRaidWithGuild(isPublic: true);
+
+        $owner = $guild->getOwner();
+
+        $this->client->loginUser($owner);
+        $crawler = $this->client->request('GET', '/raids/' . $raidId);
+        $token   = $crawler->filter('form[action$="clore"] input[name="_token"]')->attr('value');
+
+        $this->client->request('POST', '/raids/' . $raidId . '/clore', ['_token' => $token]);
+
+        $this->assertResponseStatusCodeSame(302);
+        $raid = $this->em->find(\App\Entity\Raid::class, $raidId);
+        $this->assertSame(\App\Entity\RaidStatus::Closed, $raid->getStatus());
+    }
+
+    public function testCreatorCanDeleteRaid(): void
+    {
+        [$raidId, $guildSlug, $guild] = $this->createRaidWithGuild(isPublic: true);
+
+        $owner = $guild->getOwner();
+
+        $this->client->loginUser($owner);
+        $crawler = $this->client->request('GET', '/raids/' . $raidId);
+        $token   = $crawler->filter('form[action$="supprimer"]:not([action*="commentaires"]) input[name="_token"]')->attr('value');
+
+        $this->client->request('POST', '/raids/' . $raidId . '/supprimer', ['_token' => $token]);
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->assertStringContainsString('/guildes/' . $guildSlug, $this->client->getResponse()->headers->get('location'));
+        $this->assertNull($this->em->find(\App\Entity\Raid::class, $raidId));
+    }
+
+    public function testCreatorCanAcceptPendingParticipant(): void
+    {
+        [$raidId, , $guild, $server] = $this->createRaidWithGuild(isPublic: true);
+
+        $user        = $this->makeUser('pending@test.com');
+        $char        = $this->makeCharacter($user, $server);
+        $raid        = $this->em->find(\App\Entity\Raid::class, $raidId);
+        $participant = $this->makeParticipant($raid, $char, \App\Entity\RaidParticipantStatus::Pending);
+        $this->flush();
+        $participantId = $participant->getId();
+        $this->em->clear();
+
+        $owner = $guild->getOwner();
+        $this->client->loginUser($owner);
+        $crawler = $this->client->request('GET', '/raids/' . $raidId);
+        $token   = $crawler->filter('form[action$="accepter"] input[name="_token"]')->attr('value');
+
+        $this->client->request('POST', '/raids/participants/' . $participantId . '/accepter', ['_token' => $token]);
+
+        $this->assertResponseStatusCodeSame(302);
+        $reloaded = $this->em->find(\App\Entity\RaidParticipant::class, $participantId);
+        $this->assertSame(\App\Entity\RaidParticipantStatus::Accepted, $reloaded->getStatus());
+    }
+
+    public function testCreatorCanKickParticipant(): void
+    {
+        [$raidId, , $guild, $server] = $this->createRaidWithGuild(isPublic: true);
+
+        $user        = $this->makeUser('tokick@test.com');
+        $char        = $this->makeCharacter($user, $server);
+        $raid        = $this->em->find(\App\Entity\Raid::class, $raidId);
+        $participant = $this->makeParticipant($raid, $char, \App\Entity\RaidParticipantStatus::Accepted);
+        $this->flush();
+        $participantId = $participant->getId();
+        $this->em->clear();
+
+        $owner = $guild->getOwner();
+        $this->client->loginUser($owner);
+        $crawler = $this->client->request('GET', '/raids/' . $raidId);
+        $token   = $crawler->filter('form[action$="exclure"] input[name="_token"]')->attr('value');
+
+        $this->client->request('POST', '/raids/participants/' . $participantId . '/exclure', ['_token' => $token]);
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->assertNull($this->em->find(\App\Entity\RaidParticipant::class, $participantId));
+    }
+
     // ─── Helpers ───────────────────────────────────────────────────────────────
 
     private function createRaid(bool $isPublic): int

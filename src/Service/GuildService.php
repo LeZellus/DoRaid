@@ -112,6 +112,29 @@ class GuildService
         $this->em->flush();
     }
 
+    /**
+     * Approves any pending memberships owned by $user in the guild (e.g. the guild owner joining with a second character).
+     * Precondition: caller has verified $user is the guild owner.
+     */
+    public function autoPromoteOwner(Guild $guild, User $user): void
+    {
+        $changed = false;
+        foreach ($guild->getPending() as $membership) {
+            if ((int) $membership->getCharacter()->getUser()->getId() !== (int) $user->getId()) {
+                continue;
+            }
+            try {
+                $this->membershipWorkflow->apply($membership, 'approve');
+                $changed = true;
+            } catch (\Symfony\Component\Workflow\Exception\NotEnabledTransitionException) {
+                // Not in pending state — skip
+            }
+        }
+        if ($changed) {
+            $this->em->flush();
+        }
+    }
+
     public function deleteGuild(Guild $guild): void
     {
         $this->em->remove($guild);

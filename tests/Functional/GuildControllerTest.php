@@ -237,6 +237,60 @@ class GuildControllerTest extends WebTestCaseBase
         $this->assertStringContainsString('déjà dans une guilde', $this->client->getResponse()->getContent());
     }
 
+    public function testJoinGuildSucceedsForEligibleCharacter(): void
+    {
+        $server    = $this->makeServer();
+        $owner     = $this->makeUser('owner@test.com');
+        $ownerChar = $this->makeCharacter($owner, $server);
+        $guild     = $this->makeGuild($owner, $server);
+        $this->makeMembership($guild, $ownerChar, MemberStatus::Leader);
+
+        $user = $this->makeUser('joiner@test.com');
+        $char = $this->makeCharacter($user, $server);
+        $this->flush();
+        $this->em->clear();
+
+        $this->client->loginUser($user);
+        $crawler = $this->client->request('GET', '/guildes/' . $guild->getSlug());
+        $token   = $crawler->filter('form[action$="rejoindre"] input[name="_token"]')->attr('value');
+
+        $this->client->request('POST', '/guildes/' . $guild->getSlug() . '/rejoindre', [
+            '_token'       => $token,
+            'character_id' => $char->getId(),
+        ]);
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->client->followRedirect();
+        $this->assertStringContainsString('demandé à rejoindre', $this->client->getResponse()->getContent());
+    }
+
+    public function testLeaveGuildSucceedsForMember(): void
+    {
+        $server     = $this->makeServer();
+        $owner      = $this->makeUser('owner@test.com');
+        $ownerChar  = $this->makeCharacter($owner, $server);
+        $guild      = $this->makeGuild($owner, $server);
+        $this->makeMembership($guild, $ownerChar, MemberStatus::Leader);
+
+        $user       = $this->makeUser('leaver@test.com');
+        $char       = $this->makeCharacter($user, $server);
+        $membership = $this->makeMembership($guild, $char, MemberStatus::Member);
+        $this->flush();
+        $membershipId = $membership->getId();
+        $this->em->clear();
+
+        $this->client->loginUser($user);
+        $crawler = $this->client->request('GET', '/guildes/' . $guild->getSlug() . '/membres');
+        $token   = $crawler->filter('form[action$="quitter"] input[name="_token"]')->attr('value');
+
+        $this->client->request('POST', '/guildes/membres/' . $membershipId . '/quitter', [
+            '_token' => $token,
+        ]);
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->assertNull($this->em->find(\App\Entity\GuildMembership::class, $membershipId));
+    }
+
     public function testNonLeaderCannotApproveApplication(): void
     {
         $server     = $this->makeServer();

@@ -17,4 +17,13 @@ class FileUploadService
 
         return $filename;
     }
+
+    public function replace(string $directory, ?string $existing, UploadedFile $newFile, string $basename = ''): string
+    {
+        if ($existing && file_exists($directory . '/' . $existing)) {
+            unlink($directory . '/' . $existing);
+        }
+
+        return $this->upload($newFile, $directory, $basename);
+    }
 }
