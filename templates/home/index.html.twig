@@ -1,8 +1,8 @@
 {% extends 'base.html.twig' %}
 {% import 'components/_ui.html.twig' as ui %}
 
-{% block title %}DoRaid – Organisez vos raids en guilde{% endblock %}
-{% block meta_description %}DoRaid est l'outil de gestion de raids pour guildes de MMO. Planifiez vos raids, gérez vos personnages et coordonnez votre guilde efficacement.{% endblock %}
+{% block title %}Zeminal – Organisez vos raids Dofus en guilde{% endblock %}
+{% block meta_description %}Zeminal est la plateforme de gestion de raids pour les guildes Dofus. Planifiez vos donjons et raids, gérez vos personnages et trouvez des groupes sur tous les serveurs.{% endblock %}
 
 {% block body %}
 
@@ -16,14 +16,14 @@
     <div class="relative max-w-5xl mx-auto px-6 py-24 lg:py-32 text-center">
         <div class="inline-flex items-center gap-2 bg-indigo-950/60 border border-indigo-800/40 rounded-full px-4 py-1.5 text-sm text-indigo-300 mb-8">
             <span class="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse"></span>
-            Gestion de raids pour guildes de MMO
+            Gestion de raids pour guildes Dofus
         </div>
         <h1 class="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight tracking-tight">
-            Organisez vos raids.<br>
-            <span class="text-indigo-400">Gérez votre guilde.</span>
+            Organisez vos raids Dofus.<br>
+            <span class="text-indigo-400">Tous serveurs confondus.</span>
         </h1>
         <p class="text-lg lg:text-xl text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-            DoRaid centralise la planification de vos raids, la gestion des candidatures et la coordination de vos membres en un seul endroit.
+            Zeminal centralise la planification de vos raids, la gestion des candidatures et la coordination de vos membres. Publiez vos raids pour recruter au-delà de votre guilde.
         </p>
         <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
             <a href="{{ path('app_register') }}"
@@ -35,23 +35,33 @@
                 Se connecter
             </a>
         </div>
+        <p class="mt-5 text-sm text-gray-600">Raids publics visibles par tous · Inscription gratuite · Aucune configuration</p>
     </div>
 </section>
 
 {# Features #}
 <section class="max-w-5xl mx-auto px-6 py-16 lg:py-24">
     <div class="text-center mb-12">
-        <h2 class="text-2xl lg:text-3xl font-bold text-white mb-3">Tout ce dont votre guilde a besoin</h2>
+        <h2 class="text-2xl lg:text-3xl font-bold text-white mb-3">Tout ce dont votre guilde Dofus a besoin</h2>
         <p class="text-gray-500 max-w-xl mx-auto">Une plateforme pensée pour les officiers et les membres, simple à prendre en main.</p>
     </div>
-    <div class="grid gap-6 md:grid-cols-3">
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <div class="bg-gray-900/50 border border-gray-800/60 rounded-2xl p-6 hover:border-indigo-800/40 transition group">
             <div class="w-11 h-11 rounded-xl bg-indigo-950/80 border border-indigo-800/40 flex items-center justify-center text-xl mb-5 group-hover:bg-indigo-900/50 transition">
                 ⚔
             </div>
             <h3 class="font-semibold text-white mb-2">Planification des raids</h3>
             <p class="text-sm text-gray-500 leading-relaxed">
-                Créez des raids, définissez une date, une composition et gérez les candidatures de vos membres directement depuis l'interface.
+                Créez des raids Dofus, définissez une date, une composition et gérez les candidatures depuis l'interface.
+            </p>
+        </div>
+        <div class="bg-gray-900/50 border border-gray-800/60 rounded-2xl p-6 hover:border-indigo-800/40 transition group">
+            <div class="w-11 h-11 rounded-xl bg-indigo-950/80 border border-indigo-800/40 flex items-center justify-center text-xl mb-5 group-hover:bg-indigo-900/50 transition">
+                🌐
+            </div>
+            <h3 class="font-semibold text-white mb-2">Raids publics multi-serveurs</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">
+                Publiez vos raids pour qu'ils soient visibles par tous les joueurs, quel que soit leur serveur Dofus.
             </p>
         </div>
         <div class="bg-gray-900/50 border border-gray-800/60 rounded-2xl p-6 hover:border-indigo-800/40 transition group">
@@ -60,7 +70,7 @@
             </div>
             <h3 class="font-semibold text-white mb-2">Gestion des guildes</h3>
             <p class="text-sm text-gray-500 leading-relaxed">
-                Administrez votre guilde, approuvez les demandes de membres et suivez la composition de votre roster en temps réel.
+                Administrez votre guilde, approuvez les demandes de membres et suivez la composition de votre roster.
             </p>
         </div>
         <div class="bg-gray-900/50 border border-gray-800/60 rounded-2xl p-6 hover:border-indigo-800/40 transition group">
@@ -69,7 +79,7 @@
             </div>
             <h3 class="font-semibold text-white mb-2">Profils de personnages</h3>
             <p class="text-sm text-gray-500 leading-relaxed">
-                Enregistrez vos personnages avec leur classe et leur niveau. Candidatez aux raids avec le personnage de votre choix.
+                Enregistrez vos personnages Dofus avec leur classe et leur niveau. Candidatez avec le personnage de votre choix.
             </p>
         </div>
     </div>
@@ -106,8 +116,8 @@
 {# CTA final #}
 <section class="max-w-5xl mx-auto px-6 py-16 lg:py-24 text-center">
     <div class="bg-gradient-to-br from-indigo-950/60 to-gray-900/60 border border-indigo-800/30 rounded-2xl p-10 lg:p-14">
-        <h2 class="text-2xl lg:text-3xl font-bold text-white mb-3">Rejoignez DoRaid dès aujourd'hui</h2>
-        <p class="text-gray-400 mb-8 max-w-md mx-auto">Gratuit, sans engagement. Votre guilde vous attend.</p>
+        <h2 class="text-2xl lg:text-3xl font-bold text-white mb-3">Rejoignez Zeminal dès aujourd'hui</h2>
+        <p class="text-gray-400 mb-8 max-w-md mx-auto">Gratuit, sans engagement. Trouvez ou créez des raids Dofus dès maintenant.</p>
         <a href="{{ path('app_register') }}"
            class="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-10 py-3.5 rounded-xl transition text-base shadow-lg shadow-indigo-900/40">
             Créer un compte gratuitement

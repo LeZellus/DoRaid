@@ -3,22 +3,22 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{% block title %}DoRaid – Organisez vos raids en guilde{% endblock %}</title>
-        <meta name="description" content="{% block meta_description %}DoRaid est l'outil de gestion de raids pour guildes de MMO. Planifiez vos raids, gérez vos personnages et coordonnez votre guilde facilement.{% endblock %}">
+        <title>{% block title %}Zeminal – Organisez vos raids Dofus en guilde{% endblock %}</title>
+        <meta name="description" content="{% block meta_description %}Zeminal est l'outil de gestion de raids pour guildes Dofus. Planifiez vos raids, gérez vos personnages et coordonnez votre guilde efficacement.{% endblock %}">
         <meta name="robots" content="{% block meta_robots %}index, follow{% endblock %}">
         <link rel="canonical" href="{{ app.request.uri }}">
 
         {# Open Graph #}
         <meta property="og:type" content="website">
-        <meta property="og:site_name" content="DoRaid">
-        <meta property="og:title" content="{% block og_title %}DoRaid – Organisez vos raids en guilde{% endblock %}">
-        <meta property="og:description" content="{% block og_description %}Planifiez vos raids, gérez vos personnages et coordonnez votre guilde. L'outil indispensable pour les guildes de MMO.{% endblock %}">
+        <meta property="og:site_name" content="Zeminal">
+        <meta property="og:title" content="{% block og_title %}Zeminal – Organisez vos raids Dofus en guilde{% endblock %}">
+        <meta property="og:description" content="{% block og_description %}Planifiez vos raids Dofus, gérez vos personnages et coordonnez votre guilde. Raids publics visibles par tous les serveurs.{% endblock %}">
         <meta property="og:url" content="{{ app.request.uri }}">
 
         {# Twitter Card #}
         <meta name="twitter:card" content="summary">
-        <meta name="twitter:title" content="{% block twitter_title %}DoRaid – Organisez vos raids en guilde{% endblock %}">
-        <meta name="twitter:description" content="{% block twitter_description %}Planifiez vos raids, gérez vos personnages et coordonnez votre guilde.{% endblock %}">
+        <meta name="twitter:title" content="{% block twitter_title %}Zeminal – Organisez vos raids Dofus en guilde{% endblock %}">
+        <meta name="twitter:description" content="{% block twitter_description %}Planifiez vos raids Dofus, gérez vos personnages et coordonnez votre guilde.{% endblock %}">
 
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚔️</text></svg>">
         {% block stylesheets %}{% endblock %}
@@ -38,7 +38,7 @@
                 {# Logo #}
                 <a href="{{ path('app_home') }}" class="flex items-center gap-2 shrink-0 group">
                     <span class="text-indigo-400 text-xl group-hover:text-indigo-300 transition">⚔</span>
-                    <span class="font-bold text-white text-lg tracking-tight">DoRaid</span>
+                    <span class="font-bold text-white text-lg tracking-tight">Zeminal</span>
                 </a>
 
                 {# Liens de navigation — visibles pour tous #}
@@ -121,7 +121,7 @@
         </main>
 
         <footer class="border-t border-gray-800/60 text-center py-5 text-xs text-gray-600 mt-auto">
-            DoRaid &copy; {{ "now"|date("Y") }}
+            Zeminal &copy; {{ "now"|date("Y") }}
         </footer>
 
     </body>
