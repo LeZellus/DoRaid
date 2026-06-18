@@ -149,6 +149,26 @@ class GuildService
         }
     }
 
+    public function transferLeadership(GuildMembership $from, GuildMembership $to): void
+    {
+        if ($from->getStatus() !== MemberStatus::Leader) {
+            throw new BusinessRuleException('Seul le meneur peut transférer son rôle.');
+        }
+        if ($from->getGuild()->getId() !== $to->getGuild()->getId()) {
+            throw new BusinessRuleException('Les deux personnages doivent appartenir à la même guilde.');
+        }
+        if ($to->getStatus() === MemberStatus::Pending) {
+            throw new BusinessRuleException('Impossible de nommer un membre en attente comme meneur.');
+        }
+        if ($from->getId() === $to->getId()) {
+            throw new BusinessRuleException('Vous êtes déjà meneur.');
+        }
+
+        $from->setStatus(MemberStatus::Member);
+        $to->setStatus(MemberStatus::Leader);
+        $this->em->flush();
+    }
+
     public function deleteGuild(Guild $guild): void
     {
         $this->em->remove($guild);

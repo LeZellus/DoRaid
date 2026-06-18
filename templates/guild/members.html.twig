@@ -73,6 +73,11 @@
                                 </form>
                             {% endif %}
                             {% if isLeader and m.character.user.id != app.user.id and m.status.value != 'leader' %}
+                                <form method="post" action="{{ path('app_guild_transfer_leader', {id: m.id}) }}"
+                                      onsubmit="return confirm('Nommer {{ m.character.name }} comme meneur ? Vous perdrez votre rôle de meneur.')">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('transfer_leader_' ~ m.id) }}">
+                                    {{ ui.button('Nommer meneur', 'secondary', 'submit', 'py-1.5 px-3 text-xs') }}
+                                </form>
                                 <form method="post" action="{{ path('app_guild_reject', {id: m.id}) }}"
                                       onsubmit="return confirm('Exclure {{ m.character.name }} de la guilde ?')">
                                     <input type="hidden" name="_token" value="{{ csrf_token('membership_' ~ m.id) }}">

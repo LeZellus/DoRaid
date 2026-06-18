@@ -32,7 +32,7 @@ class RaidType extends AbstractType
                 'input'       => 'datetime_immutable',
                 'constraints' => [
                     new GreaterThanOrEqual(
-                        value:   new \DateTime(),
+                        value:   new \DateTimeImmutable(),
                         message: 'La date du raid ne peut pas être dans le passé.'
                     ),
                 ],

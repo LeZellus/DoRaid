@@ -180,12 +180,13 @@ class RaidRepository extends ServiceEntityRepository
     private function buildVisibleQb(array $userGuildIds, ?string $serverName): \Doctrine\ORM\QueryBuilder
     {
         $qb = $this->createQueryBuilder('r')
-            ->addSelect('g', 's', 'rt', 'creator', 'gc')
+            ->addSelect('g', 's', 'rt', 'creator', 'gc', 'p')
             ->join('r.guild', 'g')
             ->join('g.server', 's')
             ->join('r.raidTemplate', 'rt')
             ->join('r.creator', 'creator')
-            ->join('creator.gameClass', 'gc');
+            ->join('creator.gameClass', 'gc')
+            ->leftJoin('r.participants', 'p');
 
         if (!empty($userGuildIds)) {
             $qb->where($qb->expr()->orX('r.isPublic = true', $qb->expr()->in('g', ':guildIds')))

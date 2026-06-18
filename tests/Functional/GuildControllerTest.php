@@ -319,6 +319,64 @@ class GuildControllerTest extends WebTestCaseBase
         $this->assertResponseStatusCodeSame(403);
     }
 
+    // ─── Transfert de leadership ──────────────────────────────────────────────
+
+    public function testLeaderCanTransferLeadershipToMember(): void
+    {
+        $server     = $this->makeServer();
+        $owner      = $this->makeUser('tl-owner@test.com');
+        $ownerChar  = $this->makeCharacter($owner, $server);
+        $guild      = $this->makeGuild($owner, $server);
+        $leaderM    = $this->makeMembership($guild, $ownerChar, MemberStatus::Leader);
+
+        $member     = $this->makeUser('tl-member@test.com');
+        $memberChar = $this->makeCharacter($member, $server);
+        $memberM    = $this->makeMembership($guild, $memberChar, MemberStatus::Member);
+        $this->flush();
+        $leaderMId = $leaderM->getId();
+        $memberMId = $memberM->getId();
+        $slug      = $guild->getSlug();
+        $this->em->clear();
+
+        $this->client->loginUser($owner);
+        $crawler = $this->client->request('GET', '/guildes/' . $slug . '/membres');
+        $token   = $crawler->filter('form[action$="transferer-meneur"] input[name="_token"]')->attr('value');
+
+        $this->client->request('POST', '/guildes/membres/' . $memberMId . '/transferer-meneur', [
+            '_token' => $token,
+        ]);
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->em->clear();
+        $this->assertSame(MemberStatus::Member, $this->em->find(\App\Entity\GuildMembership::class, $leaderMId)->getStatus());
+        $this->assertSame(MemberStatus::Leader, $this->em->find(\App\Entity\GuildMembership::class, $memberMId)->getStatus());
+    }
+
+    public function testNonLeaderCannotTransferLeadership(): void
+    {
+        $server     = $this->makeServer();
+        $owner      = $this->makeUser('tl2-owner@test.com');
+        $ownerChar  = $this->makeCharacter($owner, $server);
+        $guild      = $this->makeGuild($owner, $server);
+        $this->makeMembership($guild, $ownerChar, MemberStatus::Leader);
+
+        $member     = $this->makeUser('tl2-member@test.com');
+        $memberChar = $this->makeCharacter($member, $server);
+        $memberM    = $this->makeMembership($guild, $memberChar, MemberStatus::Member);
+        $this->flush();
+        $memberMId = $memberM->getId();
+
+        $rando = $this->makeUser('rando@test.com');
+        $this->flush();
+
+        $this->client->loginUser($rando);
+        $this->client->request('POST', '/guildes/membres/' . $memberMId . '/transferer-meneur', [
+            '_token' => 'bad-token',
+        ]);
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
     // ─── Helpers ───────────────────────────────────────────────────────────────
 
     /**

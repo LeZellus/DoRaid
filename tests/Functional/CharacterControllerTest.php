@@ -2,6 +2,8 @@
 
 namespace App\Tests\Functional;
 
+use App\Entity\MemberStatus;
+
 class CharacterControllerTest extends WebTestCaseBase
 {
     // ─── Création de personnage ────────────────────────────────────────────────
@@ -124,6 +126,31 @@ class CharacterControllerTest extends WebTestCaseBase
         ]);
 
         $this->assertResponseStatusCodeSame(403);
+    }
+
+    public function testDeleteLeaderCharacterShowsError(): void
+    {
+        $server    = $this->makeServer();
+        $user      = $this->makeUser('leader@test.com');
+        $char      = $this->makeCharacter($user, $server);
+        $guild     = $this->makeGuild($user, $server);
+        $this->makeMembership($guild, $char, MemberStatus::Leader);
+        $this->flush();
+        $charId = $char->getId();
+        $this->em->clear();
+
+        $this->client->loginUser($user);
+        $crawler = $this->client->request('GET', '/personnages');
+        $token   = $crawler->filter('input[name="_token"]')->first()->attr('value');
+
+        $this->client->request('POST', '/personnages/' . $charId . '/supprimer', [
+            '_token' => $token,
+        ]);
+
+        $this->assertResponseRedirects('/personnages');
+        $this->client->followRedirect();
+        $this->assertStringContainsString('meneur', $this->client->getResponse()->getContent());
+        $this->assertNotNull($this->em->find(\App\Entity\Character::class, $charId));
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────

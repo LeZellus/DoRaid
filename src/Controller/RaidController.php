@@ -22,6 +22,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\RateLimiter\RateLimiterFactory;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -108,6 +109,7 @@ class RaidController extends AbstractController
         GuildRepository $guildRepo,
         CharacterRepository $charRepo,
         RaidTemplateRepository $templateRepo,
+        RateLimiterFactory $createRaidLimiter,
     ): Response {
         $guild = $guildRepo->find((int) $request->query->get('guild'));
 
@@ -128,6 +130,15 @@ class RaidController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $limiter = $createRaidLimiter->create($this->getUser()->getUserIdentifier());
+            if (!$limiter->consume()->isAccepted()) {
+                $this->addFlash('error', 'Trop de raids créés en peu de temps. Réessayez dans quelques instants.');
+                return $this->render('raid/new.html.twig', [
+                    'form' => $form, 'guild' => $guild,
+                    'characters' => $characters, 'templates' => $templates,
+                ]);
+            }
+
             $template  = $templateRepo->find((int) $request->request->get('raid_template_id'));
             $character = $charRepo->find((int) $request->request->get('character_id'));
 
@@ -247,9 +258,15 @@ class RaidController extends AbstractController
 
     #[IsGranted('ROLE_USER')]
     #[Route('/{id}/candidater', name: 'app_raid_apply', methods: ['POST'])]
-    public function apply(Raid $raid, Request $request, CharacterRepository $charRepo): Response
+    public function apply(Raid $raid, Request $request, CharacterRepository $charRepo, RateLimiterFactory $applyRaidLimiter): Response
     {
         $this->requireCsrfToken('apply_raid_' . $raid->getId(), $request);
+
+        $limiter = $applyRaidLimiter->create($this->getUser()->getUserIdentifier());
+        if (!$limiter->consume()->isAccepted()) {
+            $this->addFlash('error', 'Trop de candidatures en peu de temps. Réessayez dans quelques instants.');
+            return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
+        }
 
         $character = $charRepo->find((int) $request->request->get('character_id'));
 

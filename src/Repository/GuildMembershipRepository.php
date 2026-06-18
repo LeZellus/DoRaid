@@ -39,6 +39,7 @@ class GuildMembershipRepository extends ServiceEntityRepository
     public function findConfirmedForUser(User $user): array
     {
         return $this->createQueryBuilder('m')
+            ->addSelect('c', 'g')
             ->join('m.character', 'c')
             ->join('m.guild', 'g')
             ->where('c.user = :user')
@@ -70,6 +71,7 @@ class GuildMembershipRepository extends ServiceEntityRepository
     public function findByUser(User $user): array
     {
         return $this->createQueryBuilder('m')
+            ->addSelect('c', 'g')
             ->join('m.character', 'c')
             ->join('m.guild', 'g')
             ->where('c.user = :user')

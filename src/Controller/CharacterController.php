@@ -3,10 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Character;
-use App\Entity\MemberStatus;
+use App\Exception\BusinessRuleException;
 use App\Form\CharacterEditType;
 use App\Form\CharacterType;
 use App\Repository\CharacterRepository;
+use App\Service\CharacterService;
 use App\Traits\CsrfGuardTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -91,7 +92,7 @@ class CharacterController extends AbstractController
     }
 
     #[Route('/{id}/supprimer', name: 'app_character_delete', methods: ['POST'])]
-    public function delete(Character $character, EntityManagerInterface $em, Request $request): Response
+    public function delete(Character $character, CharacterService $characterService, Request $request): Response
     {
         if ($character->getUser()->getId() !== $this->getUser()->getId()) {
             throw $this->createAccessDeniedException();
@@ -99,15 +100,12 @@ class CharacterController extends AbstractController
 
         $this->requireCsrfToken('delete_character_' . $character->getId(), $request);
 
-        $membership = $character->getMembership();
-        if ($membership !== null && $membership->getStatus() === MemberStatus::Leader) {
-            $this->addFlash('error', 'Ce personnage est meneur de « ' . $membership->getGuild()->getName() . ' ». Supprimez la guilde avant de supprimer ce personnage.');
-            return $this->redirectToRoute('app_character_index');
+        try {
+            $characterService->deleteCharacter($character);
+            $this->addFlash('success', 'Personnage supprimé.');
+        } catch (BusinessRuleException $e) {
+            $this->addFlash('error', $e->getMessage());
         }
-
-        $em->remove($character);
-        $em->flush();
-        $this->addFlash('success', 'Personnage supprimé.');
 
         return $this->redirectToRoute('app_character_index');
     }

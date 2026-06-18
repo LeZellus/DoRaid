@@ -13,8 +13,29 @@ framework:
     #esi: true
     #fragments: true
 
+    rate_limiter:
+        apply_raid:
+            policy: 'sliding_window'
+            limit: 10
+            interval: '1 minute'
+        join_guild:
+            policy: 'sliding_window'
+            limit: 5
+            interval: '5 minutes'
+        create_raid:
+            policy: 'sliding_window'
+            limit: 5
+            interval: '1 hour'
+
 when@test:
     framework:
         test: true
         session:
             storage_factory_id: session.storage.factory.mock_file
+        rate_limiter:
+            apply_raid:
+                limit: 10000
+            join_guild:
+                limit: 10000
+            create_raid:
+                limit: 10000

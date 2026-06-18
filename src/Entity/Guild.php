@@ -38,6 +38,7 @@ class Guild
     private ?string $imagePath = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Url(protocols: ['https'], requireTld: true, message: 'L\'URL du webhook Discord doit être une URL HTTPS valide.')]
     private ?string $discordWebhookUrl = null;
 
     #[ORM\ManyToOne]

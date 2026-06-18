@@ -22,6 +22,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\RateLimiter\RateLimiterFactory;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -154,11 +155,17 @@ class GuildController extends AbstractController
 
     #[IsGranted('ROLE_USER')]
     #[Route('/{slug}/rejoindre', name: 'app_guild_join', methods: ['POST'])]
-    public function join(Guild $guild, Request $request): Response
+    public function join(Guild $guild, Request $request, RateLimiterFactory $joinGuildLimiter): Response
     {
         $this->requireCsrfToken('join_guild_' . $guild->getId(), $request);
 
         $currentUser = $this->getUser();
+
+        $limiter = $joinGuildLimiter->create($currentUser->getUserIdentifier());
+        if (!$limiter->consume()->isAccepted()) {
+            $this->addFlash('error', 'Trop de demandes d\'adhésion en peu de temps. Réessayez dans quelques instants.');
+            return $this->redirectToRoute('app_guild_show', ['slug' => $guild->getSlug()]);
+        }
         $characterId = (int) $request->request->get('character_id');
         $character   = $characterId > 0 ? $this->charRepo->find($characterId) : null;
 
@@ -207,6 +214,37 @@ class GuildController extends AbstractController
             $name = $membership->getCharacter()->getName();
             $this->guildService->rejectMembership($membership);
             $this->addFlash('success', $name . ' a été retiré de la guilde.');
+        } catch (BusinessRuleException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('app_guild_members', ['slug' => $guild->getSlug()]);
+    }
+
+    #[IsGranted('ROLE_USER')]
+    #[Route('/membres/{id}/transferer-meneur', name: 'app_guild_transfer_leader', methods: ['POST'])]
+    public function transferLeader(GuildMembership $to, Request $request): Response
+    {
+        $guild = $to->getGuild();
+        $this->requireCsrfToken('transfer_leader_' . $to->getId(), $request);
+        $this->denyAccessUnlessGranted(GuildVoter::LEADER, $guild);
+
+        $from = null;
+        foreach ($guild->getMemberships() as $m) {
+            if ($m->getStatus() === MemberStatus::Leader
+                && (int) $m->getCharacter()->getUser()->getId() === (int) $this->getUser()->getId()) {
+                $from = $m;
+                break;
+            }
+        }
+
+        if ($from === null) {
+            throw $this->createAccessDeniedException();
+        }
+
+        try {
+            $this->guildService->transferLeadership($from, $to);
+            $this->addFlash('success', $to->getCharacter()->getName() . ' est maintenant meneur de ' . $guild->getName() . '.');
         } catch (BusinessRuleException $e) {
             $this->addFlash('error', $e->getMessage());
         }
