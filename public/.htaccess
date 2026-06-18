@@ -7,6 +7,9 @@ DirectoryIndex index.php
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
+    RewriteCond %{HTTP_HOST} ^www\.zeminal\.tech$ [NC]
+    RewriteRule ^(.*)$ https://zeminal.tech/$1 [R=301,L]
+
     RewriteCond %{REQUEST_URI}::$0 ^(/.+)/(.*)::\2$
     RewriteRule .* - [E=BASE:%1]
 

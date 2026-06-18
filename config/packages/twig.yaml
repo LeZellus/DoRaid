@@ -2,6 +2,8 @@ twig:
     file_name_pattern: '*.twig'
     form_themes:
         - 'form/tailwind.html.twig'
+    globals:
+        canonical_url: '%app.canonical_url%'
 
 when@test:
     twig:
