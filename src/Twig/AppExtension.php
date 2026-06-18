@@ -2,8 +2,11 @@
 
 namespace App\Twig;
 
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
+use Twig\TwigFunction;
 
 class AppExtension extends AbstractExtension
 {
@@ -15,11 +18,34 @@ class AppExtension extends AbstractExtension
         'August' => 'août', 'September' => 'septembre', 'October' => 'octobre',
         'November' => 'novembre', 'December' => 'décembre'];
 
+    public function __construct(
+        #[Autowire('%kernel.project_dir%')] private readonly string $projectDir,
+    ) {
+    }
+
     public function getFilters(): array
     {
         return [
             new TwigFilter('date_fr', $this->dateFr(...)),
         ];
+    }
+
+    public function getFunctions(): array
+    {
+        return [
+            new TwigFunction('raid_template_og_image', $this->raidTemplateOgImage(...)),
+        ];
+    }
+
+    /**
+     * Retourne le chemin de la bannière OG dédiée à ce type de raid, si elle existe sur le disque.
+     */
+    public function raidTemplateOgImage(string $raidTemplateName): ?string
+    {
+        $slug = (new AsciiSlugger())->slug($raidTemplateName)->lower()->toString();
+        $relativePath = 'og/raid-' . $slug . '.png';
+
+        return is_file($this->projectDir . '/public/' . $relativePath) ? $relativePath : null;
     }
 
     public function dateFr(\DateTimeInterface|string $date): string

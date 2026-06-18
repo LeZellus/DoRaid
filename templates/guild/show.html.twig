@@ -3,6 +3,7 @@
 
 {% block title %}{{ guild.name }} – Guilde Dofus {{ guild.server.name }} – Zeminal{% endblock %}
 {% block meta_description %}Guilde Dofus {{ guild.name }} sur {{ guild.server.name }}. Rejoignez la guilde et participez à leurs raids organisés sur Zeminal.{% endblock %}
+{% block og_image %}{% if guild.imagePath %}{{ canonical_url }}{{ asset('uploads/guildes/' ~ guild.slug ~ '/' ~ guild.imagePath) }}{% else %}{{ parent() }}{% endif %}{% endblock %}
 
 {% block body %}
 <div class="max-w-6xl mx-auto px-6 py-10" data-controller="reveal">

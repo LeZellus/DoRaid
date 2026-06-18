@@ -11,14 +11,16 @@
         {# Open Graph #}
         <meta property="og:type" content="website">
         <meta property="og:site_name" content="Zeminal">
-        <meta property="og:title" content="{% block og_title %}Zeminal – Organisez vos raids Dofus en guilde{% endblock %}">
-        <meta property="og:description" content="{% block og_description %}Planifiez vos raids Dofus, gérez vos personnages et coordonnez votre guilde. Raids publics visibles par tous les serveurs.{% endblock %}">
+        <meta property="og:title" content="{% block og_title %}{{ block('title') }}{% endblock %}">
+        <meta property="og:description" content="{% block og_description %}{{ block('meta_description') }}{% endblock %}">
         <meta property="og:url" content="{{ canonical_url }}{{ app.request.requestUri }}">
+        <meta property="og:image" content="{% block og_image %}{{ canonical_url }}{{ asset('og/default.png') }}{% endblock %}">
 
         {# Twitter Card #}
-        <meta name="twitter:card" content="summary">
-        <meta name="twitter:title" content="{% block twitter_title %}Zeminal – Organisez vos raids Dofus en guilde{% endblock %}">
-        <meta name="twitter:description" content="{% block twitter_description %}Planifiez vos raids Dofus, gérez vos personnages et coordonnez votre guilde.{% endblock %}">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="{% block twitter_title %}{{ block('title') }}{% endblock %}">
+        <meta name="twitter:description" content="{% block twitter_description %}{{ block('meta_description') }}{% endblock %}">
+        <meta name="twitter:image" content="{% block twitter_image %}{{ block('og_image') }}{% endblock %}">
 
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚔️</text></svg>">
 

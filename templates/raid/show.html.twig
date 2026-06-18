@@ -3,6 +3,7 @@
 
 {% block title %}{{ raid.raidTemplate.name }} – Raid Dofus {{ raid.guild.server.name }} – {{ raid.guild.name }} – Zeminal{% endblock %}
 {% block meta_description %}Raid Dofus {{ raid.raidTemplate.name }} organisé par {{ raid.guild.name }} sur {{ raid.guild.server.name }}{% if raid.scheduledAt %}, prévu le {{ raid.scheduledAt|date('d/m/Y à H:i') }}{% endif %}. {{ raid.acceptedParticipants|length }}/{{ raid.raidTemplate.maxParticipants }} participants.{% endblock %}
+{% block og_image %}{% set _ogPath = raid_template_og_image(raid.raidTemplate.name) %}{% if _ogPath %}{{ canonical_url }}{{ asset(_ogPath) }}{% else %}{{ parent() }}{% endif %}{% endblock %}
 
 {% block body %}
 <div class="max-w-6xl mx-auto px-6 py-10" data-controller="reveal">
