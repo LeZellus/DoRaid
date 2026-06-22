@@ -75,14 +75,14 @@ def make_default_banner():
     img.save(os.path.join(OUT_DIR, "default.png"))
 
 
-def make_raid_banner(filename, name, tag):
+def make_raid_banner(filename, name, tag, label="RAID DOFUS", label_color=YELLOW_400):
     img = base_canvas()
     draw = ImageDraw.Draw(img)
 
     margin = 90
     draw_wordmark(draw, margin + 18, margin + 20)
 
-    draw.text((margin, 230), "RAID DOFUS", font=font("segoeuib.ttf", 26), fill=YELLOW_400)
+    draw.text((margin, 230), label, font=font("segoeuib.ttf", 26), fill=label_color)
 
     title_font = fit_font(name, W - 2 * margin, 76)
     draw.text((margin, 280), name, font=title_font, fill=WHITE)
@@ -93,6 +93,11 @@ def make_raid_banner(filename, name, tag):
     img.save(os.path.join(OUT_DIR, filename))
 
 
+def make_guide_banner(filename, name):
+    make_raid_banner(filename, name, "Mécaniques, étages, boss et stratégies sur Zeminal",
+                      label="GUIDE DE RAID", label_color=INDIGO_300)
+
+
 if __name__ == "__main__":
     os.makedirs(OUT_DIR, exist_ok=True)
 
@@ -101,5 +106,8 @@ if __name__ == "__main__":
                       "Trouvez un groupe et rejoignez ce raid sur Zeminal")
     make_raid_banner("raid-sanctuaire-des-jardins-eternels.png", "Sanctuaire des Jardins éternels",
                       "Trouvez un groupe et rejoignez ce raid sur Zeminal")
+
+    make_guide_banner("guide-gouffre-du-gigalodon.png", "Gouffre du Gigalodon")
+    make_guide_banner("guide-sanctuaire-des-jardins-eternels.png", "Sanctuaire des Jardins éternels")
 
     print("Bannières générées dans", OUT_DIR)

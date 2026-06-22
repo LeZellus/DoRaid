@@ -34,6 +34,7 @@ class AppExtension extends AbstractExtension
     {
         return [
             new TwigFunction('raid_template_og_image', $this->raidTemplateOgImage(...)),
+            new TwigFunction('raid_guide_og_image', $this->raidGuideOgImage(...)),
             new TwigFunction('has_raid_guide', $this->hasRaidGuide(...)),
         ];
     }
@@ -55,6 +56,17 @@ class AppExtension extends AbstractExtension
     {
         $slug = (new AsciiSlugger())->slug($raidTemplateName)->lower()->toString();
         $relativePath = 'og/raid-' . $slug . '.png';
+
+        return is_file($this->projectDir . '/public/' . $relativePath) ? $relativePath : null;
+    }
+
+    /**
+     * Retourne le chemin de la bannière OG dédiée au guide de ce type de raid, si elle existe sur le disque.
+     */
+    public function raidGuideOgImage(string $raidTemplateName): ?string
+    {
+        $slug = (new AsciiSlugger())->slug($raidTemplateName)->lower()->toString();
+        $relativePath = 'og/guide-' . $slug . '.png';
 
         return is_file($this->projectDir . '/public/' . $relativePath) ? $relativePath : null;
     }
