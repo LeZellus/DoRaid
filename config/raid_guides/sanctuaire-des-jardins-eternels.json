@@ -1,0 +1,1788 @@
+{
+  "raidTemplateName": "Sanctuaire des Jardins éternels",
+  "sections": [
+    {
+      "title": "Présentation du Raid",
+      "orderNumber": 1,
+      "blocks": [
+        {
+          "type": "text",
+          "content": "Pour créer ce raid, vous devez être dans une guilde et posséder les droits de création de raids. Il faut se rendre dans la boutique, onglet Raids de Guilde, pour le lancer."
+        },
+        {
+          "type": "image",
+          "filename": "001-4achat.png",
+          "caption": "Création du raid depuis la boutique de guilde"
+        },
+        {
+          "type": "text",
+          "content": "Conditions : coût de création de 480 kamas de guilde, 8 membres minimum et 16 maximum, durée maximale de 2 heures, et score maximum de 50 000 points."
+        },
+        {
+          "type": "image",
+          "filename": "002-5boutique.png",
+          "caption": "Onglet Raids de Guilde dans la boutique"
+        },
+        {
+          "type": "text",
+          "content": "Le raid se compose de 4 énigmes à résoudre, de 4 gardiens à affronter, de 80 monstres à vaincre (20 par zone d'énigme + 60 dans le corridor) et de 2 boss finaux. Le raid étant collaboratif, il n'est pas nécessaire que chaque joueur réalise toutes les épreuves : dès qu'un membre du raid termine une épreuve, elle est validée pour tout le groupe, ce qui permet de se répartir les tâches.\n\nLe raid se termine si le capitaine y met fin, si le raid perd tous ses PV, si le temps maximum est écoulé, ou une fois que les deux boss finaux ont été vaincus au moins une fois."
+        },
+        {
+          "type": "text",
+          "content": "Contrairement à un raid classique, celui-ci dispose d'un système de PV de raid distinct du score : votre équipe possède 20PV. Si ce compteur tombe à 0, le raid se termine immédiatement avec le score accumulé jusque-là."
+        },
+        {
+          "type": "image",
+          "filename": "003-6vie.png",
+          "caption": "Indicateur de PV du raid"
+        },
+        {
+          "type": "text",
+          "content": "Vous pouvez perdre ou gagner des PV de raid : une erreur dans une énigme retire 1PV, perdre un combat retire 1PV par personnage engagé dans ce combat, et valider une énigme rapporte 1PV (sans pouvoir dépasser le maximum de 20)."
+        },
+        {
+          "type": "text",
+          "content": "Voici le barème de score de chaque épreuve : énigme de l'Ouvrage Monochrome (2 000 points), énigme du Clos des Protecteurs (2 000 points), énigme de la Réserve de Belladone (2 000 points), énigme de la Cour d'Éphèdre (2 000 points), vaincre la Sentinelle de la Cour (5 000 points), vaincre le Gardien du Clos (5 000 points), vaincre le Veilleur de l'Ouvrage (5 000 points), vaincre le Défenseur de la Réserve (5 000 points), vaincre tous les monstres du Corridor (2 000 points), vaincre la Princesse Maudite (10 000 points), vaincre la Reine Écarlate (10 000 points)."
+        },
+        {
+          "type": "text",
+          "content": "Déroulement résumé : résoudre les 4 énigmes (dans un ordre assez libre, certaines épreuves se faisant en parallèle), ce qui réveille les 4 gardiens de chaque zone qu'il faut vaincre pour débloquer le Corridor du Château, puis éliminer les 60 monstres du corridor pour débloquer l'accès à la tour où se trouvent la Princesse Maudite et la Reine Écarlate, à affronter dans l'ordre souhaité."
+        }
+      ]
+    },
+    {
+      "title": "Manuscrit du Sanctuaire (succès exploration)",
+      "orderNumber": 2,
+      "blocks": [
+        {
+          "type": "text",
+          "content": "Le succès d'exploration de ce raid est particulier : il ne consiste pas seulement à entrer dans des zones, mais à retrouver 5 pages d'un manuscrit dispersées dans le raid afin de reconstituer le livre « La Reine, le peintre et la princesse (extrait) ». Quatre pages sont disponibles directement dans les 4 zones de base, la cinquième se trouve dans le Corridor du Château et nécessite d'avoir vaincu les 4 gardiens pour y accéder."
+        },
+        {
+          "type": "image",
+          "filename": "004-7exploration.png",
+          "caption": "Succès d'exploration : le livre à reconstituer"
+        },
+        {
+          "type": "text",
+          "content": "Attention, chaque page récupérée doit être double-cliquée pour être lue et faire progresser le succès. Positions des 5 pages : Ouvrage Monochrome [22,9], Clos des Protecteurs [12,20], Réserve de Belladone [19,15], Cour d'Éphèdre [9,14], Corridor du Château [16,12] (après avoir vaincu les 4 gardiens)."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "005-13ouvrage.jpg",
+              "caption": "Page 1 – Ouvrage Monochrome"
+            },
+            {
+              "type": "image",
+              "filename": "006-14clos.jpg",
+              "caption": "Page 2 – Clos des Protecteurs"
+            },
+            {
+              "type": "image",
+              "filename": "007-15reserve.jpg",
+              "caption": "Page 3 – Réserve de Belladone"
+            },
+            {
+              "type": "image",
+              "filename": "008-16cour.jpg",
+              "caption": "Page 4 – Cour d'Éphèdre"
+            },
+            {
+              "type": "image",
+              "filename": "009-17allee.jpg",
+              "caption": "Page 5 – Corridor du Château"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "En débloquant le succès, vous obtenez le Manuscrit du Sanctuaire des Jardins éternels, qui raconte l'origine de Cire Momore : elle ne serait autre que Lysmée, fille de la reine Éphèdre."
+        },
+        {
+          "type": "image",
+          "filename": "010-18manuscrit.png",
+          "caption": "Le Manuscrit du Sanctuaire des Jardins éternels"
+        },
+        {
+          "type": "text",
+          "content": "Personnages de l'histoire : la reine Éphèdre, qui a conclu un pacte avec une créature d'Externam (Ispi) pour protéger son trésor ; Gustav, le peintre personnel d'Éphèdre ; et Lysmée, la fille d'Éphèdre, amoureuse de Gustav. Éphèdre réprouve cet amour et veut marier sa fille à un riche Astrubien ; Lysmée tente alors d'assassiner sa mère mais échoue. En représailles, Éphèdre condamne Lysmée à prendre sa place dans le pacte conclu avec Ispi, et elle est transformée en Cire Momore. Plus de détails sur cette histoire dans le Webtoon Cire Momore disponible sur le launcher."
+        }
+      ]
+    },
+    {
+      "title": "Résoudre les énigmes : vue d'ensemble",
+      "orderNumber": 3,
+      "blocks": [
+        {
+          "type": "text",
+          "content": "En entrant dans le raid, vous arrivez à l'entrée du Sanctuaire où se trouvent 4 portails vers les zones à énigme (Réserve de Belladone, Cour d'Éphèdre, Ouvrage Monochrome, Clos des Protecteurs) ainsi qu'une porte vers le Corridor, fermée pour le moment."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "011-19reserve.jpg",
+              "caption": "Réserve de Belladone"
+            },
+            {
+              "type": "image",
+              "filename": "012-20cour.jpg",
+              "caption": "Cour d'Éphèdre"
+            },
+            {
+              "type": "image",
+              "filename": "013-21ouvrage.jpg",
+              "caption": "Ouvrage Monochrome"
+            },
+            {
+              "type": "image",
+              "filename": "014-22clos.jpg",
+              "caption": "Clos des Protecteurs"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Chaque salle correspond à une énigme : il y en a donc 4 à résoudre. Une fois les 4 résolues, les 4 gardiens de chaque salle se réveillent et il faudra les vaincre pour ouvrir la porte du Corridor."
+        },
+        {
+          "type": "image",
+          "filename": "015-23enigmes.png",
+          "caption": "Schéma de liaison entre les 4 zones d'énigmes"
+        },
+        {
+          "type": "text",
+          "content": "Bien que chaque énigme soit rattachée à une salle, toutes nécessitent de réaliser des actions dans d'autres salles pour être résolues : elles sont donc fortement imbriquées. Comme le raid est collaboratif, il n'est pas conseillé de résoudre les énigmes une par une si vous êtes plusieurs : il faut vous répartir les tâches en parallèle."
+        },
+        {
+          "type": "text",
+          "content": "Répartition conseillée à 2 joueurs : Joueur 1 — clique les 6 bateaux en papier (Ouvrage Monochrome), note les objets des piédestaux en [11,21] et [12,20] (Clos des Protecteurs), clique les fleurs dans l'ordre déduit (Ouvrage Monochrome), reconstitue en multicompte les 4 jardins (Clos/Cour) et affronte le monstre de la statue. Joueur 2 — parle à Belladone pour activer les pièces (Cour d'Éphèdre), note les pièces vertes des échiquiers (Réserve de Belladone), coule les 6 bateaux (multicompte si possible), puis affronte Belladone à 4 joueurs avec de l'aide.\n\nÀ partir de 3 joueurs, ces tâches se répartissent simplement entre les membres supplémentaires (par exemple un joueur dédié à la reconstitution des jardins multicompte, un autre aux piédestaux/fleurs). À 6 joueurs ou plus, toutes les tâches peuvent être librement réparties."
+        }
+      ]
+    },
+    {
+      "title": "Énigme de la Réserve de Belladone",
+      "orderNumber": 4,
+      "blocks": [
+        {
+          "type": "text",
+          "content": "Zones utilisées : Ouvrage Monochrome + Réserve de Belladone. Personnages : 1 minimum, 2 recommandés. Objectif : récupérer des bateaux en papier puis jouer une partie de bataille navale."
+        },
+        {
+          "type": "text",
+          "content": "Rendez-vous dans l'Ouvrage Monochrome pour retrouver 6 bateaux en papier dispersés aléatoirement sur les maps de la zone. Cliquer sur un bateau pour « Dévoiler la position » le retire de l'Ouvrage et en place un sur l'une des deux maps de bataille navale de la Réserve de Belladone, en [21,17] ou [19,15].\n\nATTENTION : ne cliquez pas les fleurs en papier de l'Ouvrage Monochrome si vous ne connaissez pas encore l'ordre correct — c'est l'énigme suivante, et une erreur y coûte 1PV au raid."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "016-24bateau.jpg",
+              "caption": "Dévoiler la position d'un bateau (Ouvrage Monochrome)"
+            },
+            {
+              "type": "image",
+              "filename": "017-25bateaux.jpg",
+              "caption": "Le bateau apparaît sur une grille de bataille navale"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Une fois les 6 bateaux dévoilés, rejoignez la Réserve de Belladone à 2 personnages (un sur chaque map, [21,17] et [19,15]) pour couler les 3 bateaux de chaque grille adverse."
+        },
+        {
+          "type": "image",
+          "filename": "018-26bataille.jpg",
+          "caption": "Grille de bataille navale"
+        },
+        {
+          "type": "text",
+          "content": "Les deux maps ne jouent pas simultanément : la map [21,17] commence toujours, et une boule verte/rouge indique qui doit jouer. Pour envoyer un boulet, cliquez deux boules de votre map pour former une coordonnée (par exemple A et 2 pour viser A2) sur la position des bateaux adverses."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "019-27bateau1.jpg",
+              "caption": "Map en bas à droite"
+            },
+            {
+              "type": "image",
+              "filename": "020-28bateau2.jpg",
+              "caption": "Map en haut à gauche"
+            }
+          ]
+        },
+        {
+          "type": "image",
+          "filename": "021-29tir.jpg",
+          "caption": "Envoi d'un boulet en A2"
+        },
+        {
+          "type": "text",
+          "content": "Toute erreur réinitialise tous les bateaux déjà coulés et retire 1PV au raid. Pour connaître la position des bateaux adverses : communiquez avec votre allié, allez observer l'autre map une fois, ou jouez en multicompte avec un personnage sur chaque map."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "022-30coules1.jpg",
+              "caption": "Map bas droite : tous les bateaux coulés"
+            },
+            {
+              "type": "image",
+              "filename": "023-31coules2.jpg",
+              "caption": "Map haut gauche : tous les bateaux coulés"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Une fois les 6 bateaux détruits, l'énigme est validée et rapporte 2 000 points au raid."
+        }
+      ]
+    },
+    {
+      "title": "Énigme de la Cour d'Éphèdre",
+      "orderNumber": 5,
+      "blocks": [
+        {
+          "type": "text",
+          "content": "Zones utilisées : Réserve de Belladone + Cour d'Éphèdre. Personnages : 1 minimum, 4 nécessaires uniquement pour la phase finale. Objectif : repérer 4 pièces d'échecs bien placées sur des échiquiers, puis rejouer leur disposition dans un combat contre Belladone."
+        },
+        {
+          "type": "text",
+          "content": "Rendez-vous en [12,14] dans la Cour d'Éphèdre pour parler à Belladone et « S'informer sur les règles à suivre ». Cela active les pièces sur 4 échiquiers de la Réserve de Belladone (vides au départ)."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "024-32posbella.jpg",
+              "caption": "Position de Belladone [12,14]"
+            },
+            {
+              "type": "image",
+              "filename": "025-33bella.jpg",
+              "caption": "Dialogue avec Belladone"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Des pièces sont alors placées aléatoirement sur les 4 échiquiers (un par map). Il faut trouver parmi elles les 4 pièces correctement positionnées : 2 Tours et 2 Fous."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "026-34echiquiers.jpg",
+              "caption": "Les 4 échiquiers de la Réserve de Belladone"
+            },
+            {
+              "type": "image",
+              "filename": "027-35echiquierg.jpg",
+              "caption": "Exemple d'échiquier"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Cliquez sur chaque pièce pour la tester : si elle clignote rouge, ce n'est pas la bonne (sans pénalité) ; si elle s'affiche en vert, c'est une des 4 pièces recherchées."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "028-36rouge.jpg",
+              "caption": "Pièce incorrecte (rouge)"
+            },
+            {
+              "type": "image",
+              "filename": "029-37vert.jpg",
+              "caption": "Pièce correcte (verte)"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Notez bien pour chacune des 4 pièces vertes sa position, son type et sa couleur : un Fou noir, un Fou blanc, une Tour noire et une Tour blanche, chacun à sa propre coordonnée."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "030-38founoir.jpg",
+              "caption": "Fou Noir"
+            },
+            {
+              "type": "image",
+              "filename": "031-39foublanc.jpg",
+              "caption": "Fou Blanc"
+            },
+            {
+              "type": "image",
+              "filename": "032-40tournoire.jpg",
+              "caption": "Tour Noire"
+            },
+            {
+              "type": "image",
+              "filename": "033-41tourblanche.jpg",
+              "caption": "Tour Blanche"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Une fois ces informations notées, retournez à 4 personnages auprès de Belladone (Cour d'Éphèdre, [12,14]) pour « Défier Belladone à son jeu d'échecs ». Le combat nécessite obligatoirement 4 participants."
+        },
+        {
+          "type": "image",
+          "filename": "034-42bellaechec.jpg",
+          "caption": "Défi d'échecs contre Belladone"
+        },
+        {
+          "type": "text",
+          "content": "Chaque personnage est transformé en une des 4 pièces dont vous avez noté la position. Le but est de se replacer sur la position exacte que cette pièce occupait sur les échiquiers, en respectant les règles de déplacement : les Fous se déplacent uniquement en diagonale, les Tours uniquement en ligne."
+        },
+        {
+          "type": "image",
+          "filename": "035-43echecs.jpg",
+          "caption": "Personnages transformés en pièces d'échecs"
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "036-44ligne.png",
+              "caption": "Déplacement de la Tour (ligne)"
+            },
+            {
+              "type": "image",
+              "filename": "037-45diagolnale.png",
+              "caption": "Déplacement du Fou (diagonale)"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Vous devez normalement pouvoir vous placer correctement en 2 tours. Une pièce déjà bien placée peut donner des PA supplémentaires à un allié pour l'aider à se déplacer davantage dans le même tour."
+        },
+        {
+          "type": "image",
+          "filename": "038-46pa.png",
+          "caption": "Bonus de PA si bien placé"
+        },
+        {
+          "type": "text",
+          "content": "Au bout du 4ᵉ tour de Belladone, le combat se termine : victoire si tout le monde est bien placé, défaite sinon (le raid perd alors autant de PV que de personnages engagés). L'énigme rapporte 2 000 points au raid une fois réussie."
+        },
+        {
+          "type": "image",
+          "filename": "039-47placement.jpg",
+          "caption": "Les 4 pièces correctement placées"
+        }
+      ]
+    },
+    {
+      "title": "Énigme de l'Ouvrage Monochrome",
+      "orderNumber": 6,
+      "blocks": [
+        {
+          "type": "text",
+          "content": "Zones utilisées : Clos des Protecteurs + Ouvrage Monochrome. Personnages : 1 minimum. Objectif : repérer l'ordre d'objets sur des piédestaux du Clos, puis cliquer les fleurs en papier correspondantes de l'Ouvrage Monochrome dans le bon ordre pour obtenir une couleur, réutilisée dans l'énigme suivante."
+        },
+        {
+          "type": "text",
+          "content": "Rendez-vous dans le Clos des Protecteurs pour observer 4 piédestaux numérotés de I à IV, chacun affichant 2 objets : les piédestaux I et III se trouvent en [11,21], les piédestaux II et IV en [12,20]. Ces objets sont déterminés aléatoirement à chaque lancement du raid."
+        },
+        {
+          "type": "image",
+          "filename": "040-48piedestaux.jpg",
+          "caption": "Les piédestaux du Clos des Protecteurs"
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "041-49pied1.jpg",
+              "caption": "Piédestal I"
+            },
+            {
+              "type": "image",
+              "filename": "042-50pied3.jpg",
+              "caption": "Piédestal III"
+            },
+            {
+              "type": "image",
+              "filename": "043-51pied2.jpg",
+              "caption": "Piédestal II"
+            },
+            {
+              "type": "image",
+              "filename": "044-52pied4.jpg",
+              "caption": "Piédestal IV"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Notez l'ordre des objets par piédestal, par exemple : I = Lanterne et Bague, II = Bobine et Arakne, III = Crayon et Règle, IV = Bougie et Kamas."
+        },
+        {
+          "type": "text",
+          "content": "Rendez-vous ensuite dans l'Ouvrage Monochrome, où chaque map porte le nom de l'objet géant qu'elle affiche, et cliquez « Activer la fleur en papier » dans le bon ordre. Positions des maps : Crayon [21,7], Kamas [22,7], Bague [23,7], Règle [21,8], Arakne [23,8], Bobine [21,9], Bougie [22,9], Lanterne [23,9]."
+        },
+        {
+          "type": "image",
+          "filename": "045-53fleurs.jpg",
+          "caption": "Fleur en papier à activer"
+        },
+        {
+          "type": "text",
+          "content": "Pour chaque piédestal (dans l'ordre I, II, III, IV), parmi ses 2 objets, une seule des deux maps correspondantes possède réellement une fleur à cliquer : il faut donc se rendre sur les deux maps possibles pour déterminer la bonne."
+        },
+        {
+          "type": "image",
+          "filename": "046-54maps.jpg",
+          "caption": "Les maps de l'Ouvrage Monochrome, nommées par objet géant"
+        },
+        {
+          "type": "text",
+          "content": "Si vous cliquez la mauvaise fleur, l'écran clignote rouge et le raid perd 1PV ; sinon la fleur passe au vert."
+        },
+        {
+          "type": "image",
+          "filename": "047-55fleurok.jpg",
+          "caption": "Fleur activée correctement"
+        },
+        {
+          "type": "text",
+          "content": "Après avoir cliqué les 4 fleurs dans l'ordre, la zone de l'Ouvrage Monochrome prend une couleur parmi 4 possibles (orange, bleu, rouge, vert). L'énigme rapporte alors 2 000 points au raid. Cette couleur est indispensable pour l'énigme du Clos des Protecteurs et pour le combat de la Sentinelle de la Cour : pensez à la noter."
+        }
+      ]
+    },
+    {
+      "title": "Énigme du Clos des Protecteurs",
+      "orderNumber": 7,
+      "blocks": [
+        {
+          "type": "text",
+          "content": "Zones utilisées : Cour d'Éphèdre + Clos des Protecteurs. Personnages : 1 minimum, 2 en multicompte recommandés. Objectif : reproduire la disposition de statues du Clos dans des jardins miniatures de la Cour."
+        },
+        {
+          "type": "text",
+          "content": "Il est recommandé d'être 2 en multicompte : un personnage dans la Cour d'Éphèdre, un autre dans le Clos des Protecteurs. Chaque zone possède 4 maps adjacentes à celle du portail : dans le Clos, des jardins avec des statues déjà présentes ; dans la Cour, des jardins miniatures sur damier où certaines cases, une fois cliquées, font apparaître une statue."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "048-56casesstatue.jpg",
+              "caption": "Case cliquable d'un jardin miniature"
+            },
+            {
+              "type": "image",
+              "filename": "049-57statue.jpg",
+              "caption": "Statue apparue après le clic"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "La correspondance entre les deux zones est simple : la position relative au portail (droite/gauche, haut/bas) est la même dans le Clos et dans la Cour. Le multicompte à 2 permet de voir les deux maps simultanément."
+        },
+        {
+          "type": "image",
+          "filename": "050-58correspondance.jpg",
+          "caption": "Schéma de correspondance entre Cour et Clos"
+        },
+        {
+          "type": "text",
+          "content": "Il y a 4 jardins à reconstituer, chacun nécessitant de faire apparaître 3 statues manquantes aux bonnes positions. Se tromper de case ne fait pas perdre de PV ; seule une erreur à la validation en coûte un."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "051-59closstatues.jpg",
+              "caption": "3 statues identifiées dans le Clos"
+            },
+            {
+              "type": "image",
+              "filename": "052-60courstatue.jpg",
+              "caption": "Statues reproduites dans la Cour"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Une fois les 3 statues correctement placées sur une map de la Cour, cliquez le bouton lumineux pour valider, puis répétez pour les 3 autres maps. Une erreur affiche l'écran en rouge et retire 1PV au raid ; une validation correcte affiche le jardin en vert."
+        },
+        {
+          "type": "image",
+          "filename": "053-61buzzer.jpg",
+          "caption": "Bouton de validation du jardin"
+        },
+        {
+          "type": "text",
+          "content": "Après validation des 4 jardins, une statue apparaît au centre du Clos en [11,20], accompagnée d'une couleur (à condition d'avoir déjà terminé l'énigme de l'Ouvrage Monochrome)."
+        },
+        {
+          "type": "image",
+          "filename": "054-62statue.jpg",
+          "caption": "Statue apparue au centre du Clos"
+        },
+        {
+          "type": "text",
+          "content": "Il faut alors affronter le monstre correspondant exactement à la statue (type) et à la couleur affichée. Positions par couleur — Ambré (orange) : Dahliane [11,21], Fracamélia [11,19], Muguégide [12,20], Tritulipe [10,20]. Azuré (bleu) : Dahliane [11,19], Fracamélia [11,21], Muguégide [10,20], Tritulipe [12,20]. Écarlate (rouge) : Dahliane [10,20], Fracamélia [12,20], Muguégide [11,21], Tritulipe [11,19]. Viridine (vert) : Dahliane [12,20], Fracamélia [10,20], Muguégide [11,19], Tritulipe [11,21]."
+        },
+        {
+          "type": "image",
+          "filename": "055-63vaincrestatue.jpg",
+          "caption": "Combat contre le monstre correspondant à la statue"
+        },
+        {
+          "type": "text",
+          "content": "Affronter le mauvais monstre termine immédiatement le combat et retire 1PV au raid. Le combat se fait jusqu'à 4 personnages maximum mais reste solotable. Une fois le bon monstre vaincu, l'énigme rapporte 2 000 points au raid."
+        }
+      ]
+    },
+    {
+      "title": "Présentation des monstres du Raid",
+      "orderNumber": 8,
+      "blocks": [
+        {
+          "type": "text",
+          "content": "Tous les monstres du raid possèdent le passif « Détection des Protecteurs » (identique aux Protecteurs d'Ephedrya) : lorsqu'un monstre commence son tour avec au moins un personnage en ligne de vue à plus de 4PO (5PO ou plus), il entre dans l'état « Férocité des Protecteurs ». S'il n'a en ligne de vue que des personnages à 4PO ou moins, l'effet ne se déclenche pas."
+        },
+        {
+          "type": "text",
+          "content": "En Férocité des Protecteurs, le monstre se téléporte (portée infinie) au contact du personnage en ligne de vue le plus proche, lui applique Pesanteur 2 tours et Détecté 1 tour, et lui inflige 800 dégâts dans un élément aléatoire. Le monstre gagne 3PA, 30% de dommages finaux et l'état Intaclable 1 tour ; ses sorts sans intervalle de relance deviennent aussi plus puissants. S'il ne peut se téléporter sur personne, il gagne simplement 1PM et 2PO pour 1 tour (sauf s'il est « au repos »)."
+        },
+        {
+          "type": "text",
+          "content": "Après un tour en Férocité, le monstre entre dans l'état « Protecteur au repos » : il perd 20% de résistances dans tous les éléments pour 1 tour et ne peut pas réutiliser Férocité au tour suivant. Le personnage visé par la téléportation entre quant à lui dans l'état « Détecté » pour 1 tour, le rendant immunisé à une nouvelle Férocité pendant ce délai."
+        },
+        {
+          "type": "image",
+          "filename": "056-88muguegide.png",
+          "caption": "Le Muguégide"
+        },
+        {
+          "type": "text",
+          "content": "Sorts du Muguégide — Boutonithe : attire la cible de 5 cases, applique 10% d'érosion (12% en cc) 1 tour et inflige 320 dégâts feu ; en Férocité, dégâts en vol de vie et érosion à 20% (24% cc). Jusqu'à 6PO en ligne, 3 fois par tour, 1 fois par cible. Massiflore : +10% vitalité 2 tours à lui et un allié ciblé, +3% résistance par ligne de dégâts subie (cumulable ×10). Jusqu'à 6PO en ligne, relance 4 tours. Troncage : 400 dégâts air en zone boomerang taille 5, vole 50 tacle (60 cc) 2 tours ; en Férocité, vol porté à 75 (85 cc). Jusqu'à 4PO, 1 fois par tour."
+        },
+        {
+          "type": "image",
+          "filename": "057-89tritulipe.png",
+          "caption": "Le Tritulipe"
+        },
+        {
+          "type": "text",
+          "content": "Sorts du Tritulipe — Florichoc : 300 dégâts terre en croix taille 1 ; en Férocité, vol de vie. Jusqu'à 8PO, 4 fois par tour, 1 fois par cible. Germination : +350 puissance et +30% vitalité 2 tours (puis +30% dégâts subis au tour suivant). Sur lui-même, relance 4 tours. Pistilance : échange de place et 500 dégâts feu, gagne 1PO à chaque utilisation ; en Férocité, vol de vie et échange forcé. De 2 à 4PO sans ligne de vue, 1 fois par tour."
+        },
+        {
+          "type": "image",
+          "filename": "058-90dahliane.png",
+          "caption": "La Dahliane"
+        },
+        {
+          "type": "text",
+          "content": "Sorts de la Dahliane — Lianeçon : attire de 1 case en croix taille 2 autour d'une case ciblée, 350 dégâts neutre, retire 100 fuite et applique Enraciné 2 tours en croix taille 1. Jusqu'à 12PO modifiable, relance 3 tours. Noeudasse : 450 dégâts eau et retire 2PM 2 tours ; en Férocité, vol de vie et ne laisse qu'1PM. Jusqu'à 10PO en ligne/diagonale, 2 fois par tour, 1 fois par cible. Polyflore : 400 dégâts feu à un ennemi ou 400 soins à un allié, plus Pesanteur 1 tour à l'ennemi (ou +2PA/+2PM à l'allié) ; en Férocité, vol de vie sur ennemi. Jusqu'à 8PO, 3 fois par tour, 1 fois par cible."
+        },
+        {
+          "type": "image",
+          "filename": "059-91fracamelia.png",
+          "caption": "La Fracamélia"
+        },
+        {
+          "type": "text",
+          "content": "Sorts de la Fracamélia — Bastonille : vole 10% critique (12% cc), 200 dégâts terre + 200 dégâts feu ; en Férocité, vol de vie et vol de critique à 15% (17% cc). Jusqu'à 3PO, 4 fois par tour, 1 fois par cible. Telluriforce : téléportation puis 550 dégâts terre en croix taille 2, +20 dommages critiques 2 tours aux alliés dans la zone. Jusqu'à 6PO sans ligne de vue, relance 2 tours. Zéphyris : 250 dégâts air + 250 dégâts eau en croix diagonale taille 1 autour d'elle, +100 bouclier (200 cc) 1 tour ; en Férocité, vol de vie et bouclier à 200 (300 cc). Sur elle-même, 1 fois par tour."
+        }
+      ]
+    },
+    {
+      "title": "Veilleur de l'Ouvrage (Gardien)",
+      "orderNumber": 9,
+      "blocks": [
+        {
+          "type": "text",
+          "content": "Une fois les 4 énigmes résolues, les gardiens de chaque zone se réveillent et bloquent l'accès au Corridor du Château tant qu'ils ne sont pas tous vaincus. Les 4 combats se font à 4 joueurs maximum, sont parallélisables entre plusieurs groupes, et chaque gardien est accompagné de 4 monstres (invisibles en préparation, apparaissant au lancement du combat)."
+        },
+        {
+          "type": "image",
+          "filename": "060-69gardiens2.png",
+          "caption": "Emplacement des 4 gardiens"
+        },
+        {
+          "type": "text",
+          "content": "Les gardiens frappent fort : il est recommandé d'équiper une Prymune pour chacun de ces combats. Réussir un challenge sur chaque gardien débloque également un succès dédié."
+        },
+        {
+          "type": "image",
+          "filename": "061-69prymune.png",
+          "caption": "Prymune recommandée pour les combats de gardiens"
+        },
+        {
+          "type": "image",
+          "filename": "062-70veilleur.jpg",
+          "caption": "Le Veilleur de l'Ouvrage"
+        },
+        {
+          "type": "text",
+          "content": "Le Veilleur de l'Ouvrage commence le combat en état Invulnérable et Lourd pour toute la durée du combat."
+        },
+        {
+          "type": "image",
+          "filename": "063-71invu.png",
+          "caption": "État Invulnérable du Veilleur"
+        },
+        {
+          "type": "text",
+          "content": "Dès le début, il fait apparaître 1 Tritulipe, 1 Muguégide, 1 Dahliane et 1 Fracamélia."
+        },
+        {
+          "type": "image",
+          "filename": "064-71delockveilleur.jpg",
+          "caption": "Les 4 monstres d'accompagnement"
+        },
+        {
+          "type": "text",
+          "content": "Pour lui retirer son invulnérabilité, souvenez-vous du monstre affronté à la fin de l'énigme du Clos des Protecteurs (la statue) : il faut éliminer en premier le monstre de ce même type parmi les 4 invoqués."
+        },
+        {
+          "type": "image",
+          "filename": "065-72statuedelock.jpg",
+          "caption": "Référence à la statue de l'énigme du Clos"
+        },
+        {
+          "type": "text",
+          "content": "Cela retire l'invulnérabilité et augmente les dégâts subis par le Veilleur de 20% et par les 3 autres monstres de 10% pour le reste du combat. Éliminer le mauvais monstre en premier termine le combat et retire au raid autant de PV que de personnages engagés."
+        },
+        {
+          "type": "image",
+          "filename": "066-71dommages.png",
+          "caption": "Bonus de dégâts après déblocage"
+        },
+        {
+          "type": "text",
+          "content": "Le Veilleur possède 100 résistances critiques de base et des sorts à taux critique élevé (30 à 50%). Tous les 2 tours, il peut réduire les dégâts subis d'un allié de 40% et le rendre indéplaçable (effets débuffables, 1 tour). Son seul sort de mobilité, Pytholithe, lui permet de s'avancer sur un monstre allié puis d'échanger de place avec lui. C'est l'un des gardiens les moins dangereux."
+        },
+        {
+          "type": "image",
+          "filename": "067-71veilleur.png",
+          "caption": "Sorts du Veilleur de l'Ouvrage"
+        },
+        {
+          "type": "text",
+          "content": "Sorts — Blindéfense : indéplaçable + -40% dégâts subis pour lui et un allié ciblé, 1 tour (débuffable). Jusqu'à 6PO, relance 2 tours. Cuiracine : 750 dégâts air en vol de vie, vole 5% résistance (7% cc) 1 tour. Jusqu'à 7PO modifiable, 3 fois par tour, 1 fois par cible. Pyroche : 1 100 dégâts feu, +400 bouclier (500 cc) 1 tour pour lui. Jusqu'à 4PO, 1 fois par tour. Pytholithe : avance de 4 cases sur un allié puis échange de place, +400 bouclier 1 tour à l'allié. De 2 à 5PO en ligne, 2 fois par tour, 1 fois par cible. Sédiaimant : attire de 6 cases en étoile taille 6 autour de lui puis 1 250 dégâts terre en vol de vie en cercle taille 2. Sur lui-même, relance 2 tours."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "068-blindefensejd.png",
+              "caption": "Blindéfense"
+            },
+            {
+              "type": "image",
+              "filename": "069-cuiracinejd.png",
+              "caption": "Cuiracine"
+            },
+            {
+              "type": "image",
+              "filename": "070-pyrochejd.png",
+              "caption": "Pyroche"
+            },
+            {
+              "type": "image",
+              "filename": "071-pytholithejd.png",
+              "caption": "Pytholithe"
+            },
+            {
+              "type": "image",
+              "filename": "072-sediaimantjd.png",
+              "caption": "Sédiaimant"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Conseils : équipez une Prymune pour tanker le premier tour ; débuffez Blindéfense si elle cible le monstre que vous devez focus ; restez à distance une fois tous les monstres éliminés, car le Veilleur n'a alors plus aucun moyen de se déplacer rapidement."
+        }
+      ]
+    },
+    {
+      "title": "Gardien du Clos",
+      "orderNumber": 10,
+      "blocks": [
+        {
+          "type": "text",
+          "content": "Le Gardien du Clos commence également en état Invulnérable et Lourd pour toute la durée du combat, et fait apparaître 1 monstre de chaque type."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "073-73gardien.jpg",
+              "caption": "Le Gardien du Clos"
+            },
+            {
+              "type": "image",
+              "filename": "074-75invu.png",
+              "caption": "État Invulnérable"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "8 glyphes marrons sont disposés sur la map, chacun associé à un objet affiché à côté. Seuls 4 d'entre eux sont corrects ; marcher dans l'un des 4 autres termine le combat et retire des PV au raid."
+        },
+        {
+          "type": "image",
+          "filename": "075-74glyphes.jpg",
+          "caption": "Les 8 glyphes et leurs objets"
+        },
+        {
+          "type": "text",
+          "content": "Pour déterminer les bons glyphes, souvenez-vous de l'énigme de l'Ouvrage Monochrome : les glyphes corrects sont ceux dont l'objet correspondait à une map où une fleur en papier était réellement présente. Les invocations peuvent être utilisées pour déclencher les glyphes à votre place."
+        },
+        {
+          "type": "text",
+          "content": "Le Gardien du Clos possède des sorts à taux critique élevé (30-50%) et une thématique de soin : il peut appliquer Insoignable et réduire les soins reçus de 50% (1 tour, débuffable), et soigne ses alliés d'environ 1 000PV par tour. Son sort principal, Hydrose, est un poison qui se déclenche à chaque soin reçu par la cible (doublé si elle se soigne elle-même)."
+        },
+        {
+          "type": "image",
+          "filename": "076-75gardien.png",
+          "caption": "Sorts du Gardien du Clos"
+        },
+        {
+          "type": "text",
+          "content": "Sorts — Aéroflore : 850 dégâts air en croix taille 1, retire 50 tacle (60 cc) 1 tour. Jusqu'à 6PO modifiable, 1 fois par tour. Brasilia : 950 dégâts feu en cercle taille 2, applique Insoignable 1 tour. Jusqu'à 8PO, relance 2 tours. Bulbaume : soigne un allié d'environ 1 000PV, jusqu'à 8PO. Écorcide : 600 dégâts terre, réduit les soins finaux de la cible de 50% (60% cc) 1 tour. Jusqu'à 2PO, 3 fois par tour, 1 fois par cible. Hydrose : poison 2 tours infligeant 1 000 dégâts eau à chaque soin reçu par la cible (doublé en cas d'auto-soin). Jusqu'à 6PO modifiable, relance 3 tours."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "077-aeroflorejd.png",
+              "caption": "Aéroflore"
+            },
+            {
+              "type": "image",
+              "filename": "078-brasiliajd.png",
+              "caption": "Brasilia"
+            },
+            {
+              "type": "image",
+              "filename": "079-bulbaumejd.png",
+              "caption": "Bulbaume"
+            },
+            {
+              "type": "image",
+              "filename": "080-ecorcidejd.png",
+              "caption": "Écorcide"
+            },
+            {
+              "type": "image",
+              "filename": "081-hydrosejd.png",
+              "caption": "Hydrose"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Conseils : équipez une Prymune ; privilégiez des sorts de protection plutôt que de soin sur vos personnages ; évitez de soigner un allié actuellement sous l'effet d'Hydrose, sous peine de doubler ses dégâts."
+        }
+      ]
+    },
+    {
+      "title": "Défenseur de la Réserve",
+      "orderNumber": 11,
+      "blocks": [
+        {
+          "type": "text",
+          "content": "Le Défenseur de la Réserve est en état Lourd pour toute la durée du combat (mais pas Invulnérable) et fait apparaître 1 monstre de chaque type au début."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "082-76defenseur.jpg",
+              "caption": "Le Défenseur de la Réserve"
+            },
+            {
+              "type": "image",
+              "filename": "083-78lourd.png",
+              "caption": "État Lourd"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Sa mécanique propre : une fois tous les monstres d'accompagnement éliminés, il joue 2 fois par tour (une fois en début de tour, une fois au milieu après 2 personnages — ou 2 fois de suite si ces 2 personnages sont éliminés entre-temps)."
+        },
+        {
+          "type": "image",
+          "filename": "084-78doublejeu.jpg",
+          "caption": "Le Défenseur joue deux fois son tour"
+        },
+        {
+          "type": "text",
+          "content": "Son passif lui donne 5% de dommages finaux à chaque début de tour, mais lui fait aussi subir 5% de dégâts supplémentaires à chaque début de tour (cumulable, infini) : plus le combat avance, plus il tape fort mais plus il devient facile à abattre."
+        },
+        {
+          "type": "image",
+          "filename": "085-78dommages.png",
+          "caption": "Passif de dégâts cumulatifs"
+        },
+        {
+          "type": "text",
+          "content": "Il possède 100 résistances critiques de base et des sorts à taux critique élevé (30-50%). Il tape extrêmement fort, dispose de 3 sorts de repousse, peut échanger de place et réduire les résistances de poussée, et se téléporte jusqu'à 5PO tous les 3 tours."
+        },
+        {
+          "type": "image",
+          "filename": "086-77defenseur.png",
+          "caption": "Sorts du Défenseur de la Réserve"
+        },
+        {
+          "type": "text",
+          "content": "Sorts — Défenseur (passif) : +5% dommages finaux et +5% dégâts subis à chaque début de tour (cumulable ×10). Bourrasque : 750 dégâts air, repousse de 4 cases. Jusqu'à 2PO en ligne sans ligne de vue, 3 fois par tour, 1 fois par cible. Cotogarde : booste tous les alliés de 5% de dommages finaux par déclenchement du passif (max 50%). Sur lui-même, relance 2 tours. Géopulsion : téléportation puis 1 500 dégâts terre et repousse de 6 cases en croix taille 1. De 2 à 5PO sans ligne de vue, relance 3 tours. Polypousse : 280 dégâts terre/feu/eau/air en ligne infinie, repousse de 2 cases. Jusqu'à 1PO, 1 fois par tour. Transposiroc : échange de place, retire 100 résistances poussée 2 tours. Jusqu'à 5PO modifiable sans ligne de vue, relance 3 tours (à partir du tour 3)."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "087-bourrasquejd.png",
+              "caption": "Bourrasque"
+            },
+            {
+              "type": "image",
+              "filename": "088-geopulsionjd.png",
+              "caption": "Géopulsion"
+            },
+            {
+              "type": "image",
+              "filename": "089-polypoussejd.png",
+              "caption": "Polypousse"
+            },
+            {
+              "type": "image",
+              "filename": "090-transposirocjd.png",
+              "caption": "Transposiroc"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Conseils : équipez une Prymune ; privilégiez du soin et/ou de la protection si vous ne pouvez pas tenir la distance ; l'état Pesanteur n'empêche pas Géopulsion mais empêche l'échange de place de Transposiroc."
+        }
+      ]
+    },
+    {
+      "title": "Sentinelle de la Cour",
+      "orderNumber": 12,
+      "blocks": [
+        {
+          "type": "text",
+          "content": "La Sentinelle de la Cour commence en état Invulnérable et Lourd pour toute la durée du combat, et fait apparaître 4 monstres ainsi que 4 obélisques de couleurs différentes."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "091-79sentinelle.jpg",
+              "caption": "La Sentinelle de la Cour"
+            },
+            {
+              "type": "image",
+              "filename": "092-84invu.png",
+              "caption": "État Invulnérable"
+            }
+          ]
+        },
+        {
+          "type": "image",
+          "filename": "093-80obelisque.jpg",
+          "caption": "Les 4 obélisques : Ambré, Azuré, Viridine, Écarlate"
+        },
+        {
+          "type": "text",
+          "content": "Chaque obélisque a 5 000PV et un seuil à 1PV ; tous subissent 30% de dégâts supplémentaires. Pour rendre la Sentinelle vulnérable, il faut descendre à 1PV l'obélisque de la couleur obtenue à la fin de l'énigme de l'Ouvrage Monochrome."
+        },
+        {
+          "type": "image",
+          "filename": "094-82obelisque.png",
+          "caption": "Positionnement des obélisques"
+        },
+        {
+          "type": "text",
+          "content": "Si vous avez oublié la couleur, déduisez-la de l'élément de frappe des sorts Chromage/Kaléidos de la Sentinelle : feu → Obélisque Écarlate (rouge), eau → Azuré (bleu), air → Viridine (vert), terre → Ambré (orange)."
+        },
+        {
+          "type": "image",
+          "filename": "095-84obeli.png",
+          "caption": "Élément de frappe selon la couleur"
+        },
+        {
+          "type": "text",
+          "content": "ATTENTION : descendre le mauvais obélisque à 1PV termine le combat et retire au raid autant de PV que de personnages engagés."
+        },
+        {
+          "type": "text",
+          "content": "Le bon obélisque devient alors invulnérable et pose un glyphe carré (3x3) de sa couleur autour de lui : la Sentinelle n'est vulnérable que tant qu'elle se trouve dans ce glyphe, et redevient invulnérable si elle en sort."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "096-83obelisqueglyphes.jpg",
+              "caption": "Glyphe posé par l'obélisque vaincu"
+            },
+            {
+              "type": "image",
+              "filename": "097-84obelisquevulne.jpg",
+              "caption": "Sentinelle vulnérable dans le glyphe"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Les alliés gagnent 5% de dommages finaux tant qu'ils sont dans le glyphe, mais la Sentinelle y frappe aussi plus fort les personnages présents : il ne faut donc pas y rester en fin de tour."
+        },
+        {
+          "type": "image",
+          "filename": "098-84dommages.png",
+          "caption": "Bonus et malus liés au glyphe"
+        },
+        {
+          "type": "text",
+          "content": "Ses sorts ont un taux critique élevé (30-50%) et profitent bien des dommages critiques. L'élément de ses sorts change selon la couleur de l'énigme (Ambré=terre, Azuré=eau, Viridine=air, Écarlate=feu). Elle tape extrêmement fort, peut retirer des dommages critiques en zone, se booste avec Floriforce, et se téléporte tous les 2 tours sur son allié le plus proche (y compris un obélisque) en infligeant des dégâts en zone."
+        },
+        {
+          "type": "image",
+          "filename": "099-81sentinelle.png",
+          "caption": "Sorts de la Sentinelle de la Cour"
+        },
+        {
+          "type": "text",
+          "content": "Sorts — Chromage : retire 200 dommages critique (220 cc) en cercle taille 2 autour d'elle, inflige 1 200 dégâts dans l'élément de couleur (+1 200 si la cible est dans le glyphe). Sur elle-même, relance 3 tours. Floriforce : +20% critique et +300 puissance pour elle et ses alliés, 3 tours. Sur elle-même, relance 4 tours. Kaléidos : 900 dégâts élément de couleur (+900 si la cible est dans le glyphe). Jusqu'à 4PO, 2 fois par tour, 1 fois par cible. Omniflore : 150 dégâts dans les 4 éléments. De 2 à 8PO modifiable sans ligne de vue, 3 fois par tour, 1 fois par cible. Tétrastyle : téléportation sur l'allié le plus proche, 1 100 dégâts neutre en cercle taille 2, +100 dommages critiques 1 tour. Sur elle-même, relance 2 tours."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "100-chromagejd.png",
+              "caption": "Chromage"
+            },
+            {
+              "type": "image",
+              "filename": "101-kaleidosjd.png",
+              "caption": "Kaléidos"
+            },
+            {
+              "type": "image",
+              "filename": "102-omniflorejd.png",
+              "caption": "Omniflore"
+            },
+            {
+              "type": "image",
+              "filename": "103-tetrastylejd.png",
+              "caption": "Tétrastyle"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Conseils : équipez une Prymune ; les obélisques ont plus d'initiative que les monstres, vous pouvez donc en éliminer 2-3 avant qu'ils ne jouent ; débuffez Floriforce si possible ; sortez du glyphe avant de terminer votre tour ; l'état Pesanteur n'empêche pas la téléportation de Tétrastyle."
+        }
+      ]
+    },
+    {
+      "title": "Corridor du Château",
+      "orderNumber": 13,
+      "blocks": [
+        {
+          "type": "text",
+          "content": "Une fois les 4 gardiens vaincus (Veilleur de l'Ouvrage, Gardien du Clos, Défenseur de la Réserve, Sentinelle de la Cour), la porte vers le Corridor du Château s'ouvre. C'est dans cette zone, en [16,12], que se trouve la 5ᵉ et dernière page du manuscrit. Pour rejoindre directement la porte au fond du corridor sans combattre, la position à copier est [17,10]."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "104-85porteallee.jpg",
+              "caption": "Entrée du Corridor du Château"
+            },
+            {
+              "type": "image",
+              "filename": "105-86farm.png",
+              "caption": "Vue du Corridor"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "La zone comporte 10 salles avec 6 monstres en solo chacune, soit 60 monstres au total à éliminer pour ouvrir la porte vers la tour. Les combats sont uniquement solo : impossible d'être accompagné ou d'équiper un compagnon. Vous êtes entièrement soigné à la fin de chaque combat."
+        },
+        {
+          "type": "image",
+          "filename": "106-87monstres.jpg",
+          "caption": "Disposition des monstres du Corridor"
+        },
+        {
+          "type": "text",
+          "content": "Les monstres sont les mêmes que ceux déjà rencontrés, mais gagnent ici d'importants bonus pour la durée du combat : +30% vitalité, +20% critique, +100 dommages critiques, +2PA, +1PM, +50 tacle et +50 fuite, +2PO, +300 puissance, et un bouclier équivalent à 100% de leur niveau à chaque fin de tour."
+        },
+        {
+          "type": "image",
+          "filename": "107-92protecteurs-corridor.png",
+          "caption": "Bonus des monstres du Corridor"
+        },
+        {
+          "type": "text",
+          "content": "Conseils : les monstres ont 2 600 d'initiative — visez 2 601 ou plus pour jouer en premier ; les maps n'ont aucun obstacle, terminez vos tours à 4PO ou moins du monstre (ou bloquez sa ligne de vue avec une invocation) pour éviter Férocité des Protecteurs ; certaines classes peuvent les éliminer en un tour avec un stuff dégâts incluant Dofus Nébuleux et Prycipithon Iridescente."
+        },
+        {
+          "type": "image",
+          "filename": "108-93tour.jpg",
+          "caption": "La porte vers la tour s'ouvre après les 60 monstres"
+        }
+      ]
+    },
+    {
+      "title": "Tour de la Princesse et de la Reine",
+      "orderNumber": 14,
+      "blocks": [
+        {
+          "type": "text",
+          "content": "Pour terminer le raid, il faut vaincre la Reine Écarlate, qui se trouve dans les cachots (en descendant les escaliers), ainsi que la Princesse Maudite, en haut de la tour (en montant les escaliers)."
+        },
+        {
+          "type": "image",
+          "filename": "109-94princess-reine.jpg",
+          "caption": "Entrée de la tour"
+        },
+        {
+          "type": "text",
+          "content": "Vous pouvez diviser votre raid en deux équipes (une par boss) ou enchaîner les deux combats l'un après l'autre dans l'ordre de votre choix. Chaque combat se fait à 8 joueurs maximum ; les deux étant difficiles, il est conseillé de ne se séparer en 2 groupes que si vous disposez de 16 personnages."
+        }
+      ]
+    },
+    {
+      "title": "Reine Écarlate (combat final)",
+      "orderNumber": 15,
+      "blocks": [
+        {
+          "type": "text",
+          "content": "NOTE : Les sorts de la Reine Écarlate possèdent un taux de critique élevé (entre 30 et 50% de base)."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "110-95reine.jpg",
+              "caption": "La Reine Écarlate"
+            },
+            {
+              "type": "image",
+              "filename": "111-96reine-ecarlate.png",
+              "caption": "Présentation de ses sorts"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Sorts de la Reine Écarlate — Châtiment Royal : entre dans l'état Châtiment Royal 2 tours ; à l'issue, inflige 500 dégâts dans tous les éléments (2 000 au total) à tous les personnages hors cachot, +200 dégâts/élément par personnage en cachot (max 4, soit 3 200 au total), et se soigne si au moins un personnage est en cachot. Sur elle-même, relance 3 tours. Couronnyx : 1 300 dégâts terre en cercle taille 2 autour d'elle, +400 bouclier par personnage touché. Sur elle-même, 1 fois par tour. Écarlutte : 700 dégâts eau en vol de vie, vole 50 tacle 1 tour. Jusqu'à 5PO sans ligne de vue, 4 fois par tour, 1 fois par cible."
+        },
+        {
+          "type": "text",
+          "content": "Épécarlate : 900 dégâts feu en ligne taille 5, applique un poison 2 tours infligeant des dégâts feu égaux à 10% des PV érodés. Uniquement à 1PO, relance 2 tours. Exécution de l'Évadé : dégâts feu égaux à 10% des PV actuels puis 2 200 dégâts feu supplémentaires, uniquement si la cible est en état Évadé. Uniquement en mêlée, 4 fois par tour. Exil Impérial : 850 dégâts terre puis place la cible aléatoirement dans un des 4 cachots. Jusqu'à 8PO sans ligne de vue, 1 fois par tour. Sanfroiyal : téléportation puis attire de 5 cases en croix taille 6, 950 dégâts air et retire 100 fuite 1 tour. Jusqu'à 6PO sans ligne de vue, 1 fois par tour. Supremasiège : échange de place, 20% d'érosion 1 tour, 1 000 dégâts air en vol de vie. De 2 à 5PO, 2 fois par tour, 1 fois par cible."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "112-couronnyxjd.png",
+              "caption": "Couronnyx"
+            },
+            {
+              "type": "image",
+              "filename": "113-ecarluttejd.png",
+              "caption": "Écarlutte"
+            },
+            {
+              "type": "image",
+              "filename": "114-epecarlatejd.png",
+              "caption": "Épécarlate"
+            },
+            {
+              "type": "image",
+              "filename": "115-execution-de-l-evadejd.png",
+              "caption": "Exécution de l'Évadé"
+            }
+          ]
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "116-exil-imperialjd.png",
+              "caption": "Exil Impérial"
+            },
+            {
+              "type": "image",
+              "filename": "117-sanfroiyaljd.png",
+              "caption": "Sanfroiyal"
+            },
+            {
+              "type": "image",
+              "filename": "118-supremasiegejd.png",
+              "caption": "Supremasiège"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "NOTE : Les sorts de la Volonté de la Princesse (phase 2) possèdent un taux de critique élevé (entre 20 et 50% de base)."
+        },
+        {
+          "type": "image",
+          "filename": "119-109volonte.png",
+          "caption": "La Volonté de la Princesse"
+        },
+        {
+          "type": "text",
+          "content": "Sorts de la Volonté de la Princesse — Drainfecte : 600 dégâts feu en vol de vie, vole 2PM 2 tours. Jusqu'à 10PO modifiable, 4 fois par tour, 1 fois par cible. Maléfissure : 850 dégâts terre en étoile taille 2 autour d'elle, repousse forcée de 4 cases (ignore tous les états anti-déplacement). Sur elle-même, 1 fois par tour. Protection Maternelle : soigne la Reine Écarlate de 1 000PV, +400 bouclier (500 cc) 1 tour. Jusqu'à 12PO, 1 fois par tour. Purifiction : retire Enraciné/Pesanteur/Indéplaçable, +1PM 1 tour (2 cc), échange de place forcée et 400 dégâts air. Jusqu'à 2PO sans ligne de vue, à partir du tour 2, 1 fois par tour. Roncitron : 850 dégâts eau en croix taille 4, attire vers le centre de la zone. Jusqu'à 12PO, 1 fois par tour."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "120-drainfectejd.png",
+              "caption": "Drainfecte"
+            },
+            {
+              "type": "image",
+              "filename": "121-malefissurejd.png",
+              "caption": "Maléfissure"
+            },
+            {
+              "type": "image",
+              "filename": "122-protection-maternellejd.png",
+              "caption": "Protection Maternelle"
+            },
+            {
+              "type": "image",
+              "filename": "123-purifictionjd.png",
+              "caption": "Purifiction"
+            },
+            {
+              "type": "image",
+              "filename": "124-roncitronjd.png",
+              "caption": "Roncitron"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Principe du combat. La map comporte 4 cachots et une zone de combat centrale où se trouve la Reine. Tous les personnages commencent dans un cachot (2 plots de placement chacun) : à l'ouverture, 2 monstres apparaissent par cachot — 2 Tritulipes en haut à gauche, 2 Fracamélias en haut à droite, 2 Muguégides en bas à gauche, 2 Dahlianes en bas à droite (les cachots vides n'en génèrent pas si le combat se fait à 6 personnages ou moins). Les monstres d'un même cachot partagent les dégâts entre eux."
+        },
+        {
+          "type": "image",
+          "filename": "125-101partage.png",
+          "caption": "Partage des dégâts entre les monstres d'un cachot"
+        },
+        {
+          "type": "text",
+          "content": "Particularités des cachots : un effet global de zone (comme Diffraction du Zobal) ne s'applique qu'à l'intérieur de votre propre cachot ; les portails de l'Éliotrope n'y fonctionnent pas ; toute invocation y est automatiquement éliminée en sortant. Les effets de familiers légendaires sont aussi affectés : à 8 joueurs, Brutalité du Trool retire 9% de dégâts au départ mais seuls les monstres de votre cachot en redonnent 3% (6% au total), pour une perte nette de 3% après leur élimination ; à l'inverse, Impatience du Wabbit donne +9% au départ dont seuls 4% sont repris par les monstres du cachot, pour un gain net de 5% après leur élimination."
+        },
+        {
+          "type": "text",
+          "content": "Pour sortir des cachots, il faut éliminer les 8 monstres au total ; pendant ce temps la Reine reste passive (utilise seulement ses PM aléatoirement). Il est conseillé d'achever le dernier monstre avec le personnage qui joue juste après la Reine, pour bénéficier d'un tour complet avant qu'elle ne puisse agir. Une fois sortis, tous les personnages sont téléportés à l'entrée de leur cachot et intégralement soignés."
+        },
+        {
+          "type": "image",
+          "filename": "126-102libere.jpg",
+          "caption": "Sortie des cachots après élimination des monstres"
+        },
+        {
+          "type": "text",
+          "content": "Phase 1. La Reine Écarlate est dans les états Lourd et Inérodable pour toute la durée du combat, et ne peut pas traverser les portails de l'Éliotrope. Il est impossible de lui appliquer Pesanteur : elle la retire immédiatement et la retourne contre tous vos personnages pour 1 tour. Elle possède 50 000PV et un seuil à 1PV ; à ce seuil, elle se soigne entièrement et passe en phase 2. En phase 1, elle est seule sur le terrain."
+        },
+        {
+          "type": "image",
+          "filename": "127-103aura2.png",
+          "caption": "États Lourd et Inérodable de la Reine"
+        },
+        {
+          "type": "image",
+          "filename": "128-98seuil.png",
+          "caption": "Indicateur de seuil"
+        },
+        {
+          "type": "text",
+          "content": "Mécanique des cachots et état Évadé : à chaque tour, la Reine peut utiliser Exil Impérial (8PO sans ligne de vue) sur un personnage, qui se retrouve alors aléatoirement enfermé dans un cachot. Un personnage enfermé passe ses tours et subit 10% de ses PV actuels en dégâts terre à chaque tour."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "129-104prisonbis.jpg",
+              "caption": "Personnage emprisonné dans un cachot"
+            },
+            {
+              "type": "image",
+              "filename": "130-105imperial.png",
+              "caption": "Effet Exil Impérial"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Chaque cachot ne peut contenir qu'un seul personnage à la fois ; si tous les personnages du combat sont enfermés simultanément, le combat est automatiquement perdu. Pour libérer un personnage, il faut infliger 5 000 dégâts au Floracle situé devant son cachot."
+        },
+        {
+          "type": "image",
+          "filename": "131-99floracle.jpg",
+          "caption": "Le Floracle, porte du cachot"
+        },
+        {
+          "type": "text",
+          "content": "Le Floracle est une entité statique sans tour de jeu, avec 5 000PV, un seuil à 1PV, et qui subit 100% de dégâts supplémentaires. S'il n'y a personne dans le cachot correspondant, le Floracle est invulnérable. Une fois son seuil atteint, le personnage enfermé est libéré et téléporté devant le cachot, et le Floracle récupère intégralement ses PV."
+        },
+        {
+          "type": "image",
+          "filename": "132-100floracle.png",
+          "caption": "Le Floracle récupère ses PV après libération"
+        },
+        {
+          "type": "text",
+          "content": "Le personnage libéré entre alors dans l'état Évadé (tête de mort) pour 1 tour : il devient la cible potentielle d'Exécution de l'Évadé (2 000 à 3 000 dégâts feu en mêlée), il faut donc absolument empêcher la Reine de l'atteindre durant ce tour. Il gagne en contrepartie l'état Immunité : Exil Impérial pendant 2 tours complets, l'empêchant d'être de nouveau enfermé."
+        },
+        {
+          "type": "image",
+          "filename": "133-106mortsursis.jpg",
+          "caption": "État Évadé (tête de mort)"
+        },
+        {
+          "type": "text",
+          "content": "La Reine peut se téléporter jusqu'à 6PO sans ligne de vue et échanger de place jusqu'à 5PO deux fois par tour ; avec 370 d'esquive PM, lui retirer des PM est très difficile."
+        },
+        {
+          "type": "text",
+          "content": "Châtiment Royal est la deuxième mécanique majeure : un sort à retardement qui, après 2 tours dans l'état du même nom, inflige 500 dégâts par élément (2 000 au total) à tous les personnages hors cachot, +200 dégâts par élément pour chaque personnage en cachot (max 4, soit 3 200 au total), et soigne la Reine si au moins un personnage est enfermé au moment du déclenchement."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "134-154chatiment.png",
+              "caption": "État Châtiment Royal"
+            },
+            {
+              "type": "image",
+              "filename": "135-108chatimentvisu.jpg",
+              "caption": "Déclenchement de Châtiment Royal"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Dilemme tactique : laisser les personnages en cachot évite l'état Évadé mais expose à de lourds dégâts de Châtiment Royal (et soigne la Reine) ; les libérer systématiquement réduit ces dégâts mais expose aux énormes dégâts feu d'Exécution de l'Évadé. Il faut anticiper le moment où Châtiment Royal va se déclencher pour décider. Il faut au total infliger 50 000 dégâts à la Reine pour atteindre son seuil ; ses soins ne peuvent pas être réduits, car elle retire elle-même tout Insoignable ou envoûtement avant de se soigner."
+        },
+        {
+          "type": "text",
+          "content": "Phase 2. Au seuil, la Reine devient invulnérable et se soigne entièrement. Elle fait apparaître à ses côtés la Volonté de la Princesse (30 000PV), elle-même invulnérable jusqu'à la fin de son premier tour de jeu."
+        },
+        {
+          "type": "image",
+          "filename": "136-110volonte.jpg",
+          "caption": "Apparition de la Volonté de la Princesse"
+        },
+        {
+          "type": "text",
+          "content": "En phase 2, la Reine joue 2 fois par tour : une fois en début de tour, une fois au milieu après que la moitié des personnages ont joué."
+        },
+        {
+          "type": "image",
+          "filename": "137-112doublejeu.jpg",
+          "caption": "La Reine joue deux fois par tour"
+        },
+        {
+          "type": "text",
+          "content": "Pour lui retirer son invulnérabilité, deux armes apparaissent chacune d'un côté du terrain : le Pommeau Enraciné et la Lame Fleurie, entourées d'un glyphe vert infligeant 10% des PV actuels en dégâts air à l'entrée, en début ou en fin de tour dans la zone."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "138-107epee.jpg",
+              "caption": "Pommeau Enraciné"
+            },
+            {
+              "type": "image",
+              "filename": "139-108epee.jpg",
+              "caption": "Lame Fleurie"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Les deux armes ont 5 500PV chacune et sont invulnérables pendant 1 tour complet après le passage en phase 2."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "140-111lame.png",
+              "caption": "Lame Fleurie"
+            },
+            {
+              "type": "image",
+              "filename": "141-111pommeau.png",
+              "caption": "Pommeau Enraciné"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Éliminer le Pommeau ou la Lame rend la Reine vulnérable pour le reste du combat, mais lui octroie aussi un bonus permanent : +5% de dommages finaux pour le Pommeau, +10% de critique pour la Lame. Les sorts de la Reine restent identiques en phase 2, mais il faut désormais éliminer à la fois la Reine et la Volonté de la Princesse, gérer le Pommeau et la Lame, tout en continuant à subir les cachots, Exécution de l'Évadé et Châtiment Royal — sachant que la Reine joue maintenant 2 fois par tour et peut donc enfermer 2 personnages par tour."
+        },
+        {
+          "type": "text",
+          "content": "Stratégie globale. Avec un familier à l'effet légendaire Impatience du Wabbit, ce combat profite d'un bug favorable : vous gagnez 1% de dommages finaux par monstre présent sur la map en plus de la Reine (9% au total avec les 8 monstres), mais ne perdez que sur les monstres de votre propre cachot (4%), pour un gain net de 5% de dommages finaux jusqu'à la fin du combat. Une bonne résistance feu (environ 30%) aide à tanker ses dégâts, majoritairement dans cet élément."
+        },
+        {
+          "type": "text",
+          "content": "Phase contre les monstres : assez anecdotique car vous êtes intégralement soigné ensuite — veillez simplement à achever le dernier monstre avec le personnage jouant juste après la Reine. Les classes à sorts de charge (comme le Iop) ont intérêt à se charger pendant cette phase."
+        },
+        {
+          "type": "text",
+          "content": "Phase 1 : gérez avec attention les personnages en état Évadé pour limiter les dégâts d'Exécution de l'Évadé. Un personnage enfermé peut parfois être volontairement laissé en cachot et le combat poursuivi à 7 pour éviter l'état Évadé ; vous pouvez aussi pré-baisser les PV du Floracle (1 000 ou moins) pour ne nécessiter qu'un seul coup au moment de libérer. Anticipez le déclenchement de Châtiment Royal pour vous protéger ou minimiser les dégâts."
+        },
+        {
+          "type": "text",
+          "content": "Phase 2 : la Reine joue 2 fois par tour, donc enferme potentiellement 2 personnages par tour. Comme le Pommeau et la Lame sont invulnérables 1 tour complet et que la Volonté de la Princesse n'est vulnérable qu'après son premier tour, il est conseillé de la focus en priorité (seulement 30 000PV et peu de résistance, éliminable en 2 tours, et facilement maintenue à distance avec 105 d'esquive PM et aucun état anti-déplacement). Attaquez ensuite le Pommeau et la Lame (environ 11 000 dégâts cumulés)."
+        },
+        {
+          "type": "text",
+          "content": "Le dilemme des cachots persiste en phase 2 : les laisser dedans réduit vos dégâts disponibles et expose à un Châtiment Royal trop lourd à tanker ; les libérer systématiquement expose à Exécution de l'Évadé. Libérez en priorité les personnages capables de jouer leur tour avant la Reine pour limiter ce risque. Une invulnérabilité en mêlée (Barricade du Féca, Prohibition du Pandawa) ou l'état Pacifiste (Corruption de l'Enutrof) permettent de contrer Exécution de l'Évadé. Pour garder la Reine à distance des personnages Évadé, des retraits de PM inévitables (Avarice et Retraite anticipée de l'Enutrof, Emprise du Iop) ou des sorts de temporisation (Rémanence du Xélor) sont utiles ; comme elle ne peut pas être mise en Pesanteur, seul l'état Enraciné (via une Stabilisation de Pandawa par exemple) permet de contrer son échange de place — pas sa téléportation."
+        },
+        {
+          "type": "image",
+          "filename": "142-108enracinea.jpg",
+          "caption": "Exemple d'application de l'état Enraciné sur la Reine"
+        }
+      ]
+    },
+    {
+      "title": "Princesse Maudite (combat final)",
+      "orderNumber": 16,
+      "blocks": [
+        {
+          "type": "text",
+          "content": "NOTE : Les sorts de la Princesse Maudite possèdent un taux de critique élevé (entre 20 et 50% de base)."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "143-115princesse.jpg",
+              "caption": "La Princesse Maudite"
+            },
+            {
+              "type": "image",
+              "filename": "144-116princesse.png",
+              "caption": "Présentation de ses sorts"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Sorts de la Princesse Maudite — Appel du Protecteur : invoque aléatoirement un protecteur (Dahliane, Tritulipe, Muguégide ou Fracamélia). Jusqu'à 2PO sans ligne de vue, relance 2 tours. Drainfecte : 650 dégâts feu en vol de vie, vole 1PO 2 tours. Jusqu'à 10PO modifiable, 4 fois par tour, 1 fois par cible."
+        },
+        {
+          "type": "text",
+          "content": "Florigine : si la Fleur Maudite est dans le camp de la Princesse, inflige 1 050 dégâts air en vol de vie en croix taille 4 et retire 3PA dans la même zone ; si la Fleur est dans votre camp, applique 10% d'érosion 1 tour et inflige 1 050 dégâts air dans la même zone (réduit aussi les soins finaux de 10% en cas de critique). Jusqu'à 12PO, 1 fois par tour. Maléfissure : retire 1 tour d'envoûtement, 900 dégâts terre en étoile taille 2 autour de la Volonté de la Princesse, repousse forcée de 4 cases. Sur elle-même, 1 fois par tour."
+        },
+        {
+          "type": "text",
+          "content": "Purifiction : retire Enraciné/Pesanteur/Indéplaçable de la Volonté de la Princesse, +1PM 1 tour (2 cc), échange de place forcée et 400 dégâts air. Jusqu'à 2PO sans ligne de vue, à partir du tour 2, 1 fois par tour. Roncitron : 900 dégâts eau en croix taille 4, attire vers le centre. Jusqu'à 12PO, 1 fois par tour. Tempête Florale : 10% d'érosion 2 tours et 450 dégâts dans tous les éléments à tous les personnages (dégâts légèrement augmentés si la Fleur est dans le camp de la Princesse) ; si la Princesse est en phase 2, elle gagne aussi 100% de critique 2 tours et se soigne de 20% de ses PV max (10 000). Sur elle-même, relance 2 tours, nécessite l'état Floraison 10."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "145-appel-du-protecteurjd.png",
+              "caption": "Appel du Protecteur"
+            },
+            {
+              "type": "image",
+              "filename": "120-drainfectejd.png",
+              "caption": "Drainfecte"
+            },
+            {
+              "type": "image",
+              "filename": "146-floriginejd.png",
+              "caption": "Florigine"
+            },
+            {
+              "type": "image",
+              "filename": "121-malefissurejd.png",
+              "caption": "Maléfissure"
+            },
+            {
+              "type": "image",
+              "filename": "123-purifictionjd.png",
+              "caption": "Purifiction"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "NOTE : Les sorts de la Volonté de la Reine (phase 2) possèdent un taux de critique élevé (entre 30 et 50% de base)."
+        },
+        {
+          "type": "image",
+          "filename": "147-127volonte.png",
+          "caption": "La Volonté de la Reine"
+        },
+        {
+          "type": "text",
+          "content": "Sorts de la Volonté de la Reine — Couronnyx : 1 000 dégâts terre en cercle taille 2 autour de la Reine Écarlate. Sur elle-même, 1 fois par tour. Épécarlate : 700 dégâts feu en ligne taille 5. Uniquement à 1PO, relance 2 tours. Lien Familial : partage les dommages avec la Princesse Maudite 1 tour et donne 800 bouclier à la Volonté (non débuffable) ; uniquement si la Princesse est vulnérable. Sur elle-même, relance 2 tours. Sanfroiyal : téléportation, attire de 2 cases en croix taille 3, 750 dégâts air. Jusqu'à 6PO sans ligne de vue, 1 fois par tour. Supremasiège : échange de place, 800 dégâts air en vol de vie. De 2 à 5PO, 2 fois par tour, 1 fois par cible."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "148-couronnyxjd2.png",
+              "caption": "Couronnyx"
+            },
+            {
+              "type": "image",
+              "filename": "149-epecarlatejd2.png",
+              "caption": "Épécarlate"
+            },
+            {
+              "type": "image",
+              "filename": "150-sanfroiyaljd2.png",
+              "caption": "Sanfroiyal"
+            },
+            {
+              "type": "image",
+              "filename": "151-supremasiegejd2.png",
+              "caption": "Supremasiège"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Principe du combat. Une Fleur maudite apparaît au centre de la map avec une hitbox de 4 cases (comme Gargandyas) : taper n'importe laquelle des 4 cases lui infligera des dégâts (les sorts de zone n'infligent les dégâts qu'une seule fois)."
+        },
+        {
+          "type": "text",
+          "content": "La Fleur a 10 000PV et un seuil à 1PV. À ce seuil, elle se soigne entièrement et change de camp pour passer dans le vôtre pendant 2 tours complets, période durant laquelle elle est invulnérable, avant de retourner dans le camp adverse (il faudra alors de nouveau déclencher son seuil pour la récupérer)."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "152-123fleur.jpg",
+              "caption": "La Fleur maudite"
+            },
+            {
+              "type": "image",
+              "filename": "153-123fleurcamp.jpg",
+              "caption": "La Fleur dans votre camp"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "NOTE IMPORTANTE : la Fleur maudite subit 20% de dégâts supplémentaires. À chaque tour, elle soigne de 1 200PV toutes les entités de son camp et leur donne 300 puissance et 10% critique pour 1 tour."
+        },
+        {
+          "type": "image",
+          "filename": "154-124petale.png",
+          "caption": "Soin et buffs procurés par la Fleur"
+        },
+        {
+          "type": "text",
+          "content": "Quand la Princesse passe en phase 2, la Fleur maudite pose en plus des glyphes sur le terrain, utiles pour lui retirer son invulnérabilité (détaillé plus loin)."
+        },
+        {
+          "type": "text",
+          "content": "Phase 1. La Princesse est dans les états Lourd et Inérodable pour toute la durée du combat, et invulnérable en mêlée (seuls les dégâts à distance fonctionnent)."
+        },
+        {
+          "type": "image",
+          "filename": "155-118aura.png",
+          "caption": "États de la Princesse Maudite"
+        },
+        {
+          "type": "text",
+          "content": "Elle possède 50 000PV et un seuil à 1PV ; à ce seuil, elle se soigne entièrement et passe en phase 2."
+        },
+        {
+          "type": "image",
+          "filename": "156-120seuil.png",
+          "caption": "Indicateur de seuil"
+        },
+        {
+          "type": "text",
+          "content": "Aura Maudite : à partir du tour 2, au début de chaque tour, tous les personnages en ligne de vue de la Princesse sont transformés en Statue Maudite (passent leur tour) et seront OS au début du tour suivant de la Princesse, même s'ils ne sont plus en ligne de vue à ce moment."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "157-133statues.jpg",
+              "caption": "Deux personnages transformés en statue"
+            },
+            {
+              "type": "image",
+              "filename": "158-132stratue.png",
+              "caption": "État Statue Maudite"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Pour éviter l'OS, un personnage transformé doit utiliser un coup d'arme sur sa propre statue afin de conjurer le sort (la première ligne de dégâts de l'arme ne compte pas). Il faut donc systématiquement éviter d'être en ligne de vue au moment où la Princesse commence son tour ; les invocations, elles, ne sont jamais transformées et peuvent servir à bloquer sa ligne de vue."
+        },
+        {
+          "type": "image",
+          "filename": "159-155statue.png",
+          "caption": "Coup d'arme pour conjurer la statue"
+        },
+        {
+          "type": "text",
+          "content": "La Princesse invoque aussi un monstre aléatoire de la zone tous les 2 tours ; grâce à Aura Maudite, ces monstres la suivent automatiquement quand elle se déplace."
+        },
+        {
+          "type": "image",
+          "filename": "160-121aura.png",
+          "caption": "Monstre invoqué suivant la Princesse"
+        },
+        {
+          "type": "text",
+          "content": "Floraison : la Princesse commence le combat en Floraison 0, et gagne 1 état de Floraison à chaque sort de dégâts utilisé. À Floraison 10, elle peut lancer Tempête Florale, qui applique 10% d'érosion 2 tours et inflige d'énormes dégâts à toutes les entités sur la map, avant de retomber à Floraison 0."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "161-117etat.jpg",
+              "caption": "Floraison 0"
+            },
+            {
+              "type": "image",
+              "filename": "162-122floraison.jpg",
+              "caption": "Floraison 4"
+            },
+            {
+              "type": "image",
+              "filename": "163-134floraison.jpg",
+              "caption": "Floraison 10"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Il faut infliger 50 000 dégâts pour atteindre son seuil et la faire passer en phase 2 ; ses soins sont impossibles à réduire car elle retire elle-même Insoignable et tout envoûtement avant de se soigner."
+        },
+        {
+          "type": "text",
+          "content": "Phase 2. La Princesse devient invulnérable et fait apparaître à ses côtés la Volonté de la Reine (30 000PV), invulnérable jusqu'à la fin de son premier tour de jeu."
+        },
+        {
+          "type": "image",
+          "filename": "164-128volonte.jpg",
+          "caption": "Apparition de la Volonté de la Reine"
+        },
+        {
+          "type": "text",
+          "content": "Elle joue désormais 2 fois par tour : une fois en début de tour, une fois au milieu après que la moitié des personnages ont joué."
+        },
+        {
+          "type": "image",
+          "filename": "165-136doublejeu.jpg",
+          "caption": "La Princesse joue deux fois par tour"
+        },
+        {
+          "type": "text",
+          "content": "Pour retirer son invulnérabilité : quand la Fleur maudite est dans le camp adverse (celui de la Princesse) en phase 2, elle pose à son tour un glyphe violet (uniquement sur les cases du pourtour central de la map) qui ne dure qu'un seul tour."
+        },
+        {
+          "type": "image",
+          "filename": "166-129glyphe.jpg",
+          "caption": "Glyphe violet posé par la Fleur maudite"
+        },
+        {
+          "type": "text",
+          "content": "Le personnage qui marche dans ce glyphe gagne le sort à usage unique Incantation Florale (10PO sans ligne de vue, 2PA) : utilisé sur la Princesse, il retire 150 puissance 1 tour et lui applique l'état Incantation Florale pour le reste du combat ; réutilisé une seconde fois sur elle alors qu'elle est déjà dans cet état, il lui retire définitivement son Invulnérabilité. Utilisé sur un allié, il retire 1 tour d'envoûtement et donne 200% du niveau en bouclier pour 1 tour."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "167-130sort.png",
+              "caption": "Sort Incantation Florale"
+            },
+            {
+              "type": "image",
+              "filename": "168-131incantation.png",
+              "caption": "Effet d'Incantation Florale sur la Princesse"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Si un ennemi marche dans le glyphe à votre place, celui-ci disparaît sans effet et il faut attendre un tour supplémentaire pour qu'un nouveau glyphe apparaisse. Il faut donc utiliser le sort 2 fois sur la Princesse pour lui retirer son invulnérabilité — en récupérant chaque fois le sort via un nouveau glyphe, puisqu'il disparaît de la barre après usage. Une fois la Princesse vulnérable, la Fleur ne pose plus de glyphe et le sort ne peut plus être récupéré. ATTENTION : même vulnérable, la Princesse reste invulnérable en mêlée — seuls les dégâts à distance continuent de fonctionner."
+        },
+        {
+          "type": "text",
+          "content": "Il faut donc garder la Fleur maudite dans le camp ennemi pendant au moins 2 tours pour retirer l'invulnérabilité, ce qui donne dans le même temps 300 puissance et 10% critique aux ennemis pendant ces 2 tours. Si la Volonté de la Reine est encore vivante quand la Princesse devient vulnérable, elle peut utiliser Lien Familial pour partager les dégâts avec elle pendant 1 tour : il est donc conseillé de l'éliminer en priorité (seulement 30 000PV, peu de résistance, rapidement abattue). En phase 2, Tempête Florale confère en plus 100% de critique pour 2 tours et soigne la Princesse de 10 000PV à chaque utilisation."
+        },
+        {
+          "type": "image",
+          "filename": "169-135tempete.png",
+          "caption": "Tempête Florale en phase 2"
+        },
+        {
+          "type": "text",
+          "content": "Stratégie globale. Phase 1 : au tour 1, déclenchez le seuil de la Fleur maudite et éliminez le monstre invoqué en priorité (la Fleur doit être focus pour profiter du bonus de puissance et des soins au tour 2). Veillez à n'être en ligne de vue d'aucun personnage au début du tour 2, en vous cachant derrière des obstacles ou en plaçant une invocation devant la Princesse avant qu'elle ne joue. La phase 1 reste assez simple : il suffit de la taper à distance jusqu'au seuil, en surveillant son état de Floraison pour anticiper Tempête Florale (environ tous les 3 tours si elle peut vous frapper librement ; à partir de Floraison 6, attendez-vous au sort au tour suivant et envisagez de réduire sa puissance ou ses dommages fixes). Au tour 3, la Fleur retourne dans le camp adverse — il peut être intéressant de la repasser dans votre camp avant de déclencher le seuil de la Princesse."
+        },
+        {
+          "type": "text",
+          "content": "Phase 2 : la difficulté augmente nettement car la Princesse joue 2 fois par tour (invocation possible une fois par tour global, Floraison qui s'incrémente plus vite, vigilance de ligne de vue à assurer 2 fois par tour), tout en gérant la pression constante de la Volonté de la Reine. Éliminez d'abord la Volonté de la Reine (30 000PV, peu de résistance, abattable en 2 tours) avant de retirer l'invulnérabilité de la Princesse, pour éviter qu'elle ne partage les dégâts via Lien Familial. Si la Fleur se retrouve dans le camp adverse à un autre moment et pose son glyphe, profitez-en pour récupérer le sort et appliquer Incantation Florale par avance (malus de 150 puissance et facilite le retrait final de l'invulnérabilité)."
+        },
+        {
+          "type": "text",
+          "content": "Une fois la Volonté éliminée, maintenez la Fleur dans le camp adverse pendant au moins 2 tours pour récupérer 2 fois le sort Incantation Florale (et accepter le bonus ennemi de 300 puissance pendant ce temps). Une fois la Princesse vulnérable, il reste à lui retirer ses 50 000PV en gérant toujours la ligne de vue, la Floraison, les invocations régulières, les dégâts du double-jeu, l'érosion cumulative (Tempête Florale + Florigine appliquent chacune 10%), et en gardant si possible la Fleur dans votre camp pour ses soins et son bonus. ATTENTION : en phase 2, Tempête Florale soigne la Princesse de 10 000PV à chaque lancer — pensez à lui appliquer Insoignable ou à réduire ses soins reçus (Leçon de Grunob par exemple) pour limiter cet effet."
+        }
+      ]
+    },
+    {
+      "title": "Récompenses du Raid",
+      "orderNumber": 17,
+      "blocks": [
+        {
+          "type": "text",
+          "content": "Comme pour tous les raids, les récompenses dépendent du meilleur score obtenu au cours de la semaine, débloquant des paliers de récompenses affichés sur une frise. Les scores sont réinitialisés chaque semaine : pensez à récupérer vos récompenses avant la fin de la période."
+        },
+        {
+          "type": "text",
+          "content": "Un seul type de frise de raid peut être validé par semaine (par exemple, choisir entre les Jardins éternels et le Gigalodon si les deux sont réalisés la même semaine). Si le score est amélioré plus tard dans la semaine, seules les récompenses correspondant au meilleur score comptent, avec un complément si des récompenses à score plus faible avaient déjà été réclamées. Refaire le même raid plusieurs fois dans la semaine débloque toujours la même frise (le meilleur score atteint compte, pas un score additionné par run)."
+        },
+        {
+          "type": "text",
+          "content": "Les 11 paliers de récompenses sont aux scores de 2 000, 4 000, 6 000, 8 000, 13 000, 18 000, 23 000, 28 000, 30 000, 40 000 et 50 000 points."
+        },
+        {
+          "type": "image",
+          "filename": "170-149recompenses.jpg",
+          "caption": "Frise des paliers de récompenses du raid"
+        },
+        {
+          "type": "text",
+          "content": "Jusqu'au palier 4, vous obtenez uniquement des guildatons et de l'expérience. Du palier 5 au palier 8, un Coffre du Sanctuaire est offert en plus. Au palier 9, à la place du coffre, vous obtenez 10 Fleurs des protecteurs du Sanctuaire. Aux paliers 10 et 11, vous obtenez un Coffre majestueux du Sanctuaire. La Fleur des protecteurs du Sanctuaire permet de crafter 3 nouveaux items et ne s'obtient que via la frise ou les coffres de la frise (aucun drop en combat)."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "171-150coffre-majestueux.png",
+              "caption": "Coffre majestueux du Sanctuaire"
+            },
+            {
+              "type": "image",
+              "filename": "172-151coffre-sanctuaire.png",
+              "caption": "Coffre du Sanctuaire"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Coffre du Sanctuaire : 90,5% Pièce d'armure des Gardiens du Sanctuaire (ressource), 8% Fleur des protecteurs du Sanctuaire (ressource), 1% Chachardon (familier d'apparat), 0,5% Heaume des Gardiens du Sanctuaire (chapeau)."
+        },
+        {
+          "type": "text",
+          "content": "Coffre majestueux du Sanctuaire : 49,25% Bouquet de lianes de la Princesse Maudite (ressource), 49,25% Pommeau brisé de la Reine Écarlate (ressource), 8% Fleur des protecteurs du Sanctuaire (ressource), 1% Chachardon (familier d'apparat), 0,25% Grèves Écarlates (bottes), 0,25% Étreinte Végétale (amulette)."
+        },
+        {
+          "type": "text",
+          "content": "Dans les coffres, vous pouvez donc à faible taux obtenir directement des pièces de la Panoplie du Sanctuaire des Jardins éternels, ainsi qu'une chance de 1% par coffre d'obtenir le Chachardon, un familier d'apparat."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "173-153panoplie-jardins.png",
+              "caption": "Panoplie du Sanctuaire des Jardins éternels"
+            },
+            {
+              "type": "image",
+              "filename": "174-152chachardon.png",
+              "caption": "Le Chachardon, familier d'apparat"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Réussir un raid rapporte également des points d'activité de guilde, environ 2 000 points par raid d'après les observations."
+        },
+        {
+          "type": "text",
+          "content": "La position de la guilde dans le classement hebdomadaire (réinitialisé le mardi à 6h) donne des récompenses supplémentaires aux participants (pas à toute la guilde) : le Top 1 reçoit l'Ornement Or « Sanctuaire des Jardins éternels », un titre, 25 Reconnaissances de guilde et 20 d'XP de guilde ; le Top 2 l'Ornement Argent, 20 Reconnaissances et 15 d'XP ; le Top 3 l'Ornement Bronze, 15 Reconnaissances et 10 d'XP ; le Top 4 à 10 donne 10 Reconnaissances et 7 d'XP ; le Top 11 à 50 donne 5 Reconnaissances et 5 d'XP ; le Top 50% donne 3 Reconnaissances et 3 d'XP ; et simplement apparaître dans le classement (Top 100%) donne 1 Reconnaissance et 1 d'XP. L'XP de guilde n'est attribuée qu'une seule fois pour toute la guilde, pas par participant."
+        },
+        {
+          "type": "image",
+          "filename": "175-158ornements.png",
+          "caption": "Ornements de classement hebdomadaire de guilde"
+        }
+      ]
+    }
+  ]
+}
