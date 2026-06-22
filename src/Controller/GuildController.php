@@ -18,6 +18,7 @@ use App\Service\FileUploadService;
 use App\Service\GuildService;
 use App\Traits\CsrfGuardTrait;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
@@ -112,7 +113,7 @@ class GuildController extends AbstractController
     }
 
     #[Route('/{slug}', name: 'app_guild_show')]
-    public function show(Guild $guild, RaidRepository $raidRepo): Response
+    public function show(#[MapEntity(mapping: ['slug' => 'slug'])] Guild $guild, RaidRepository $raidRepo): Response
     {
         $currentUser = $this->getUser();
         $isOwner     = $currentUser && (int) $guild->getOwner()->getId() === (int) $currentUser->getId();
@@ -142,7 +143,7 @@ class GuildController extends AbstractController
     }
 
     #[Route('/{slug}/membres', name: 'app_guild_members')]
-    public function members(Guild $guild): Response
+    public function members(#[MapEntity(mapping: ['slug' => 'slug'])] Guild $guild): Response
     {
         $currentUser = $this->getUser();
 
@@ -155,7 +156,7 @@ class GuildController extends AbstractController
 
     #[IsGranted('ROLE_USER')]
     #[Route('/{slug}/rejoindre', name: 'app_guild_join', methods: ['POST'])]
-    public function join(Guild $guild, Request $request, RateLimiterFactoryInterface $joinGuildLimiter): Response
+    public function join(#[MapEntity(mapping: ['slug' => 'slug'])] Guild $guild, Request $request, RateLimiterFactoryInterface $joinGuildLimiter): Response
     {
         $this->requireCsrfToken('join_guild_' . $guild->getId(), $request);
 
@@ -279,7 +280,7 @@ class GuildController extends AbstractController
     #[IsGranted('GUILD_LEADER', subject: 'guild')]
     #[IsGranted('ROLE_USER')]
     #[Route('/{slug}/supprimer', name: 'app_guild_delete', methods: ['POST'])]
-    public function delete(Guild $guild, Request $request): Response
+    public function delete(#[MapEntity(mapping: ['slug' => 'slug'])] Guild $guild, Request $request): Response
     {
         $this->requireCsrfToken('delete_guild_' . $guild->getId(), $request);
         $this->guildService->deleteGuild($guild);
@@ -292,7 +293,7 @@ class GuildController extends AbstractController
     #[IsGranted('ROLE_USER')]
     #[Route('/{slug}/modifier', name: 'app_guild_edit', methods: ['GET', 'POST'])]
     public function edit(
-        Guild $guild,
+        #[MapEntity(mapping: ['slug' => 'slug'])] Guild $guild,
         Request $request,
         EntityManagerInterface $em,
         #[Autowire('%kernel.project_dir%')] string $projectDir,
