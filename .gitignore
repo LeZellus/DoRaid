@@ -22,5 +22,6 @@
 /public/assets/
 ###< symfony/asset-mapper ###
 
-/public/uploads/
+/public/uploads/*
+!/public/uploads/raid-guides/
 /deploy.config.ps1
