@@ -1,5 +1,9 @@
 {
   "raidTemplateName": "Sanctuaire des Jardins éternels",
+  "source": {
+    "name": "Dofus pour les Noobs",
+    "url": "https://www.dofuspourlesnoobs.com/sanctuaire-des-jardins-eternels.html"
+  },
   "sections": [
     {
       "title": "Présentation du Raid",

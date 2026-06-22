@@ -1,5 +1,9 @@
 {
   "raidTemplateName": "Gouffre du Gigalodon",
+  "source": {
+    "name": "Dofus pour les Noobs",
+    "url": "https://www.dofuspourlesnoobs.com/gouffre-du-gigalodon.html"
+  },
   "sections": [
     {
       "title": "Présentation du Raid",
