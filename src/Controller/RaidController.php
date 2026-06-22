@@ -54,7 +54,13 @@ class RaidController extends AbstractController
         $grouped = $raidRepo->findGroupedOpen($userGuildIds, $serverName);
 
         $upcomingRaids = $grouped['upcoming'];
-        $startedRaids  = $grouped['started'];
+        // Un raid "démarré" peut avoir dépassé sa durée planifiée depuis la dernière
+        // exécution de app:close-expired-raids : on le clôture à la volée plutôt que
+        // de l'afficher comme encore ouvert.
+        $startedRaids  = array_values(array_filter(
+            $grouped['started'],
+            fn($r) => !$this->raidService->closeIfExpired($r)
+        ));
         $ongoingRaids  = $grouped['ongoing'];
 
         // Collect available types from all open raids before applying the type filter
@@ -194,6 +200,7 @@ class RaidController extends AbstractController
     ): Response {
         if ($r = $this->checkRaidAccess($raid)) return $r;
 
+        $this->raidService->closeIfExpired($raid);
         $this->raidService->syncEnigmes($raid);
 
         $currentUser = $this->getUser();

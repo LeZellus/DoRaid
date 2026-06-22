@@ -112,6 +112,29 @@ class RaidService
         $this->em->flush();
     }
 
+    /**
+     * Clôture automatiquement un raid ouvert dont la durée planifiée est dépassée.
+     * Sans effet sur les raids déjà clos, sans date planifiée ou sans durée de template.
+     *
+     * @return bool true si le raid vient d'être clôturé.
+     */
+    public function closeIfExpired(Raid $raid): bool
+    {
+        if ($raid->getStatus() !== RaidStatus::Open) {
+            return false;
+        }
+
+        $end = $raid->getExpectedEndTime();
+        if ($end === null || $end > new \DateTimeImmutable()) {
+            return false;
+        }
+
+        $this->raidWorkflow->apply($raid, 'close');
+        $this->em->flush();
+
+        return true;
+    }
+
     public function deleteRaid(Raid $raid): void
     {
         $this->em->remove($raid);

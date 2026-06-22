@@ -259,6 +259,73 @@ class RaidServiceTest extends WebTestCaseBase
         $this->service()->acceptParticipant($participant);
     }
 
+    // ─── closeIfExpired ───────────────────────────────────────────────────────
+
+    public function testCloseIfExpiredClosesRaidPastEndTime(): void
+    {
+        $server    = $this->makeServer();
+        $owner     = $this->makeUser('owner@test.com');
+        $ownerChar = $this->makeCharacter($owner, $server);
+        $guild     = $this->makeGuild($owner, $server);
+        $raid      = $this->makeRaid($guild, $ownerChar, isPublic: true);
+        // Template par défaut : 60 minutes de durée (cf. makeRaidTemplate)
+        $raid->setScheduledAt(new \DateTimeImmutable('-2 hours'));
+        $this->flush();
+
+        $closed = $this->service()->closeIfExpired($raid);
+
+        $this->assertTrue($closed);
+        $this->assertSame(RaidStatus::Closed, $raid->getStatus());
+    }
+
+    public function testCloseIfExpiredDoesNothingWhenNotYetExpired(): void
+    {
+        $server    = $this->makeServer();
+        $owner     = $this->makeUser('owner@test.com');
+        $ownerChar = $this->makeCharacter($owner, $server);
+        $guild     = $this->makeGuild($owner, $server);
+        $raid      = $this->makeRaid($guild, $ownerChar, isPublic: true);
+        $raid->setScheduledAt(new \DateTimeImmutable('+30 minutes'));
+        $this->flush();
+
+        $closed = $this->service()->closeIfExpired($raid);
+
+        $this->assertFalse($closed);
+        $this->assertSame(RaidStatus::Open, $raid->getStatus());
+    }
+
+    public function testCloseIfExpiredDoesNothingWhenAlreadyClosed(): void
+    {
+        $server    = $this->makeServer();
+        $owner     = $this->makeUser('owner@test.com');
+        $ownerChar = $this->makeCharacter($owner, $server);
+        $guild     = $this->makeGuild($owner, $server);
+        $raid      = $this->makeRaid($guild, $ownerChar, isPublic: true);
+        $raid->setScheduledAt(new \DateTimeImmutable('-2 hours'));
+        $raid->setStatus(RaidStatus::Closed);
+        $this->flush();
+
+        $closed = $this->service()->closeIfExpired($raid);
+
+        $this->assertFalse($closed);
+    }
+
+    public function testCloseIfExpiredDoesNothingWhenNoScheduledAt(): void
+    {
+        // Raid "ongoing" sans date planifiée : pas de fin attendue, jamais clôturé automatiquement.
+        $server    = $this->makeServer();
+        $owner     = $this->makeUser('owner@test.com');
+        $ownerChar = $this->makeCharacter($owner, $server);
+        $guild     = $this->makeGuild($owner, $server);
+        $raid      = $this->makeRaid($guild, $ownerChar, isPublic: true);
+        $this->flush();
+
+        $closed = $this->service()->closeIfExpired($raid);
+
+        $this->assertFalse($closed);
+        $this->assertSame(RaidStatus::Open, $raid->getStatus());
+    }
+
     public function testDeleteRaidRemovesIt(): void
     {
         $server    = $this->makeServer();

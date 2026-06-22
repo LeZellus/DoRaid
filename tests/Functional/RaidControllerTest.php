@@ -88,6 +88,54 @@ class RaidControllerTest extends WebTestCaseBase
         $this->assertResponseIsSuccessful();
     }
 
+    // ─── Clôture automatique à l'affichage ─────────────────────────────────────
+
+    public function testViewingExpiredRaidClosesItAutomatically(): void
+    {
+        [$raidId] = $this->createRaidWithGuild(isPublic: true);
+        $raid = $this->em->find(\App\Entity\Raid::class, $raidId);
+        $raid->setScheduledAt(new \DateTimeImmutable('-2 hours')); // template par défaut : 60 min
+        $this->flush();
+
+        $this->client->request('GET', '/raids/' . $raidId);
+
+        $this->assertResponseIsSuccessful();
+        $this->em->clear();
+        $reloaded = $this->em->find(\App\Entity\Raid::class, $raidId);
+        $this->assertSame(RaidStatus::Closed, $reloaded->getStatus());
+    }
+
+    public function testViewingStillOpenRaidDoesNotCloseIt(): void
+    {
+        [$raidId] = $this->createRaidWithGuild(isPublic: true);
+        $raid = $this->em->find(\App\Entity\Raid::class, $raidId);
+        $raid->setScheduledAt(new \DateTimeImmutable('+10 minutes'));
+        $this->flush();
+
+        $this->client->request('GET', '/raids/' . $raidId);
+
+        $this->assertResponseIsSuccessful();
+        $this->em->clear();
+        $reloaded = $this->em->find(\App\Entity\Raid::class, $raidId);
+        $this->assertSame(RaidStatus::Open, $reloaded->getStatus());
+    }
+
+    public function testIndexClosesExpiredRaidAndExcludesItFromTheList(): void
+    {
+        [$raidId] = $this->createRaidWithGuild(isPublic: true);
+        $raid = $this->em->find(\App\Entity\Raid::class, $raidId);
+        $raid->setScheduledAt(new \DateTimeImmutable('-2 hours'));
+        $this->flush();
+
+        $crawler = $this->client->request('GET', '/raids');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSame(0, $crawler->filter('a[href="/raids/' . $raidId . '"]')->count());
+        $this->em->clear();
+        $reloaded = $this->em->find(\App\Entity\Raid::class, $raidId);
+        $this->assertSame(RaidStatus::Closed, $reloaded->getStatus());
+    }
+
     // ─── Candidature ───────────────────────────────────────────────────────────
 
     public function testApplySucceedsForEligibleUser(): void

@@ -2,9 +2,8 @@
 
 namespace App\Command;
 
-use App\Entity\RaidStatus;
 use App\Repository\RaidRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Service\RaidService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,26 +17,19 @@ class CloseExpiredRaidsCommand extends Command
 {
     public function __construct(
         private readonly RaidRepository $raidRepo,
-        private readonly EntityManagerInterface $em,
+        private readonly RaidService $raidService,
     ) {
         parent::__construct();
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $now   = new \DateTimeImmutable();
         $count = 0;
 
         foreach ($this->raidRepo->findAllOpen() as $raid) {
-            $end = $raid->getExpectedEndTime();
-            if ($end !== null && $end <= $now) {
-                $raid->setStatus(RaidStatus::Closed);
+            if ($this->raidService->closeIfExpired($raid)) {
                 $count++;
             }
-        }
-
-        if ($count > 0) {
-            $this->em->flush();
         }
 
         $output->writeln(sprintf('<info>%d raid(s) clos.</info>', $count));
