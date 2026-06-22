@@ -1,0 +1,1485 @@
+{
+  "raidTemplateName": "Gouffre du Gigalodon",
+  "sections": [
+    {
+      "title": "Présentation du Raid",
+      "orderNumber": 1,
+      "blocks": [
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "01-sommaire.jpg",
+              "caption": ""
+            },
+            {
+              "type": "text",
+              "content": "Sommaire de l'article : Présentation du Raid, Gestion de la lumière, Mécanique de zone Idées noires, Présentation des monstres, Étage -1 Avant-poste des explorateurs, Étage -2 Plateau de la Mureine, Étage -3 Falaise noyée, Étage -4 Terrier d'Exécrabe, Débloquer le raccourci Mureine-Exécrabe, Étage -5 Ossuaire abyssal, Étage -6 Sombrefond de Willorque, Le Gigalodon, Récompenses du Raid."
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Pour créer ce raid, vous devez être dans une guilde et posséder les droits de création de raids. Il faut se rendre dans la boutique, onglet Raids de Guilde, pour le lancer."
+        },
+        {
+          "type": "image",
+          "filename": "02-achat-raid-boutique.png",
+          "caption": "Création du raid depuis la boutique de guilde"
+        },
+        {
+          "type": "text",
+          "content": "Conditions : coût de création de 360 kamas de guilde, 8 membres minimum et 12 maximum, durée maximale d'une heure, score maximum infini (60 000 pour remplir la frise de récompenses), et aucun échange possible entre joueurs durant le raid. Les Boss sont uniques : une fois vaincus (ou déjà engagés en combat par une autre équipe), ils ne repopent pas. Attention, le combat final contre le Gigalodon peut dépasser la limite d'une heure, mais il faut absolument l'avoir lancé avant l'expiration du chrono."
+        },
+        {
+          "type": "image",
+          "filename": "03-boutique-raids-guilde.png",
+          "caption": "Onglet Raids de Guilde dans la boutique"
+        },
+        {
+          "type": "text",
+          "content": "Le raid repose sur une mécanique de lumière : moins une zone est éclairée, plus les monstres (et certains boss) qui y résident sont boostés. Le contenu se compose de 20 groupes de monstres à vaincre, de ressources à drop pour augmenter le score, de 3 boss et de deux énigmes assez simples, avant d'affronter le boss final. Le raid se termine si le capitaine y met fin, si le temps maximum est écoulé, ou dès que le combat contre le Gigalodon est lancé. Le raid étant collaboratif, il n'est pas nécessaire que chaque joueur réalise tous les combats : dès qu'un boss qui débloque une zone est vaincu par n'importe quel membre, la zone se débloque pour tout le groupe, permettant de répartir les tâches (une équipe sur un boss, une autre en train de farmer des ressources)."
+        },
+        {
+          "type": "text",
+          "content": "Pour augmenter le score du raid (qui alimente le coffre), deux leviers existent : le coffre du raid et les dégâts infligés au Gigalodon. Descendre les étages ne rapporte aucun score en soi ; seul le drop de ressources sur les monstres et boss en rapporte. Il existe un drop commun (identique pour tous les participants du combat) et un drop unique sur les boss (obtenu à 100% par un seul personnage du combat, et rapportant beaucoup plus de points). Le drop seul ne suffit pas : chaque personnage doit ensuite rapporter ses ressources au coffre du raid, situé en haut de l'avant-poste des explorateurs, via l'option « Déposer tous les trésors »."
+        },
+        {
+          "type": "image",
+          "filename": "04-coffre-du-raid.jpg",
+          "caption": "Le coffre du raid où déposer les ressources collectées"
+        },
+        {
+          "type": "text",
+          "content": "Attention, en cas de défaite dans un combat, le joueur est téléporté en haut du gouffre et perd toutes les ressources non déposées. Voici le tableau des ressources et de leur valeur en points : Sel des profondeurs (drop commun, taux variable, aucun point — utile uniquement pour la lumière), Quartz (commun, 2 points), Opale (commun, 4 points), Amazonite (commun, 6 points), Aventurine (commun, 10 points), Lapiz (commun, 15 points), Jais (commun, 20 points), Onyx (commun, 30 points), Unité de Mureine (drop unique à 100%, 1 000 points), Rancune d'Exécrabe (unique à 100%, 5 000 points), Noirceur de Willorque (unique à 100%, 10 000 points)."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "05-ressource-quartz.png",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "06-ressource-opale.png",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "07-ressource-amazonite.png",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "08-ressource-aventurine.png",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "09-ressource-lapiz.png",
+              "caption": ""
+            }
+          ]
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "10-ressource-jais.png",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "11-ressource-onyx.png",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "12-ressource-unite-de-mureine.png",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "13-ressource-rancune-dexecrabe.png",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "14-ressource-noirceur-de-willorque.png",
+              "caption": ""
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Le but du raid est de descendre le plus profond possible avant d'affronter le Gigalodon, sachant que chaque boss ne peut être vaincu qu'une seule fois (maximum 16 000 points cumulés sur les trois boss intermédiaires). Il existe 5 accès à débloquer pour atteindre le 6ème et dernier étage. Déroulement résumé : vaincre tous les groupes de l'étage -1, vaincre la Mureine, résoudre l'énigme du Luminarium, vaincre l'Exécrabe et résoudre son énigme, récupérer les fragments de clef manquants à l'étage -5, vaincre Willorque (qui ne débloque aucun accès mais rapporte beaucoup de points), remonter déposer ses ressources au coffre, puis lancer le combat du Gigalodon avant la fin du chrono. En parallèle, il faut gérer la lumière et peut farmer les monstres pour des ressources supplémentaires."
+        }
+      ]
+    },
+    {
+      "title": "Gestion de la lumière",
+      "orderNumber": 2,
+      "blocks": [
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "15-mecanisme-lumiere.jpg",
+              "caption": ""
+            },
+            {
+              "type": "text",
+              "content": "Pendant toute la durée du raid, il faut gérer l'intensité lumineuse de chaque zone : plus une zone est sombre, plus les déplacements y sont difficiles et plus les monstres bénéficient de bonus. Il existe 5 intensités de lumière notées de 0 (obscurité quasi totale) à 4 (lumière maximale)."
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Cette intensité influence les monstres via la mécanique « Idées noires » (détaillée plus loin)."
+        },
+        {
+          "type": "image",
+          "filename": "16-idees-noires-intensite-0.png",
+          "caption": "Idées noires en intensité 0"
+        },
+        {
+          "type": "text",
+          "content": "Si la lumière s'éteint complètement (intensité 0), les monstres deviennent en plus agressifs : ils agressent jusqu'à 10 cases de distance et attaquent au bout de 5 secondes si le joueur ne quitte pas leur périmètre."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "17-monstre-agressif.jpg",
+              "caption": ""
+            },
+            {
+              "type": "text",
+              "content": "L'intensité baisse automatiquement avec le temps : chaque palier dure 2 minutes, soit 8 minutes pour passer de l'intensité 4 à 0."
+            }
+          ]
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "18-luminomachine.jpg",
+              "caption": ""
+            },
+            {
+              "type": "text",
+              "content": "Pour contrer cette baisse, chaque étage dispose de deux Luminomachines liées entre elles (situées à l'entrée et à la sortie de chaque étage), qui affichent en permanence l'intensité actuelle de la zone."
+            }
+          ]
+        },
+        {
+          "type": "image",
+          "filename": "19-depot-sel-luminomachine.jpg",
+          "caption": "Dépôt de Sel des profondeurs dans une Luminomachine"
+        },
+        {
+          "type": "text",
+          "content": "Les Luminomachines indiquent en permanence l'intensité en cours (de 0 à 4). En y déposant du Sel des profondeurs, on augmente l'intensité lumineuse. Le coût est cumulatif : passer à l'intensité 1 coûte 1 sel, à l'intensité 2 un total de 3 sels, à l'intensité 3 un total de 6 sels, à l'intensité 4 un total de 10 sels."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "20-luminomachine-intensite-0.jpg",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "21-luminomachine-intensite-1.jpg",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "22-luminomachine-intensite-2.jpg",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "23-luminomachine-intensite-3.jpg",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "24-luminomachine-intensite-4.jpg",
+              "caption": ""
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Soit 20 sels au total pour aller de 0 à 4. Positions des Luminomachines par étage : Avant-poste des explorateurs [3,2] et [4,3] ; Plateau de la Mureine [4,5] et [2,7] ; Falaise noyée [2,9] et [3,12] ; Terrier d'Exécrabe [5,11] et [8,11] ; Ossuaire abyssal [10,13] et [10,14]. En entrant dans le raid, la Luminomachine du premier étage est déjà à l'intensité 4 ; quand un nouvel étage est débloqué, son intensité démarre à 1."
+        },
+        {
+          "type": "text",
+          "content": "Le Sel des profondeurs est une ressource partagée par tout le raid (visible dans l'interface du raid, pas dans l'inventaire individuel)."
+        },
+        {
+          "type": "image",
+          "filename": "25-sel-des-profondeurs.png",
+          "caption": "Le Sel des profondeurs dans l'interface du raid"
+        },
+        {
+          "type": "text",
+          "content": "Il s'obtient de deux façons : en drop sur les monstres (quantité égale pour tous les participants du combat, non affectée par la prospection) ou en récoltant des gisements répartis dans chaque zone (pas de métier requis)."
+        },
+        {
+          "type": "image",
+          "filename": "26-drop-sel.png",
+          "caption": "Exemple de drop de sel partagé entre tous les combattants"
+        },
+        {
+          "type": "text",
+          "content": "Le temps de repop d'un gisement de sel est d'environ 5 à 10 minutes."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "27-gisement-sel.jpg",
+              "caption": ""
+            },
+            {
+              "type": "text",
+              "content": "Position des gisements de sel par étage : Avant-poste [3,2], [2,2], [4,2], [3,3] ; Plateau de la Mureine [3,5], [2,6], [4,6], [3,7], [4,7] (x2) ; Falaise noyée [2,10], [3,10], [1,11], [2,12] ; Terrier d'Exécrabe [6,11], [7,10], [8,10] (x2) ; Ossuaire abyssal [11,14], [12,14], [12,13], [11,13]."
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Un succès spécial, le succès « Sel », est débloqué pour tout le raid si l'interface affiche au moins 100 sels cumulés."
+        },
+        {
+          "type": "image",
+          "filename": "28-succes-sel.png",
+          "caption": "Le succès « Sel » à débloquer"
+        },
+        {
+          "type": "text",
+          "content": "Le sel dépensé dans les Luminomachines est perdu et ne compte donc pas dans ce total. Si le raid réussit, tous les membres débloquent le succès."
+        },
+        {
+          "type": "image",
+          "filename": "29-cent-sel-interface.png",
+          "caption": "100 sels affichés dans l'interface du raid"
+        }
+      ]
+    },
+    {
+      "title": "Mécanique de zone : Idées noires",
+      "orderNumber": 3,
+      "blocks": [
+        {
+          "type": "text",
+          "content": "Tous les monstres du raid, ainsi que les boss Mureine et Exécrabe, possèdent une mécanique spéciale nommée « Idées noires », dépendante de la luminosité de la zone. Le Gigalodon et Willorque ne sont pas concernés par cette mécanique. Plus la luminosité est faible, plus les monstres (et les boss concernés) reçoivent un bonus pour toute la durée du combat : à l'intensité 0, ils gagnent 200% de vitalité, 1 000 de puissance et 2PM ; à l'intensité 1, 100% de vitalité, 500 de puissance et 1PM ; à l'intensité 2, 50% de vitalité et 250 de puissance ; à l'intensité 3, 20% de vitalité et 100 de puissance ; à l'intensité 4, aucun bonus. Il est donc fortement conseillé de monter la lumière au maximum avant d'engager un combat important."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "30-idees-noires-bonus-intensite-0.png",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "31-idees-noires-bonus-intensite-1.png",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "32-idees-noires-bonus-intensite-2.png",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "33-idees-noires-bonus-intensite-3.png",
+              "caption": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Présentation des monstres du Raid",
+      "orderNumber": 4,
+      "blocks": [
+        {
+          "type": "text",
+          "content": "Le raid comporte six monstres différents qui n'apparaissent pas tous dès le premier étage, mais progressivement au fil de la descente ; certains accompagnent également des boss."
+        },
+        {
+          "type": "image",
+          "filename": "34-monstre-madrepire.png",
+          "caption": "Le Madrépire, monstre de l'étage -1"
+        },
+        {
+          "type": "text",
+          "content": "Étage -1 : le Madrépire dispose des sorts KO'rail (450 dégâts air en zone carré de taille 3, jusqu'à 7PO, lançable 2 fois par tour) et Récidif (550 dégâts feu, attire les cibles de 4 cases en zone croix de taille 4, jusqu'à 7PO, lançable 1 fois par tour)."
+        },
+        {
+          "type": "image",
+          "filename": "35-monstre-kokayou.png",
+          "caption": "Le Kokayou, monstre de l'étage -1"
+        },
+        {
+          "type": "text",
+          "content": "Le Kokayou dispose d'Épinade (450 dégâts terre en zone étoile de taille 3 sur lui-même) et Hydrage (400 dégâts eau en vol de vie, uniquement en mêlée, lançable 2 fois par tour)."
+        },
+        {
+          "type": "image",
+          "filename": "36-monstre-leviatank.png",
+          "caption": "Le Léviatank, apparaît à l'étage -2"
+        },
+        {
+          "type": "text",
+          "content": "Étage -2 : le Léviatank dispose d'Absolutte (s'avance de 5 cases et inflige 325 dégâts air en zone cône, en ligne jusqu'à 5PO) et Branchiche (450 dégâts feu à la cible et aux personnages entre elle et le Léviatank, pose un glyphe de 2 tours infligeant 250 dégâts feu, uniquement à 1PO)."
+        },
+        {
+          "type": "image",
+          "filename": "37-monstre-calarmure.png",
+          "caption": "Le Calarmure, apparaît à l'étage -3"
+        },
+        {
+          "type": "text",
+          "content": "Étage -3 : le Calarmure dispose d'Armucus (bouclier de 600% du niveau pendant 2 tours, jusqu'à 6PO) et Encornéant (550 dégâts air en zone cercle de taille 3, jusqu'à 6PO)."
+        },
+        {
+          "type": "image",
+          "filename": "38-monstre-ecaillon.png",
+          "caption": "L'Écaillon, apparaît à l'étage -4"
+        },
+        {
+          "type": "text",
+          "content": "Étage -4 : l'Écaillon dispose d'Enfourchage (repousse de 3 cases, 450 dégâts feu en ligne de taille 4, jusqu'à 6PO) et Tridémence (550 dégâts terre en zone cône de taille 1, uniquement à 1PO)."
+        },
+        {
+          "type": "image",
+          "filename": "39-monstre-krakhaine.png",
+          "caption": "Le Krak'Haine, apparaît à l'étage -5"
+        },
+        {
+          "type": "text",
+          "content": "Étage -5 : le Krak'Haine dispose d'Abjection (150 dégâts dans les 4 éléments en ligne infinie, à 1PO, lançable 2 fois par tour) et Férosignal (retire 1PM non esquivable à tous les personnages, le monstre le plus proche de chaque personnage touché gagne 1PM en retour, cumulable)."
+        }
+      ]
+    },
+    {
+      "title": "Étage -1 : Avant-poste des explorateurs",
+      "orderNumber": 5,
+      "blocks": [
+        {
+          "type": "text",
+          "content": "Position des Luminomachines : [3,2] et [4,3]. Position des Sels des profondeurs récoltables : [3,2], [2,2], [4,2], [3,3]. Objectif : éliminer tous les groupes de monstres de la zone."
+        },
+        {
+          "type": "text",
+          "content": "En arrivant dans le raid, les joueurs atterrissent sur une plateforme (l'avant-poste des explorateurs) où se trouve le PNJ Voctir, qui explique le déroulement du raid, ainsi que le Coffre du raid, gardé par le Gigalodon. Ce coffre permet deux actions : « Déposer tous les trésors » (pour augmenter le score du raid) et « S'approcher du coffre malgré l'ombre qui rôde » (qui amorce le combat final contre le Gigalodon, à ne faire qu'en fin de raid)."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "40-echelle-avant-poste.jpg",
+              "caption": ""
+            },
+            {
+              "type": "text",
+              "content": "Pour commencer, il faut descendre une échelle vers la zone aquatique, où se trouvent plusieurs groupes de monstres."
+            }
+          ]
+        },
+        {
+          "type": "image",
+          "filename": "41-objectif-etage-1.png",
+          "caption": "Objectif de l'étage -1 affiché en jeu"
+        },
+        {
+          "type": "text",
+          "content": "Au total, il y a 6 étages à descendre. Pour débloquer l'accès à chaque profondeur, il faut réaliser un objectif : ici, vaincre tous les groupes de monstres présents à cet étage."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "42-map-etage-1.jpg",
+              "caption": ""
+            },
+            {
+              "type": "text",
+              "content": "L'étage est composé de 5 maps comportant chacune 3 à 4 groupes de monstres (1 à 6 monstres par groupe), soit 18 groupes au total à vaincre."
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Une fois vaincus, ces monstres ne repopent plus jusqu'à la fin du raid. En combattant, il existe une chance de drop de base de 1% pour l'altération « Premier fragment de clef de la cage à giga-requin », commune à tout le raid et nécessaire plus tard pour atteindre l'étage -6."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "43-ascenseur-etage-1.jpg",
+              "caption": ""
+            },
+            {
+              "type": "text",
+              "content": "Une fois tous les groupes vaincus, il faut se rendre en [4,3] pour emprunter l'ascenseur menant à l'étage -2."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Étage -2 : Plateau de la Mureine (Boss)",
+      "orderNumber": 6,
+      "blocks": [
+        {
+          "type": "text",
+          "content": "Position des Luminomachines : [4,5] et [2,7]. Position des Sels des profondeurs récoltables : [3,5], [2,6], [4,6], [3,7], [4,7] (x2). Objectif : vaincre la Mureine. Comme à l'étage précédent, les monstres vaincus ne repopent plus jusqu'à la fin du raid."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "44-position-mureine.jpg",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "45-trou-acces-mureine.jpg",
+              "caption": ""
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "L'accès à l'antre de la Mureine se fait via la map en [4,7] : il faut cliquer sur le plus gros trou au centre pour y tomber. Il est fortement conseillé de monter la lumière au maximum (intensité 4) avant le combat afin d'éviter les bonus liés aux Idées noires. La Mureine est accompagnée de 3 monstres : un Madrépire, un Kokayou et un Léviatank."
+        },
+        {
+          "type": "text",
+          "content": "Le combat est réalisable jusqu'à 12 personnages (comme tous les combats de boss du raid), mais reste largement faisable avec 6 à 8 joueurs."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "46-boss-mureine.jpg",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "47-boss-mureine-sorts.png",
+              "caption": "Sorts Impératrice et Cuirage de la Mureine"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "La Mureine possède 51 000PV. Le danger principal vient de son sort « Disperssssion » (700 dégâts eau, invoque une Murare au contact de la cible, jusqu'à 10PO sans ligne de vue, utilisable 2 fois par tour, limité à 10 invocations au total). Son passif « Impératrice » lui donne 100 de puissance pour 1 tour par Murare présente sur le terrain. Elle dispose aussi de « Triplicité » (1 150 dégâts terre en zone fourche de taille 4, à 1PO) et de « Cuirage » (800 dégâts air et 2 000 de bouclier pendant 2 tours à toutes les Murares alignées, jusqu'à 7PO sans ligne de vue)."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "48-sort-cuirage.png",
+              "caption": "Cuirage"
+            },
+            {
+              "type": "image",
+              "filename": "49-sort-disperssssion.png",
+              "caption": "Disperssssion"
+            },
+            {
+              "type": "image",
+              "filename": "50-sort-triplicite.png",
+              "caption": "Triplicité"
+            }
+          ]
+        },
+        {
+          "type": "image",
+          "filename": "51-monstre-murare.png",
+          "caption": "La Murare, invoquée par la Mureine"
+        },
+        {
+          "type": "text",
+          "content": "Les Murares invoquées appliquent l'état « Corroside » (400 dégâts feu, applique Corroside jusqu'à la fin du combat, cumulable ; chaque ligne de dégâts subie ensuite ajoute 250 dégâts feu supplémentaires en vol de vie pour la Mureine, jusqu'à 10 fois par tour). Leur passif « Antidote » retire les états Corroside aux alliés proches quand une Murare meurt, et leur sort « Faufilette » échange leur position avec un monstre allié et lui donne 2PM."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "52-sort-antidote.png",
+              "caption": "Antidote"
+            },
+            {
+              "type": "image",
+              "filename": "53-sort-corroside.png",
+              "caption": "Corroside"
+            },
+            {
+              "type": "image",
+              "filename": "54-sort-faufilette.png",
+              "caption": "Faufilette"
+            }
+          ]
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "55-murares-invoquees.jpg",
+              "caption": ""
+            },
+            {
+              "type": "text",
+              "content": "Elle peut invoquer 2 Murares par tour, limité à 10 invocations au total."
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Au début de chaque tour, la Mureine gagne 100 de puissance pour chaque Murare en vie sur le terrain (effet Impératrice)."
+        },
+        {
+          "type": "image",
+          "filename": "56-effet-imperatrice.png",
+          "caption": "Effet qui fait gagner 100 Puissance par Murare en vie"
+        },
+        {
+          "type": "text",
+          "content": "Les Murares appliquent l'effet Corroside : chaque ligne de dégâts subie ensuite ajoute une ligne supplémentaire de 250 dégâts feu, et cet effet est cumulable (par exemple, touché 2 fois par Corroside, chaque ligne de dégâts subie en ajoute 2 lignes de 250)."
+        },
+        {
+          "type": "image",
+          "filename": "57-effet-corroside-cumul.png",
+          "caption": "Effet de cumul de Corroside"
+        },
+        {
+          "type": "text",
+          "content": "La stratégie consiste à maintenir la Mureine à distance pour l'empêcher d'invoquer des Murares : soit en lui retirant ses PM (elle a 6PM de base et 264 d'esquive PM, ce qui est difficile, mais réalisable avec 2 personnages dédiés au retrait de PM sur un combat à 8), soit en la tacler/bloquer avec un tank (elle a 230 de fuite). Une méthode efficace consiste à la coincer entre 2 Murares dans un coin, ces dernières étant elles-mêmes taclées."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "58-placement-blocage-mureine.jpg",
+              "caption": "Le Mureine est bloquée par ses 2 Murares, elles-mêmes taclées par un Pandawa"
+            },
+            {
+              "type": "image",
+              "filename": "59-placement-blocage-mureine-creature.jpg",
+              "caption": "Même configuration mais en mode créature pour plus de visibilité"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Il est conseillé d'éliminer les 3 monstres d'accompagnement avant la Mureine, ainsi que les Murares invoquées au premier tour. À la fin du combat : un personnage obtient 1 Unité de Mureine (1 000 points de score), tout le raid obtient l'altération « Deuxième fragment de clef de la cage à giga-requin », et tous les combattants dropent au moins 1 Sel des profondeurs."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "60-acces-etage-3.jpg",
+              "caption": ""
+            },
+            {
+              "type": "text",
+              "content": "Il faut ensuite se rendre en [2,7] pour emprunter l'ascenseur vers l'étage -3."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Étage -3 : Falaise noyée (énigme du Luminarium)",
+      "orderNumber": 7,
+      "blocks": [
+        {
+          "type": "text",
+          "content": "Position des Luminomachines : [2,9] et [3,12]. Position des Sels des profondeurs récoltables : [2,10], [3,10], [1,11], [2,12]. Objectif : résoudre l'énigme du Luminarium. Aucun combat n'étant nécessaire ici, il est inutile de trop monter la lumière (économie de sel)."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "61-position-luminarium.jpg",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "62-mur-luminarium.jpg",
+              "caption": ""
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "L'énigme se trouve dans la grotte en [4,12], une safe-zone sans monstre. On y trouve un mur de 16 poissons lanterne (4x4) appelé le Luminarium, qu'il faut entièrement allumer pour le faire disparaître et libérer le passage."
+        },
+        {
+          "type": "text",
+          "content": "L'énigme s'inspire du jeu « Lights Out » : l'état (allumé/éteint) de chaque poisson est généré aléatoirement à chaque raid. Cliquer sur un poisson change son état ainsi que celui de ses voisins directs (haut, bas, gauche, droite)."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "63-exemple-clic-poisson-1.jpg",
+              "caption": "Si je clique sur le poisson entouré"
+            },
+            {
+              "type": "image",
+              "filename": "64-exemple-clic-poisson-2.jpg",
+              "caption": "Après avoir cliqué le poisson, il s'allume (car il était éteint) et ceux adjacents changent également de configuration"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "La méthode conseillée consiste à allumer rangée par rangée en partant du haut : on clique sur le poisson de la rangée du dessous correspondant à chaque poisson éteint de la rangée du dessus, jusqu'à ce qu'il ne reste que les deux coins du bas à traiter."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "65-methode-solution-luminarium.jpg",
+              "caption": ""
+            },
+            {
+              "type": "text",
+              "content": "Étapes : on clique sous chaque poisson éteint de la première ligne pour l'allumer, on procède de la même manière pour la seconde ligne, puis il ne reste plus qu'à cliquer les deux poissons dans les coins du bas pour finir."
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Une fois tous les poissons allumés, ils s'illuminent puis disparaissent, ouvrant le passage vers l'étage -4."
+        },
+        {
+          "type": "text",
+          "content": "Un solveur automatique est disponible séparément sur le site (page dédiée « Solveur du Luminarium ») avec un mode Solveur (indique où cliquer à partir d'une configuration donnée) et un mode Entraînement (génère des configurations aléatoires à résoudre)."
+        }
+      ]
+    },
+    {
+      "title": "Étage -4 : Terrier d'Exécrabe (Boss + énigme)",
+      "orderNumber": 8,
+      "blocks": [
+        {
+          "type": "text",
+          "content": "Position des Luminomachines : [5,11] et [8,11]. Position des Sels des profondeurs récoltables : [6,11], [7,10], [8,10] (x2). Objectif : vaincre l'Exécrabe et résoudre son énigme. Le combat et l'énigme se déroulent tous les deux en [9,11] ; l'énigme ne peut être tentée qu'après avoir vaincu le boss."
+        },
+        {
+          "type": "image",
+          "filename": "66-position-execrabe.jpg",
+          "caption": "Position du combat et de l'énigme de l'Exécrabe en [9,11]"
+        },
+        {
+          "type": "text",
+          "content": "Durant le combat, l'Exécrabe change d'apparence à chaque seuil de PV en passant par 4 formes (Coquillage, Oursin, Perle, Poulpe) dont l'ordre est aléatoire à chaque raid. Des statues autour de la map s'illuminent en bleu pour indiquer l'apparence en cours ; il faut mémoriser cet ordre pour l'énigme."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "67-execrabe-forme-coquillage.jpg",
+              "caption": "Coquillage"
+            },
+            {
+              "type": "image",
+              "filename": "68-execrabe-forme-oursin.jpg",
+              "caption": "Oursin"
+            },
+            {
+              "type": "image",
+              "filename": "69-execrabe-forme-perle.jpg",
+              "caption": "Perle"
+            },
+            {
+              "type": "image",
+              "filename": "70-execrabe-forme-poulpe.jpg",
+              "caption": "Poulpe"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Avant le combat, il est conseillé de mettre la lumière à l'intensité 4. L'Exécrabe est accompagné de 5 monstres : 2 Calarmures, 1 Kokayou, 1 Écaillon et 1 Léviatank. Combat réalisable jusqu'à 12 personnages."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "71-boss-execrabe.jpg",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "72-boss-execrabe-sorts.png",
+              "caption": "Sorts Crustank (passif), Canopince et Encornage de l'Exécrabe"
+            }
+          ]
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "73-sort-canopince.png",
+              "caption": "Canopince"
+            },
+            {
+              "type": "image",
+              "filename": "74-sort-encornage.png",
+              "caption": "Encornage"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Sort Bisque (950 dégâts, jusqu'à 7PO) : son élément et sa zone changent selon la forme de l'Exécrabe — Coquillage (terre, cercle taille 3), Oursin (air, étoile taille 4), Perle (feu, carré taille 3), Poulpe (eau, cône taille 4)."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "75-sort-bisque-normal.png",
+              "caption": "Bisque (normal)"
+            },
+            {
+              "type": "image",
+              "filename": "76-sort-bisque-coquillage.png",
+              "caption": "Bisque (Coquillage)"
+            },
+            {
+              "type": "image",
+              "filename": "77-sort-bisque-oursin.png",
+              "caption": "Bisque (Oursin)"
+            },
+            {
+              "type": "image",
+              "filename": "78-sort-bisque-perle.png",
+              "caption": "Bisque (Perle)"
+            },
+            {
+              "type": "image",
+              "filename": "79-sort-bisque-poulpe.png",
+              "caption": "Bisque (Poulpe)"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "L'Exécrabe a 100 000PV et 4 seuils tous les 20 000PV (80 000, 60 000, 40 000, 20 000)."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "80-execrabe-seuil-1.png",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "81-execrabe-seuil-2.png",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "82-execrabe-seuil-3.png",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "83-execrabe-seuil-4.png",
+              "caption": ""
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "À chaque seuil de PV, l'Exécrabe change d'apparence (ordre aléatoire à chaque raid, jamais deux fois la même apparence) et applique un effet selon la forme atteinte : Coquillage donne 5 000 de bouclier infini, Oursin renvoie 20% des dégâts subis (jusqu'au changement de forme suivant), Perle retire 63PO à tous les personnages pendant 2 tours (non débuffable), Poulpe attire tous les personnages alignés ou en diagonale de 10 cases."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "84-etat-coquillage-bouclier.png",
+              "caption": "Coquillage : Boost en PB"
+            },
+            {
+              "type": "image",
+              "filename": "85-etat-oursin-renvoi-degats.png",
+              "caption": "Oursin : Renvoi de dommages"
+            },
+            {
+              "type": "image",
+              "filename": "86-etat-perle-retrait-po.png",
+              "caption": "Perle : Retire l'infini PO"
+            },
+            {
+              "type": "image",
+              "filename": "87-etat-poulpe-attraction.png",
+              "caption": "Poulpe : Attire en ligne et diagonale"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Stratégie : l'Exécrabe tape surtout à courte portée et a peu d'esquive PM (64), donc facile à neutraliser avec du retrait PM. Il a l'initiative au tour 1 (environ 2 000 à 2 500 dégâts sur un personnage). Sans retrait PM, rester à au moins 9 cases suffit à éviter ses attaques de mêlée. Il faut éliminer les monstres d'abord, puis noter l'ordre des formes prises par l'Exécrabe à chaque seuil de PV pour l'énigme. À la victoire : un personnage obtient 1 Rancune d'Exécrabe (5 000 points), un personnage obtient 1 Pince d'Exécrabe (utile pour le raccourci, voir section suivante), tout le raid obtient l'altération « Troisième fragment de clef de la cage à giga-requin », et tous les combattants dropent au moins 1 Sel des profondeurs."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "88-acces-enigme-execrabe.jpg",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "89-statues-enigme-execrabe.jpg",
+              "caption": ""
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Pour l'énigme, après le combat, il faut cliquer sur le point d'eau de la map pour descendre face à quatre statues représentant les apparences de l'Exécrabe. Il suffit de cliquer sur les statues dans le même ordre que les seuils de PV rencontrés en combat. Chaque erreur fait perdre 1 000 points de score au raid (le score peut devenir négatif), et une mauvaise statue cliquée provoque un flash rouge obligeant à recommencer depuis le début. Une statue correctement cliquée s'illumine en bleu."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "90-enigme-execrabe-etape-1.jpg",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "91-enigme-execrabe-etape-2.jpg",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "92-enigme-execrabe-etape-3.jpg",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "93-enigme-execrabe-etape-4.jpg",
+              "caption": ""
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Une fois résolue, un passage vers l'étage -5 apparaît."
+        }
+      ]
+    },
+    {
+      "title": "Débloquer le raccourci Mureine - Exécrabe",
+      "orderNumber": 9,
+      "blocks": [
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "94-pince-dexecrabe.png",
+              "caption": ""
+            },
+            {
+              "type": "text",
+              "content": "Pendant le combat contre l'Exécrabe, un des personnages drope automatiquement 1 Pince d'Exécrabe (drop garanti à 100% sur un combattant). Cette ressource permet d'ouvrir un raccourci entre le plateau de la Mureine et le Terrier d'Exécrabe."
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Le raccourci se situe en [6,10] : il suffit de cliquer sur le poisson lanterne à cet endroit. Seul le personnage possédant la Pince d'Exécrabe peut activer ce raccourci (les échanges étant impossibles dans le raid)."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "95-ouverture-raccourci.jpg",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "96-raccourci-passage-1.jpg",
+              "caption": ""
+            }
+          ]
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "97-raccourci-passage-2.jpg",
+              "caption": ""
+            },
+            {
+              "type": "text",
+              "content": "Une fois ouvert, le passage mène directement en [4,7], sur la map où la Mureine a été combattue."
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Attention, ce chemin ne comporte aucune Luminomachine : il faut donc traverser 2 maps supplémentaires, parfois en intensité 0 (où les monstres agressent jusqu'à 10 cases), ce qui demande de la prudence. Avant de descendre à l'étage -5, il est recommandé de déposer ses trésors au coffre du raid : avec les ressources de la Mureine et de l'Exécrabe, environ 6 000 points de score sont déjà accessibles. C'est important car le taux de drop des fragments de clef manquants (à l'étage -5) dépend du score du raid : 1% en dessous de 5 000 points, 5% entre 5 000 et 7 000, 10% entre 7 000 et 10 000, et 20% au-delà de 10 000 points. Atteindre 10 000 points de score avant de descendre est donc idéal pour maximiser les chances de drop."
+        }
+      ]
+    },
+    {
+      "title": "Étage -5 : Ossuaire abyssal (drop)",
+      "orderNumber": 10,
+      "blocks": [
+        {
+          "type": "text",
+          "content": "Position des Luminomachines : [10,13] et [10,14]. Position des Sels des profondeurs récoltables : [11,14], [12,14], [12,13], [11,13]. Objectif : obtenir les 4 fragments de clef pour accéder à l'étage -6. Le premier fragment se drope sur tous les monstres du raid (taux de base 1%) et a normalement déjà été obtenu à l'étage -1. Le deuxième s'obtient automatiquement en vainquant la Mureine, et le troisième automatiquement en vainquant l'Exécrabe (donc déjà acquis à ce stade). Le quatrième se drope uniquement sur les Krak'Haine, monstre exclusif à l'Ossuaire abyssal, à un taux de base de 1%."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "98-fragment-clef-1.png",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "99-fragment-clef-2.png",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "100-fragment-clef-3.png",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "101-fragment-clef-4.png",
+              "caption": ""
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Le drop est partagé par tout le raid, même hors du même combat : dès qu'une équipe obtient un fragment, tout le raid le possède. Les fragments sont des altérations invisibles dans l'inventaire et le résumé de combat ; il faut consulter ses altérations pour vérifier sa progression. Comme à l'étage précédent, le taux de drop du quatrième fragment augmente avec le score du raid (5% entre 5 000 et 7 000 points, 10% entre 7 000 et 10 000, 20% au-delà de 10 000), d'où l'intérêt de déposer ses trésors avant de descendre. Presque tous les groupes de monstres de cet étage comportent au moins un Krak'Haine, qui repope rapidement, ce qui permet d'enchaîner les combats. Avec un score faible (taux à 1%), il peut être difficile d'obtenir ce fragment dans le temps imparti d'une heure. Sur la map [12,13], une transition nécessite de cliquer sur un os pour descendre ; attention, elle fait buguer l'Autofollow et l'Autopilotage."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "102-acces-etage-6.jpg",
+              "caption": ""
+            },
+            {
+              "type": "text",
+              "content": "Une fois les 4 fragments réunis, l'accès à l'étage -6 se débloque via la cage de plongée en [10,14]."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Étage -6 : Sombrefond de Willorque (Boss)",
+      "orderNumber": 11,
+      "blocks": [
+        {
+          "type": "text",
+          "content": "Objectif : vaincre Willorque. Cet étage ne comporte que deux maps, sans aucun monstre ni gestion de lumière classique. Après la descente, les joueurs arrivent sur une map vide ; Willorque se trouve sur la map de droite, en [11,16]. Attention, cette map est plongée dans une obscurité totale équivalente à l'intensité 0 : Willorque peut donc agresser jusqu'à 10 cases en 5 secondes, comme les monstres classiques. Le combat est réalisable jusqu'à 12 personnages et Willorque n'est accompagné d'aucun monstre."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "103-boss-willorque.jpg",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "104-boss-willorque-sorts.png",
+              "caption": "Présentation des sorts de Willorque, dont C'est assez"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Sort « C'est assez » : Willorque gagne entre 1 et 10PM selon son Light Count (1PM à 90% de Light Count, 10PM à 0%), devient invisible 1 tour si son Light Count est à 40% ou moins, et applique l'effet Switch au poisson lanterne le plus proche de lui. Le Switch s'applique après les effets du sort."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "105-sort-echolok.png",
+              "caption": "Écholok"
+            },
+            {
+              "type": "image",
+              "filename": "106-sort-sombre-chant.png",
+              "caption": "Sombre Chant"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Sort Écholok (950 dégâts feu, applique Switch au poisson lanterne le plus proche de la cible, jusqu'à 5PO) et sort Sombre Chant (dégâts feu variant de 500 à 1 500 selon le Light Count, en zone cercle de taille 10 autour de lui)."
+        },
+        {
+          "type": "text",
+          "content": "Willorque possède 62 000PV et n'a pas la mécanique « Idées noires » : ses statistiques restent donc fixes. Il est dans l'état Enraciné pour toute la durée du combat (impossible à pousser, attirer, échanger de place ou faire traverser un portail ; seul un Pandawa peut le porter), et ne peut ni tacler ni être taclé."
+        },
+        {
+          "type": "image",
+          "filename": "107-willorque-etat-initial.png",
+          "caption": "État initial du combat contre Willorque"
+        },
+        {
+          "type": "text",
+          "content": "En début de combat, il invoque 10 Poissons Lanterne, plutôt regroupés au centre de la map, avec 4 allumés et 6 éteints au départ. Ils ont 200% de résistance dans tous les éléments et 550 000PV (donc impossibles à éliminer), ne taclent pas et ne peuvent ni échanger de position ni traverser de portail, mais peuvent être poussés, attirés ou portés par un Pandawa."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "108-map-willorque-sombre.jpg",
+              "caption": "Il fait sombre oui"
+            },
+            {
+              "type": "image",
+              "filename": "109-poisson-lanterne-willorque.png",
+              "caption": ""
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Willorque possède la mécanique « Light count », un pourcentage de 0 à 100% selon le nombre de poissons lanterne allumés (chacun valant 10%)."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "110-light-count-willorque.png",
+              "caption": ""
+            },
+            {
+              "type": "text",
+              "content": "Plus ce taux est élevé, plus la map est éclairée, et plus le taux est bas, plus les effets de ses sorts sont puissants. À 100% de Light count, il perd 20% de résistance pour 1 tour."
+            }
+          ]
+        },
+        {
+          "type": "image",
+          "filename": "111-malus-resistance-light-count-100.png",
+          "caption": "Malus de résistance à 100% de Light count"
+        },
+        {
+          "type": "text",
+          "content": "À 43 400PV, un seuil déclenche l'effet « Random Fish » qui éteint tous les poissons lanterne, ramenant le Light count à 0%."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "112-seuil-43400-pv-willorque.png",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "113-effet-random-fish.png",
+              "caption": ""
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Quand le Light Count est à 0%, ses sorts Sombre Chant (jusqu'à environ 1 400 dégâts feu) et C'est assez (jusqu'à 10PM et invisibilité) deviennent nettement plus puissants."
+        },
+        {
+          "type": "text",
+          "content": "L'option d'affichage « Passer les entités au premier plan » peut aider à mieux voir en cas de faible luminosité."
+        },
+        {
+          "type": "image",
+          "filename": "114-option-entites-premier-plan.jpg",
+          "caption": "Cheatcode pour mieux voir même si la luminosité est trop basse : Passer les entités au premier plan"
+        },
+        {
+          "type": "text",
+          "content": "L'effet Switch change l'état du poisson lanterne le plus proche de la cible (et de ceux alignés avec lui) lors des sorts C'est assez et Écholok : un poisson qui s'allume soigne Willorque de 20% de ses PV max s'il est à 3PO ou moins, tandis qu'un poisson qui s'éteint inflige des dégâts neutres égaux à 20% des PV actuels aux personnages à 3PO ou moins."
+        },
+        {
+          "type": "image",
+          "filename": "115-willorque-invisible.png",
+          "caption": "Willorque rendu invisible par C'est assez"
+        },
+        {
+          "type": "text",
+          "content": "Stratégie : avoir un Pandawa dans l'équipe est fortement conseillé. L'astuce principale consiste à ignorer totalement la mécanique du Light count et des poissons lanterne."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "116-blocage-willorque-pandawa.jpg",
+              "caption": ""
+            },
+            {
+              "type": "text",
+              "content": "Il faut placer Willorque dans un coin de la map (sans poisson lanterne à 3PO ou moins) avec 2 personnages en mêlée pour le bloquer."
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Des résistances feu sur les personnages au contact sont utiles mais pas indispensables avec un peu de soin. Sans Pandawa, on peut l'entourer avec 4 personnages, au prix d'un placement moins maîtrisé. Une fois vaincu, un personnage obtient 1 Noirceur de Willorque (10 000 points de score) et tous les combattants dropent automatiquement un Sel des profondeurs. Il ne reste plus qu'à remonter à l'avant-poste pour déposer les trésors et affronter le Gigalodon."
+        }
+      ]
+    },
+    {
+      "title": "Le Gigalodon (combat final)",
+      "orderNumber": 12,
+      "blocks": [
+        {
+          "type": "text",
+          "content": "Le combat contre le Gigalodon peut être lancé à n'importe quel moment du raid, mais il est fortement déconseillé de le faire trop tôt car il met fin au raid une fois terminé. Il n'est pas obligatoire de descendre tous les étages avant de l'affronter, mais cela permet d'augmenter le score grâce aux ressources collectées en chemin. Le temps limite d'une heure du raid englobe tous les objectifs (drop, descente, remplissage du coffre et lancement du combat) : il faut impérativement lancer le combat avant la fin du chrono, mais une fois lancé, il peut être terminé sans limite de temps même après l'heure écoulée. Si le temps presse, il vaut mieux retourner à l'avant-poste, déposer toutes les ressources au coffre pour sécuriser les points, puis lancer le combat. Le score final du raid additionne les points du coffre et les points bonus liés aux dégâts infligés au Gigalodon."
+        },
+        {
+          "type": "text",
+          "content": "Pour lancer le combat, il faut parler au Coffre du raid via « S'approcher du coffre malgré l'ombre qui rôde » puis « Prendre le coffre et s'échapper »."
+        },
+        {
+          "type": "image",
+          "filename": "117-lancer-combat-gigalodon.jpg",
+          "caption": "Lancer le combat via le coffre du raid"
+        },
+        {
+          "type": "text",
+          "content": "Comme les autres boss, il peut être affronté jusqu'à 12 personnages."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "118-boss-gigalodon.jpg",
+              "caption": ""
+            },
+            {
+              "type": "image",
+              "filename": "119-boss-gigalodon-sorts.png",
+              "caption": "Sorts Gigarâle et Maxquale du Gigalodon"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Le Gigalodon possède deux sorts simples : Gigarâle (700 dégâts terre à tous les personnages à 2PO ou moins d'un autre personnage ou d'une invocation, avec propagation en chaîne autour de chaque cible touchée, 1 fois par tour) et Maxquale (500 dégâts air à portée infinie sans ligne de vue, jusqu'à 5 fois par tour, 1 fois par cible). Il dispose aussi d'Ultrasplash (700 dégâts eau en zones cônes de chaque côté de lui, 1 fois par tour) et de Tournageoire (700 dégâts terre et repousse de 7 cases en zone cercle de taille 6, 1 fois par tour)."
+        },
+        {
+          "type": "text",
+          "content": "Le combat est très simple à remporter : le véritable enjeu est d'infliger le maximum de dégâts pour maximiser le score. Les joueurs disposent de 3 tours pour cela (une machine sur la map indique les tours restants ; au dernier tour, la map s'assombrit)."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "120-gigamachine-3-tours.jpg",
+              "caption": "3 tours restants"
+            },
+            {
+              "type": "image",
+              "filename": "121-gigamachine-1-tour.jpg",
+              "caption": "1 tour restant"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Au début du tour 4, le combat se termine automatiquement par la victoire des joueurs via l'effet « Gigalodoom », quel que soit le nombre de dégâts infligés."
+        },
+        {
+          "type": "image",
+          "filename": "122-effet-gigalodoom.png",
+          "caption": "Effet Gigalodoom déclenchant la victoire automatique"
+        },
+        {
+          "type": "text",
+          "content": "Il n'est pas possible de relancer le combat en cas de défaite ou de victoire : le raid se termine dans tous les cas. La phase de préparation dure 3 minutes. Le nombre de dégâts infligés est affiché sous forme de score en haut de l'écran."
+        },
+        {
+          "type": "image",
+          "filename": "123-score-degats-gigalodon.png",
+          "caption": "Affichage du score de dégâts infligés"
+        },
+        {
+          "type": "text",
+          "content": "Attention, ce score affiché n'est pas directement le bonus de score gagné sur le raid, mais uniquement le nombre de dégâts infligés : il faut le convertir via le barème de la section « Dégâts et score »."
+        },
+        {
+          "type": "text",
+          "content": "Les raids de guilde introduisent une mécanique de monstres jouant deux fois par tour : une première fois en début de tour, une seconde fois au milieu du tour, après que la moitié des combattants ont joué. Le Gigalodon est le seul monstre du raid concerné par cette mécanique."
+        },
+        {
+          "type": "image",
+          "filename": "124-gigalodon-double-tour.jpg",
+          "caption": "Le Gigalodon joue deux fois son tour dans le même tour"
+        },
+        {
+          "type": "text",
+          "content": "Il possède une hitbox de plusieurs cases (comme Gargandyas), visible sous forme de glyphe rouge : taper n'importe quelle case de cette zone infligera des dégâts à la cible."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "125-glyphe-hitbox-gigalodon.jpg",
+              "caption": ""
+            },
+            {
+              "type": "text",
+              "content": "Les sorts de zone n'infligent les dégâts qu'une seule fois, et le Gigalodon ne peut pas être déplacé."
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Effet « Les dents de l'amer » : trois cases situées devant lui (les seules accessibles en mêlée, le reste étant de l'eau) permettent de le frapper en mêlée."
+        },
+        {
+          "type": "image",
+          "filename": "126-effet-dents-de-lamer.png",
+          "caption": "Effet « Les dents de l'amer »"
+        },
+        {
+          "type": "text",
+          "content": "Si un personnage reste au contact au début de son tour, le Gigalodon l'attrape dans sa bouche jusqu'au tour suivant (le personnage passe alors automatiquement son tour) et pose un glyphe noir sur la case libérée. Si un autre personnage se place sur ce glyphe avant le prochain tour du Gigalodon, celui qui était dans sa bouche est OS, et le nouveau personnage est attrapé à sa place. Si personne ne s'y place, le Gigalodon recrache le personnage sur le glyphe en lui infligeant des dégâts terre égaux à 80% de ses PV actuels, et le personnage recraché entre dans l'état « Recraché » pendant 1 tour (protection temporaire contre une nouvelle capture)."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "127-zone-attrapage-gigalodon.jpg",
+              "caption": "En blanc, la zone dans laquelle le Gigalodon peut vous attraper"
+            },
+            {
+              "type": "image",
+              "filename": "128-personnage-gueule-gigalodon.jpg",
+              "caption": "Un personnage dans la gueule du Gigalodon et le glyphe noir"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Le sort Tournageoire inflige 700 dégâts terre et repousse les cibles en zone de 7 cases, utilisable 1 fois par tour, en combo possible avec Gigarâle."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "129-sort-tournageoire.jpg",
+              "caption": ""
+            },
+            {
+              "type": "text",
+              "content": "Les cases en rouge représentent la zone où le Gigalodon inflige des dégâts terre et repousse les cibles ; les cases en orange infligent seulement des dégâts terre sans repousser. Pour éviter ce sort, il est préférable de rester loin des bords du point d'eau."
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Le sort Ultrasplash inflige 700 dégâts eau dans des zones cônes de chaque côté du Gigalodon, lançable 1 fois par tour."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "130-sort-ultrasplash.jpg",
+              "caption": ""
+            },
+            {
+              "type": "text",
+              "content": "Pour éviter ses dégâts, il faut se placer en diagonale avec le Gigalodon ; les zones en rouge représentent la zone d'effet du sort."
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Le sort Gigarâle inflige environ 700 dégâts terre aux personnages à 2PO ou moins d'un autre personnage ou d'une invocation alliée, avec propagation autour de chaque cible touchée (un personnage à 2PO ou moins de 3 autres subira 4 fois les dégâts). Lançable 1 fois par tour."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "131-sort-gigarale-exemple-zones.jpg",
+              "caption": "Zones autour du Iop et du Sadida représentées en bleu et vert"
+            },
+            {
+              "type": "image",
+              "filename": "132-sort-gigarale-exemple-degats.png",
+              "caption": ""
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Conseils de placement : se mettre en diagonale du Gigalodon pour éviter Ultrasplash (dégâts tankables, surtout avec de la résistance eau) ; ne jamais rester à 2PO ou moins d'un allié ou d'une invocation pour éviter de cumuler les dégâts de Gigarâle (3 cases de distance suffisent à les annuler) ; ne jamais se placer sur les 3 cases en mêlée pour éviter d'être mangé ; et éviter le bord du bassin pour ne pas subir Tournageoire (qui peut créer des regroupements dangereux avec Gigarâle)."
+        },
+        {
+          "type": "text",
+          "content": "Pour maximiser les dégâts et donc le score, il est conseillé d'emmener des classes capables d'augmenter les dégâts subis par la cible (Iop avec Massacre, Pandawa avec Brassage, Huppermage avec Volcan et combinaison terre/feu, Sram avec Marque Mortuaire et Coupe Gorge, Zobal avec Transfiguration, Ouginak avec Gibier et Acharnement, entre autres), de privilégier les dégâts monocible (les sorts de zone sont peu utiles ici), d'utiliser un Eliotrope pour la redirection via portails, d'équiper un stuff orienté dégâts comme le Dofus Nébuleux (rentable dès le tour 1 et le tour 3), l'item légendaire Jugement de Thanathena (+4% de dégâts subis par le Gigalodon), ainsi que les trophées Arcaniste et Impétueux."
+        },
+        {
+          "type": "text",
+          "content": "Le score obtenu dépend des dégâts totaux infligés au Gigalodon, calculé au début du tour 4 : 10 000 dégâts rapportent 1 000 points, 20 000 dégâts 2 000 points, 40 000 dégâts 3 000 points, 70 000 dégâts 4 000 points, 100 000 dégâts 5 000 points, 130 000 dégâts 6 000 points, 160 000 dégâts 7 000 points, 200 000 dégâts 8 000 points, 250 000 dégâts 9 000 points, 300 000 dégâts 10 000 points, 400 000 dégâts 11 000 points, 500 000 dégâts 12 000 points, 600 000 dégâts 13 000 points, 800 000 dégâts 14 000 points, et 1 000 000 dégâts 15 000 points."
+        }
+      ]
+    },
+    {
+      "title": "Récompenses du Raid",
+      "orderNumber": 13,
+      "blocks": [
+        {
+          "type": "text",
+          "content": "Comme pour tous les raids, les récompenses dépendent du meilleur score obtenu au cours de la semaine, débloquant des paliers affichés sur une frise. Les scores sont réinitialisés chaque semaine, il faut donc récupérer ses récompenses avant la fin de la période. Un seul type de frise de raid peut être validé par semaine (par exemple, choisir entre les Jardins éternels et le Gigalodon si les deux sont réalisés la même semaine). Si le score est amélioré plus tard dans la semaine, seules les récompenses correspondant au meilleur score sont prises en compte, avec un complément si des récompenses à score plus faible avaient déjà été réclamées. Refaire le même raid plusieurs fois dans la semaine débloque toujours la même frise (le meilleur score cumulé compte, pas un score additionné par run)."
+        },
+        {
+          "type": "text",
+          "content": "Les 10 paliers de récompenses sont aux scores de 1 000, 2 000, 5 000, 8 000, 13 000, 19 000, 27 000, 36 000, 45 000 et 60 000 points."
+        },
+        {
+          "type": "image",
+          "filename": "133-frise-recompenses.jpg",
+          "caption": "Frise des paliers de récompenses du raid"
+        },
+        {
+          "type": "text",
+          "content": "Tous les paliers donnent des guildatons et de l'XP ; du palier 1 à 5, un Coffre du Gouffre est offert, du palier 6 à 10 un Coffre majestueux du Gouffre."
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "134-coffre-du-gouffre.png",
+              "caption": ""
+            },
+            {
+              "type": "text",
+              "content": "Le Coffre du Gouffre contient : 69% Lueur abyssale (ressource), 10% Aileron de Willorque (ressource), 10% Carapace d'Exécrabe (ressource), 10% Venin de Mureine (ressource), 1% Minilodon (familier d'apparat)."
+            }
+          ]
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "135-coffre-majestueux-du-gouffre.png",
+              "caption": ""
+            },
+            {
+              "type": "text",
+              "content": "Le Coffre majestueux du Gouffre contient : 32,5% Aileron de Willorque, 32,5% Carapace d'Exécrabe, 32,5% Venin de Mureine, 1% Minilodon, 0,5% Dorsale de Willorque (cape), 0,5% Lancepince d'Exécrabe (lance), 0,5% Visage de Mureine (chapeau)."
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Dans les coffres, on peut donc à faible taux obtenir directement des pièces de la Panoplie du Gouffre."
+        },
+        {
+          "type": "image",
+          "filename": "136-panoplie-du-gouffre.png",
+          "caption": "Panoplie du Gouffre obtenable via les coffres"
+        },
+        {
+          "type": "columns",
+          "items": [
+            {
+              "type": "image",
+              "filename": "137-familier-minilodon.png",
+              "caption": ""
+            },
+            {
+              "type": "text",
+              "content": "Chaque coffre offre également 1% de chance d'obtenir le Minilodon, un familier d'apparat."
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Réussir un raid rapporte également des points d'activité de guilde, environ 2 000 points par raid d'après les observations."
+        },
+        {
+          "type": "image",
+          "filename": "138-recompenses-points-activite-guilde.png",
+          "caption": "Points d'activité de guilde obtenus"
+        },
+        {
+          "type": "image",
+          "filename": "139-ornements-ladder-guilde.png",
+          "caption": "Ornements de classement hebdomadaire de guilde"
+        },
+        {
+          "type": "text",
+          "content": "La position de la guilde dans un classement hebdomadaire (réinitialisé le mardi à 6h) donne des récompenses supplémentaires aux participants (pas à toute la guilde) : le Top 1 reçoit l'Ornement Or « Gouffre du Gigalodon », le titre « Terreur des Profondeurs », 25 Reconnaissances de guilde et 20 d'XP de guilde ; le Top 2 l'Ornement Argent, 20 Reconnaissances et 15 d'XP ; le Top 3 l'Ornement Bronze, 15 Reconnaissances et 10 d'XP ; le Top 4 à 10 donne 10 Reconnaissances et 7 d'XP ; le Top 11 à 50 donne 5 Reconnaissances et 5 d'XP ; le Top 50% donne 3 Reconnaissances et 3 d'XP ; et simplement apparaître dans le classement (Top 100%) donne 1 Reconnaissance et 1 d'XP. L'XP de guilde n'est attribuée qu'une seule fois pour toute la guilde, pas par participant."
+        }
+      ]
+    }
+  ]
+}

@@ -60,7 +60,8 @@
         {% set route = app.request.attributes.get('_route', '') %}
 
         {# ── Navbar ── #}
-        <nav class="sticky top-0 z-40 bg-gray-900/90 backdrop-blur-md border-b border-white/5">
+        {% set _unread = app.user ? notification_unread_count() : 0 %}
+        <nav class="sticky top-0 z-40 bg-gray-900/90 backdrop-blur-md border-b border-white/5" data-controller="navbar">
             <div class="max-w-6xl mx-auto px-6 h-16 flex items-center gap-6">
 
                 {# Logo #}
@@ -69,27 +70,15 @@
                     <span class="font-bold text-white text-lg tracking-tight">Zeminal</span>
                 </a>
 
-                {# Liens de navigation — visibles pour tous #}
-                <div class="flex items-center gap-1">
+                {# Liens de navigation — desktop #}
+                <div class="hidden lg:flex items-center gap-1">
                     {% if app.user %}
-                        {% if route == 'app_home' %}
-                            <a href="{{ path('app_home') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition text-white bg-gray-800">Dashboard</a>
-                        {% else %}
-                            <a href="{{ path('app_home') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition text-gray-400 hover:text-white hover:bg-gray-800/60">Dashboard</a>
-                        {% endif %}
-                        {% if route starts with 'app_character' %}
-                            <a href="{{ path('app_character_index') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition text-white bg-gray-800">Personnages</a>
-                        {% else %}
-                            <a href="{{ path('app_character_index') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition text-gray-400 hover:text-white hover:bg-gray-800/60">Personnages</a>
-                        {% endif %}
+                        <a href="{{ path('app_home') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition {{ route == 'app_home' ? 'text-white bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800/60' }}">Dashboard</a>
                     {% endif %}
-                    {% if route starts with 'app_guild' %}
-                        <a href="{{ path('app_guild_index') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition text-white bg-gray-800">Guildes</a>
-                    {% else %}
-                        <a href="{{ path('app_guild_index') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition text-gray-400 hover:text-white hover:bg-gray-800/60">Guildes</a>
-                    {% endif %}
+                    <a href="{{ path('app_guild_index') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition {{ route starts with 'app_guild' ? 'text-white bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800/60' }}">Guildes</a>
+                    <a href="{{ path('app_raid_guide_index') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition {{ route starts with 'app_raid_template_guide' or route == 'app_raid_guide_index' ? 'text-white bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800/60' }}">Guides</a>
                     <span class="relative inline-flex shrink-0">
-                        {% if route starts with 'app_raid' %}
+                        {% if route starts with 'app_raid' and route != 'app_raid_template_guide' and route != 'app_raid_guide_index' %}
                             <a href="{{ path('app_raid_index') }}" class="inline-flex items-center px-3 py-2 rounded-lg text-sm font-semibold transition border border-yellow-400 text-yellow-300">Trouver un raid</a>
                         {% else %}
                             <a href="{{ path('app_raid_index') }}" class="inline-flex items-center px-3 py-2 rounded-lg text-sm font-semibold transition border border-yellow-500/80 text-yellow-400 hover:border-yellow-400 hover:text-yellow-300 hover:bg-yellow-400/10 nav-cta-pulse">Trouver un raid</a>
@@ -98,64 +87,115 @@
                     </span>
                 </div>
 
-                {% if app.user %}
+                {# Zone compte — desktop #}
+                <div class="hidden lg:flex items-center gap-2 ml-auto">
+                    {% if app.user %}
+                        <div class="relative">
+                            <button type="button" data-navbar-target="accountButton" data-action="click->navbar#toggleAccount"
+                                    aria-haspopup="true" aria-expanded="false"
+                                    class="flex items-center gap-2 bg-gray-800/60 border border-gray-700/50 hover:border-gray-600 rounded-xl pl-1.5 pr-2.5 py-1.5 transition cursor-pointer">
+                                <span class="relative">
+                                    <span class="w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
+                                        {{ app.user.username|slice(0,1)|upper|default('?') }}
+                                    </span>
+                                    {% if _unread > 0 %}
+                                        <span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-indigo-500 ring-2 ring-gray-800"></span>
+                                    {% endif %}
+                                </span>
+                                <span class="text-sm text-gray-200 font-medium">{{ app.user.username }}</span>
+                                <svg data-navbar-target="accountChevron" xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-gray-500 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                </svg>
+                            </button>
 
-                    {# Lien admin #}
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <a href="{{ path('admin_dashboard') }}"
-                           class="px-3 py-2 rounded-lg text-sm font-medium transition text-yellow-400 hover:text-yellow-300 hover:bg-yellow-900/20 border border-yellow-800/30">
-                            ⚙ Admin
-                        </a>
-                    {% endif %}
-
-                    {# Cloche notifications #}
-                    {% set _unread = notification_unread_count() %}
-                    <a href="{{ path('app_notifications') }}"
-                       title="Notifications"
-                       data-controller="notification-poll"
-                       data-notification-poll-url-value="{{ path('api_notifications_unread') }}"
-                       class="relative flex items-center justify-center w-9 h-9 rounded-lg transition ml-auto {{ _unread > 0 ? 'text-indigo-300 hover:text-indigo-200 hover:bg-indigo-900/20 bell-active' : 'text-gray-400 hover:text-white hover:bg-gray-800/60' }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-2.83-2h5.66A3 3 0 0110 18z"/>
-                        </svg>
-                        <span data-notification-poll-target="badge"
-                              class="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-indigo-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-0.5 leading-none ring-2 ring-gray-900 {{ _unread == 0 ? 'hidden' : '' }}">
-                            {{ _unread > 9 ? '9+' : _unread }}
-                        </span>
-                    </a>
-
-                    {# Profil + déconnexion #}
-                    <div class="flex items-center gap-2">
-                        <div class="flex items-center gap-2.5 bg-gray-800/60 border border-gray-700/50 rounded-xl px-3 py-1.5">
-                            <div class="w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
-                                {{ app.user.username|slice(0,1)|upper|default('?') }}
+                            <div data-navbar-target="accountPanel"
+                                 class="hidden absolute right-0 mt-2 w-56 bg-gray-800 border border-gray-700 rounded-xl shadow-2xl overflow-hidden py-1 z-50">
+                                <a href="{{ path('app_character_index') }}"
+                                   class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-700/60 hover:text-white transition">
+                                    Personnages
+                                </a>
+                                <a href="{{ path('app_notifications') }}"
+                                   data-controller="notification-poll"
+                                   data-notification-poll-url-value="{{ path('api_notifications_unread') }}"
+                                   class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-700/60 hover:text-white transition">
+                                    Notifications
+                                    <span data-notification-poll-target="badge"
+                                          class="min-w-[18px] h-[18px] bg-indigo-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-0.5 leading-none {{ _unread == 0 ? 'hidden' : '' }}">
+                                        {{ _unread > 9 ? '9+' : _unread }}
+                                    </span>
+                                </a>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <a href="{{ path('admin_dashboard') }}"
+                                       class="block px-4 py-2.5 text-sm text-yellow-400 hover:bg-yellow-900/20 transition">
+                                        ⚙ Administration
+                                    </a>
+                                {% endif %}
+                                <div class="border-t border-gray-700 my-1"></div>
+                                <a href="{{ path('app_logout') }}"
+                                   class="block px-4 py-2.5 text-sm text-gray-400 hover:bg-gray-700/60 hover:text-white transition">
+                                    Déconnexion
+                                </a>
                             </div>
-                            <span class="text-sm text-gray-200 font-medium">{{ app.user.username }}</span>
                         </div>
-                        <a href="{{ path('app_logout') }}"
-                           title="Déconnexion"
-                           class="flex items-center gap-1.5 text-sm text-gray-500 hover:text-white transition px-2.5 py-2 rounded-lg hover:bg-gray-800/60">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h8a1 1 0 110 2H5v12h7a1 1 0 110 2H4a1 1 0 01-1-1V3zm10.293 4.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L14.586 11H7a1 1 0 110-2h7.586l-1.293-1.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                            </svg>
-                            <span class="hidden sm:inline text-sm">Déconnexion</span>
-                        </a>
-                    </div>
+                    {% else %}
+                        <a href="{{ path('app_login') }}" class="text-sm text-gray-400 hover:text-white transition px-3 py-2 rounded-lg hover:bg-gray-800/60">Connexion</a>
+                        <a href="{{ path('app_register') }}" class="text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg transition">Inscription</a>
+                    {% endif %}
+                </div>
 
-                {% else %}
+                {# Bouton menu — mobile #}
+                <button type="button" data-navbar-target="button" data-action="click->navbar#toggle"
+                        aria-label="Ouvrir le menu" aria-expanded="false"
+                        class="lg:hidden ml-auto relative flex items-center justify-center w-9 h-9 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800/60 transition">
+                    {% if _unread > 0 %}
+                        <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-indigo-500 ring-2 ring-gray-900"></span>
+                    {% endif %}
+                    <svg data-navbar-target="openIcon" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                    <svg data-navbar-target="closeIcon" xmlns="http://www.w3.org/2000/svg" class="hidden w-6 h-6" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.293 5.293a1 1 0 011.414 0L10 8.586l3.293-3.293a1 1 0 111.414 1.414L11.414 10l3.293 3.293a1 1 0 01-1.414 1.414L10 11.414l-3.293 3.293a1 1 0 01-1.414-1.414L8.586 10 5.293 6.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                </button>
+            </div>
 
-                    <div class="flex items-center gap-2 ml-auto">
-                        <a href="{{ path('app_login') }}"
-                           class="text-sm text-gray-400 hover:text-white transition px-3 py-2 rounded-lg hover:bg-gray-800/60">
-                            Connexion
-                        </a>
-                        <a href="{{ path('app_register') }}"
-                           class="text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg transition">
-                            Inscription
-                        </a>
-                    </div>
+            {# Menu déroulant — mobile #}
+            <div data-navbar-target="panel" class="hidden lg:hidden border-t border-white/5 bg-gray-900/95">
+                <div class="max-w-6xl mx-auto px-6 py-3 flex flex-col gap-1">
+                    {% if app.user %}
+                        <a href="{{ path('app_home') }}" data-action="click->navbar#close" class="px-3 py-2.5 rounded-lg text-sm font-medium transition {{ route == 'app_home' ? 'text-white bg-gray-800' : 'text-gray-300 hover:text-white hover:bg-gray-800/60' }}">Dashboard</a>
+                        <a href="{{ path('app_character_index') }}" data-action="click->navbar#close" class="px-3 py-2.5 rounded-lg text-sm font-medium transition {{ route starts with 'app_character' ? 'text-white bg-gray-800' : 'text-gray-300 hover:text-white hover:bg-gray-800/60' }}">Personnages</a>
+                    {% endif %}
+                    <a href="{{ path('app_guild_index') }}" data-action="click->navbar#close" class="px-3 py-2.5 rounded-lg text-sm font-medium transition {{ route starts with 'app_guild' ? 'text-white bg-gray-800' : 'text-gray-300 hover:text-white hover:bg-gray-800/60' }}">Guildes</a>
+                    <a href="{{ path('app_raid_guide_index') }}" data-action="click->navbar#close" class="px-3 py-2.5 rounded-lg text-sm font-medium transition {{ route starts with 'app_raid_template_guide' or route == 'app_raid_guide_index' ? 'text-white bg-gray-800' : 'text-gray-300 hover:text-white hover:bg-gray-800/60' }}">Guides</a>
+                    <a href="{{ path('app_raid_index') }}" data-action="click->navbar#close" class="px-3 py-2.5 rounded-lg text-sm font-semibold transition text-yellow-400 hover:text-yellow-300 hover:bg-yellow-400/10">⚔ Trouver un raid</a>
 
-                {% endif %}
+                    <div class="border-t border-gray-800 my-2"></div>
+
+                    {% if app.user %}
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('admin_dashboard') }}" data-action="click->navbar#close" class="px-3 py-2.5 rounded-lg text-sm font-medium transition text-yellow-400 hover:bg-yellow-900/20">⚙ Admin</a>
+                        {% endif %}
+                        <a href="{{ path('app_notifications') }}" data-action="click->navbar#close" class="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition text-gray-300 hover:text-white hover:bg-gray-800/60">
+                            Notifications
+                            {% if _unread > 0 %}
+                                <span class="min-w-[18px] h-[18px] bg-indigo-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-0.5 leading-none">{{ _unread > 9 ? '9+' : _unread }}</span>
+                            {% endif %}
+                        </a>
+                        <div class="flex items-center justify-between px-3 py-2.5">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
+                                    {{ app.user.username|slice(0,1)|upper|default('?') }}
+                                </div>
+                                <span class="text-sm text-gray-200 font-medium">{{ app.user.username }}</span>
+                            </div>
+                            <a href="{{ path('app_logout') }}" class="text-sm text-gray-500 hover:text-white transition">Déconnexion</a>
+                        </div>
+                    {% else %}
+                        <a href="{{ path('app_login') }}" data-action="click->navbar#close" class="px-3 py-2.5 rounded-lg text-sm font-medium transition text-gray-300 hover:text-white hover:bg-gray-800/60">Connexion</a>
+                        <a href="{{ path('app_register') }}" data-action="click->navbar#close" class="px-3 py-2.5 rounded-lg text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white text-center">Inscription</a>
+                    {% endif %}
+                </div>
             </div>
         </nav>
 

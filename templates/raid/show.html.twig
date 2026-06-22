@@ -142,9 +142,27 @@
         </div>
     </div>
 
+    {# ── Guide du raid (mis en avant) ── #}
+    {% if has_raid_guide(raid.raidTemplate.name) %}
+        <a href="{{ path('app_raid_template_guide', {id: raid.raidTemplate.id}) }}"
+           class="group relative flex items-center gap-5 overflow-hidden rounded-2xl border border-indigo-700/40 bg-gradient-to-r from-indigo-950/80 via-indigo-950/30 to-gray-900 px-6 py-5 mb-6 transition hover:border-indigo-500/60"
+           data-reveal data-reveal-delay="1">
+            <div class="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-indigo-600/10 blur-3xl pointer-events-none"></div>
+            <div class="relative w-12 h-12 rounded-xl bg-indigo-600/20 border border-indigo-600/30 flex items-center justify-center text-2xl shrink-0">📖</div>
+            <div class="relative flex-1 min-w-0">
+                <div class="font-semibold text-white group-hover:text-indigo-300 transition">Guide complet du raid disponible</div>
+                <div class="text-sm text-gray-400 mt-0.5">Mécaniques, étages, boss et stratégies pour {{ raid.raidTemplate.name }} — tout y est détaillé.</div>
+            </div>
+            <span class="relative inline-flex items-center gap-1.5 text-sm font-semibold text-indigo-300 group-hover:text-indigo-200 shrink-0">
+                Consulter le guide
+                <span class="group-hover:translate-x-1 transition-transform">→</span>
+            </span>
+        </a>
+    {% endif %}
+
     {# ── Énigmes (pleine largeur) ── #}
     {% if raid.enigmes is not empty %}
-        <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden mb-6" data-reveal data-reveal-delay="1">
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden mb-6" data-reveal data-reveal-delay="2">
             <div class="px-6 py-4 border-b border-gray-800 flex items-center justify-between">
                 <h2 class="font-semibold text-white">Énigmes</h2>
             </div>
@@ -181,7 +199,7 @@
     {% endif %}
 
     {# ── Grid : contenu principal (50%) + sidebar commentaires (50%) ── #}
-    <div class="grid gap-6 lg:grid-cols-2 items-start" data-reveal data-reveal-delay="2">
+    <div class="grid gap-6 lg:grid-cols-2 items-start" data-reveal data-reveal-delay="3">
 
         {# ── Colonne gauche ── #}
         <div class="space-y-6">

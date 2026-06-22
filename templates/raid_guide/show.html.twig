@@ -1,0 +1,164 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Guide – {{ raidTemplate.name }} – Zeminal{% endblock %}
+{% block meta_description %}Guide complet du raid de guilde {{ raidTemplate.name }} : mécaniques, étages, boss et récompenses.{% endblock %}
+
+{% macro guide_image(image, imageBasePath) %}
+    <figure class="text-center">
+        <img src="{{ asset(imageBasePath ~ image.filename) }}"
+             alt="{{ image.caption }}"
+             loading="lazy"
+             class="max-w-full max-h-[28rem] mx-auto rounded-lg border border-gray-800 bg-gray-950 cursor-zoom-in"
+             onclick="document.getElementById('lightbox-img').src=this.src;document.getElementById('lightbox-img').alt=this.alt;document.getElementById('lightbox').style.display='flex'">
+        {% if image.caption %}
+            <figcaption class="text-xs text-gray-500 mt-2">{{ image.caption }}</figcaption>
+        {% endif %}
+    </figure>
+{% endmacro %}
+
+{% block body %}
+{# ── Lightbox plein écran ── #}
+<div id="lightbox"
+     onclick="this.style.display='none'"
+     style="display:none"
+     class="fixed inset-0 z-50 bg-black/95 flex items-center justify-center cursor-zoom-out">
+    <button onclick="event.stopPropagation(); document.getElementById('lightbox').style.display='none'"
+            class="absolute top-4 right-4 text-white/60 hover:text-white text-3xl leading-none z-10"
+            aria-label="Fermer">✕</button>
+    <img id="lightbox-img" src="" alt=""
+         class="max-w-full max-h-full object-contain select-none"
+         style="max-width:100vw;max-height:100vh">
+</div>
+<script>
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') document.getElementById('lightbox').style.display = 'none';
+});
+</script>
+
+<div class="max-w-6xl mx-auto px-6 py-10">
+
+    <a href="{{ path('app_raid_index') }}"
+       class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-300 transition mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
+        </svg>
+        Tous les raids
+    </a>
+
+    <div class="flex items-center gap-4 mb-8">
+        {% if raidTemplate.imagePath %}
+            <img src="{{ asset('uploads/raid-templates/' ~ raidTemplate.imagePath) }}"
+                 alt="{{ raidTemplate.name }}"
+                 class="w-16 h-16 rounded-2xl object-cover border border-indigo-800/40 shrink-0">
+        {% else %}
+            <div class="w-16 h-16 rounded-2xl bg-indigo-900/40 border border-indigo-800/30 flex items-center justify-center text-3xl shrink-0">⚔</div>
+        {% endif %}
+        <div>
+            <p class="text-xs uppercase tracking-wide text-indigo-400 font-semibold">Guide de raid</p>
+            <h1 class="text-3xl font-bold text-white tracking-tight">{{ raidTemplate.name }}</h1>
+        </div>
+    </div>
+
+    <div data-controller="raid-guide" class="lg:grid lg:grid-cols-[260px_1fr] lg:gap-8 lg:items-start">
+
+        {# ── Sommaire (desktop, sticky) ── #}
+        <aside class="hidden lg:block">
+            <nav class="sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto bg-gray-900 border border-gray-800 rounded-2xl p-3">
+                <p class="text-xs uppercase tracking-wide text-gray-500 font-semibold px-3 pt-1 pb-2">Sommaire</p>
+                <ul class="space-y-0.5">
+                    {% for section in guide.sections %}
+                        <li>
+                            <a href="#section-{{ loop.index }}"
+                               data-raid-guide-target="tocLink"
+                               data-action="click->raid-guide#jumpTo"
+                               class="block px-3 py-2 rounded-lg text-sm transition truncate text-gray-400 hover:text-white hover:bg-gray-800/60 border-l-2 border-transparent">
+                                <span class="text-indigo-500/70 mr-1">{{ loop.index }}.</span>{{ section.title }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <div class="border-t border-gray-800 mt-2 pt-2 flex gap-2">
+                    <button type="button" data-action="raid-guide#expandAll"
+                            class="flex-1 text-xs text-gray-400 hover:text-white border border-gray-800 hover:border-gray-700 rounded-lg py-1.5 transition cursor-pointer">
+                        Tout déplier
+                    </button>
+                    <button type="button" data-action="raid-guide#collapseAll"
+                            class="flex-1 text-xs text-gray-400 hover:text-white border border-gray-800 hover:border-gray-700 rounded-lg py-1.5 transition cursor-pointer">
+                        Tout replier
+                    </button>
+                </div>
+            </nav>
+        </aside>
+
+        {# ── Sommaire (mobile, dépliant) ── #}
+        <details class="lg:hidden mb-6 bg-gray-900 border border-gray-800 rounded-2xl group" data-raid-guide-target="mobileToc">
+            <summary class="list-none cursor-pointer px-5 py-3.5 flex items-center justify-between gap-3 select-none">
+                <span class="text-sm font-semibold text-white">📑 Sommaire</span>
+                <span class="text-gray-500 group-open:rotate-180 transition-transform shrink-0">▾</span>
+            </summary>
+            <ul class="px-3 pb-3 space-y-0.5">
+                {% for section in guide.sections %}
+                    <li>
+                        <a href="#section-{{ loop.index }}"
+                           data-action="click->raid-guide#jumpTo"
+                           class="block px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-gray-800/60 transition">
+                            <span class="text-indigo-500/70 mr-1">{{ loop.index }}.</span>{{ section.title }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </details>
+
+        {# ── Contenu ── #}
+        <div class="space-y-4 min-w-0">
+
+            <div class="hidden lg:flex justify-end gap-3 -mt-1">
+                <button type="button" data-action="raid-guide#expandAll" class="text-xs text-gray-500 hover:text-white transition cursor-pointer">Tout déplier</button>
+                <span class="text-gray-700">·</span>
+                <button type="button" data-action="raid-guide#collapseAll" class="text-xs text-gray-500 hover:text-white transition cursor-pointer">Tout replier</button>
+            </div>
+
+            {% for section in guide.sections %}
+                <details id="section-{{ loop.index }}"
+                         data-raid-guide-target="section"
+                         class="group scroll-mt-20 bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden"
+                         {% if loop.first %}open{% endif %}>
+                    <summary class="list-none cursor-pointer px-6 py-4 border-b border-gray-800 flex items-center justify-between gap-3 select-none hover:bg-gray-800/30 transition">
+                        <h2 class="font-semibold text-white text-lg">
+                            <span class="text-indigo-400 mr-1">{{ loop.index }}.</span> {{ section.title }}
+                        </h2>
+                        <span class="text-gray-500 group-open:rotate-180 transition-transform shrink-0">▾</span>
+                    </summary>
+                    <div class="px-6 py-5 space-y-5">
+                        {% for block in section.blocks %}
+                            {% if block.type == 'text' %}
+                                <p class="text-sm text-gray-300 leading-relaxed whitespace-pre-line">{{ block.content }}</p>
+                            {% elseif block.type == 'image' %}
+                                {{ _self.guide_image(block, imageBasePath) }}
+                            {% elseif block.type == 'columns' %}
+                                <div class="grid gap-4 {{ block.items|length >= 5 ? 'grid-cols-2 sm:grid-cols-5' : (block.items|length == 4 ? 'grid-cols-2 sm:grid-cols-4' : (block.items|length == 3 ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2')) }} items-center">
+                                    {% for item in block.items %}
+                                        <div>
+                                            {% if item.type == 'text' %}
+                                                <p class="text-sm text-gray-300 leading-relaxed whitespace-pre-line">{{ item.content }}</p>
+                                            {% elseif item.type == 'image' %}
+                                                {{ _self.guide_image(item, imageBasePath) }}
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </details>
+            {% endfor %}
+
+            <p class="text-xs text-gray-600 pt-6 text-center">
+                Guide rédigé à partir d'informations publiques sur le donjon {{ raidTemplate.name }}.
+            </p>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

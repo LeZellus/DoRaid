@@ -34,7 +34,18 @@ class AppExtension extends AbstractExtension
     {
         return [
             new TwigFunction('raid_template_og_image', $this->raidTemplateOgImage(...)),
+            new TwigFunction('has_raid_guide', $this->hasRaidGuide(...)),
         ];
+    }
+
+    /**
+     * Indique si un guide statique existe pour ce type de raid.
+     */
+    public function hasRaidGuide(string $raidTemplateName): bool
+    {
+        $slug = (new AsciiSlugger())->slug($raidTemplateName)->lower()->toString();
+
+        return is_file($this->projectDir . '/config/raid_guides/' . $slug . '.json');
     }
 
     /**

@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Guides de raid Dofus – Zeminal{% endblock %}
+{% block meta_description %}Tous les guides de raid de guilde Dofus disponibles sur Zeminal : mécaniques, étages, boss et stratégies détaillées.{% endblock %}
+
+{% block body %}
+<div class="max-w-6xl mx-auto px-6 py-12" data-controller="reveal">
+
+    <h1 class="text-3xl font-bold text-white mb-3" data-reveal>Guides de raid</h1>
+    <p class="text-gray-500 text-sm mb-8 max-w-2xl" data-reveal data-reveal-delay="1">
+        Mécaniques, étages, boss et stratégies détaillées pour chaque raid de guilde Dofus disponible sur Zeminal.
+    </p>
+
+    {% if templates is empty %}
+        <div class="bg-gray-900/60 border border-gray-800/50 rounded-2xl py-16 text-center" data-reveal data-reveal-delay="1">
+            <p class="text-gray-500 text-sm">Aucun guide n'est disponible pour le moment.</p>
+        </div>
+    {% else %}
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {% for template in templates %}
+                <a href="{{ path('app_raid_template_guide', {id: template.id}) }}"
+                   class="group flex items-center gap-4 bg-gray-900 border border-gray-800 hover:border-indigo-600/50 rounded-2xl px-5 py-4 transition"
+                   data-reveal data-reveal-delay="{{ (loop.index % 4) + 1 }}">
+                    {% if template.imagePath %}
+                        <img src="{{ asset('uploads/raid-templates/' ~ template.imagePath) }}"
+                             alt="{{ template.name }}"
+                             loading="lazy" decoding="async" width="48" height="48"
+                             class="w-12 h-12 rounded-xl object-cover border border-indigo-800/40 shrink-0">
+                    {% else %}
+                        <div class="w-12 h-12 rounded-xl bg-indigo-900/40 border border-indigo-800/30 flex items-center justify-center text-2xl shrink-0">⚔</div>
+                    {% endif %}
+                    <div class="flex-1 min-w-0">
+                        <div class="font-semibold text-white group-hover:text-indigo-300 transition truncate">{{ template.name }}</div>
+                        <div class="text-xs text-gray-500 mt-0.5">📖 Voir le guide</div>
+                    </div>
+                    <span class="text-indigo-600 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all shrink-0 text-lg font-bold">→</span>
+                </a>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}
