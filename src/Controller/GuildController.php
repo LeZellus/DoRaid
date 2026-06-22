@@ -22,7 +22,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\RateLimiter\RateLimiterFactory;
+use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -155,7 +155,7 @@ class GuildController extends AbstractController
 
     #[IsGranted('ROLE_USER')]
     #[Route('/{slug}/rejoindre', name: 'app_guild_join', methods: ['POST'])]
-    public function join(Guild $guild, Request $request, RateLimiterFactory $joinGuildLimiter): Response
+    public function join(Guild $guild, Request $request, RateLimiterFactoryInterface $joinGuildLimiter): Response
     {
         $this->requireCsrfToken('join_guild_' . $guild->getId(), $request);
 

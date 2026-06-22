@@ -22,7 +22,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\RateLimiter\RateLimiterFactory;
+use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -115,7 +115,7 @@ class RaidController extends AbstractController
         GuildRepository $guildRepo,
         CharacterRepository $charRepo,
         RaidTemplateRepository $templateRepo,
-        RateLimiterFactory $createRaidLimiter,
+        RateLimiterFactoryInterface $createRaidLimiter,
     ): Response {
         $guild = $guildRepo->find((int) $request->query->get('guild'));
 
@@ -265,7 +265,7 @@ class RaidController extends AbstractController
 
     #[IsGranted('ROLE_USER')]
     #[Route('/{id}/candidater', name: 'app_raid_apply', methods: ['POST'])]
-    public function apply(Raid $raid, Request $request, CharacterRepository $charRepo, RateLimiterFactory $applyRaidLimiter): Response
+    public function apply(Raid $raid, Request $request, CharacterRepository $charRepo, RateLimiterFactoryInterface $applyRaidLimiter): Response
     {
         $this->requireCsrfToken('apply_raid_' . $raid->getId(), $request);
 
