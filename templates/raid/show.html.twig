@@ -145,6 +145,7 @@
     {# ── Guide du raid (mis en avant) ── #}
     {% if has_raid_guide(raid.raidTemplate.name) %}
         <a href="{{ path('app_raid_template_guide', {id: raid.raidTemplate.id}) }}"
+           target="_blank" rel="noopener"
            class="group relative flex items-center gap-5 overflow-hidden rounded-2xl border border-indigo-700/40 bg-gradient-to-r from-indigo-950/80 via-indigo-950/30 to-gray-900 px-6 py-5 mb-6 transition hover:border-indigo-500/60"
            data-reveal data-reveal-delay="1">
             <div class="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-indigo-600/10 blur-3xl pointer-events-none"></div>

@@ -85,7 +85,7 @@
 
 {# ── Quick access ── #}
 <section class="max-w-5xl mx-auto px-6 pb-10" data-controller="reveal">
-    <div class="grid gap-4 sm:grid-cols-2">
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 
         <a href="{{ path('app_raid_index') }}"
            class="group relative flex items-center gap-5 bg-gray-900/70 border border-yellow-500/20 hover:border-yellow-500/50 hover:bg-yellow-500/5 rounded-2xl px-6 py-5 transition-all"
@@ -107,6 +107,17 @@
                 <div class="text-sm text-gray-500 mt-0.5">Rejoignez une guilde sur votre serveur Dofus</div>
             </div>
             <span class="text-indigo-600 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all shrink-0 text-lg font-bold">→</span>
+        </a>
+
+        <a href="{{ path('app_raid_guide_index') }}"
+           class="group relative flex items-center gap-5 bg-gray-900/70 border border-violet-500/20 hover:border-violet-500/50 hover:bg-violet-500/5 rounded-2xl px-6 py-5 transition-all"
+           data-reveal data-reveal-delay="3">
+            <div class="w-12 h-12 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-2xl shrink-0 group-hover:bg-violet-500/20 transition">📖</div>
+            <div class="flex-1 min-w-0">
+                <div class="font-semibold text-white group-hover:text-violet-300 transition">Consulter les guides</div>
+                <div class="text-sm text-gray-500 mt-0.5">Mécaniques, boss et stratégies pour chaque raid</div>
+            </div>
+            <span class="text-violet-600 group-hover:text-violet-400 group-hover:translate-x-1 transition-all shrink-0 text-lg font-bold">→</span>
         </a>
 
     </div>
