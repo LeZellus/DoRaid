@@ -75,6 +75,24 @@ def make_default_banner():
     img.save(os.path.join(OUT_DIR, "default.png"))
 
 
+def make_guides_index_banner():
+    img = base_canvas()
+    draw = ImageDraw.Draw(img)
+
+    margin = 90
+    draw_wordmark(draw, margin + 18, margin + 20)
+
+    draw.text((margin, 220), "Tous les guides de raid", font=font("segoeuib.ttf", 60), fill=WHITE)
+    draw.text((margin, 296), "Dofus", font=font("segoeuib.ttf", 60), fill=INDIGO_400)
+
+    draw.text((margin, 400), "Mécaniques, étages, boss et stratégies pour chaque raid de guilde",
+               font=font("segoeui.ttf", 28), fill=GRAY_400)
+
+    draw.text((margin, 540), "zeminal.tech/guides", font=font("segoeui.ttf", 24), fill=GRAY_500)
+
+    img.save(os.path.join(OUT_DIR, "guides-index.png"))
+
+
 def make_raid_banner(filename, name, tag, label="RAID DOFUS", label_color=YELLOW_400):
     img = base_canvas()
     draw = ImageDraw.Draw(img)
@@ -109,5 +127,7 @@ if __name__ == "__main__":
 
     make_guide_banner("guide-gouffre-du-gigalodon.png", "Gouffre du Gigalodon")
     make_guide_banner("guide-sanctuaire-des-jardins-eternels.png", "Sanctuaire des Jardins éternels")
+
+    make_guides_index_banner()
 
     print("Bannières générées dans", OUT_DIR)

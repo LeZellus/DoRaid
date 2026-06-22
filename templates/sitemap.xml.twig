@@ -19,6 +19,20 @@
         <priority>0.8</priority>
     </url>
 
+    <url>
+        <loc>{{ url('app_raid_guide_index') }}</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    {% for template in templatesWithGuide %}
+    <url>
+        <loc>{{ url('app_raid_template_guide', {id: template.id}) }}</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    {% endfor %}
+
     {% for raid in raids %}
     <url>
         <loc>{{ url('app_raid_show', {id: raid.id}) }}</loc>
