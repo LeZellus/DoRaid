@@ -90,7 +90,9 @@
                                             {{ guild.name }}
                                         </span>
                                     </div>
-                                    <div class="text-xs text-gray-500 mt-0.5">Meneur · <span class="text-gray-300">{{ guild.leaderCharacter.name }}</span></div>
+                                    {% if guild.leaderCharacter %}
+                                        <div class="text-xs text-gray-500 mt-0.5">Meneur · <span class="text-gray-300">{{ guild.leaderCharacter.name }}</span></div>
+                                    {% endif %}
                                     <span class="inline-block mt-2 text-xs font-medium bg-indigo-900/20 border border-indigo-800/30 text-indigo-400 rounded-full px-2 py-0.5">
                                         ⚔ {{ serverName }}
                                     </span>

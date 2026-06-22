@@ -28,7 +28,10 @@ class CharacterType extends AbstractType
                     new NotBlank(message: 'Entrez un nom.'),
                     new Length(min: 2, max: 50),
                 ],
-                'attr' => ['placeholder' => 'Ex : Darkpala'],
+                'attr' => [
+                    'placeholder' => 'Ex : Darkpala ou Dark-pala',
+                    'title'       => 'Une majuscule au début, puis des minuscules. Pas de chiffre ni d\'accent. Maximum 2 tirets (-).',
+                ],
             ])
             ->add('gameClass', EntityType::class, [
                 'label' => 'Classe',

@@ -76,6 +76,17 @@ abstract class WebTestCaseBase extends WebTestCase
         return $user;
     }
 
+    /** Suite de lettres minuscules aléatoires, conforme au format de pseudo (pas de chiffre). */
+    protected function randomLetters(int $length = 8): string
+    {
+        $letters = 'abcdefghijklmnopqrstuvwxyz';
+        $out = '';
+        for ($i = 0; $i < $length; $i++) {
+            $out .= $letters[random_int(0, 25)];
+        }
+        return $out;
+    }
+
     protected function makeServer(): Server
     {
         $server = (new Server())->setName('Serveur-' . uniqid('', true));
@@ -96,7 +107,7 @@ abstract class WebTestCaseBase extends WebTestCase
             ->setUser($user)
             ->setServer($server)
             ->setGameClass($this->makeGameClass())
-            ->setName('Perso-' . uniqid('', true))
+            ->setName('Perso' . $this->randomLetters())
             ->setLevel(60)
             ->setOptimizationLevel(OptimizationLevel::High);
         $this->em->persist($char);

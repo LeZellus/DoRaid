@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\CharacterRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CharacterRepository::class)]
 #[ORM\Table(name: 'game_character')]
@@ -18,6 +19,10 @@ class Character
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\Regex(
+        pattern: '/^(?=(?:[^-]*-){0,2}[^-]*$)[A-Z][a-z-]*$/',
+        message: 'Le pseudo doit commencer par une majuscule suivie uniquement de minuscules, sans chiffre ni accent, avec au maximum 2 tirets (-).',
+    )]
     private string $name;
 
     #[ORM\ManyToOne]
