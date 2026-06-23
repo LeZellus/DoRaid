@@ -78,7 +78,7 @@
                                     <img src="{{ asset('uploads/guildes/' ~ guild.slug ~ '/' ~ guild.imagePath) }}"
                                          alt="{{ guild.name }}"
                                          loading="lazy"
-                                         class="w-12 h-12 rounded-full object-cover border border-indigo-800/40 shrink-0">
+                                         class="w-12 h-12 rounded-full object-contain shrink-0">
                                 {% else %}
                                     <div class="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-600 to-indigo-800 flex items-center justify-center text-lg font-bold text-white shrink-0 group-hover:from-indigo-500 group-hover:to-indigo-700 transition-all">
                                         {{ guild.name|slice(0,1)|upper }}

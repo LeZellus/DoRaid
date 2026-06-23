@@ -89,7 +89,7 @@
                                             {% if m.guild.imagePath %}
                                                 <img src="{{ asset('uploads/guildes/' ~ m.guild.slug ~ '/' ~ m.guild.imagePath) }}"
                                                      alt="{{ m.guild.name }}"
-                                                     class="w-6 h-6 rounded object-cover shrink-0">
+                                                     class="w-6 h-6 rounded object-contain shrink-0">
                                             {% else %}
                                                 <span class="w-6 h-6 rounded bg-indigo-900/50 flex items-center justify-center text-xs font-bold shrink-0">
                                                     {{ m.guild.name|slice(0,1)|upper }}

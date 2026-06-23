@@ -433,7 +433,7 @@
                                             <img src="{{ asset('uploads/guildes/' ~ item.guild.slug ~ '/' ~ item.guild.imagePath) }}"
                                                  alt="{{ item.guild.name }}"
                                                  loading="lazy" decoding="async" width="36" height="36"
-                                                 class="w-9 h-9 rounded-lg object-cover shrink-0">
+                                                 class="w-9 h-9 rounded-lg object-contain shrink-0">
                                         {% else %}
                                             <div class="w-9 h-9 rounded-lg bg-indigo-900/40 flex items-center justify-center text-sm font-bold text-indigo-300 shrink-0">
                                                 {{ item.guild.name|slice(0,1)|upper }}
@@ -476,7 +476,7 @@
                                             <img src="{{ asset('uploads/guildes/' ~ m.guild.slug ~ '/' ~ m.guild.imagePath) }}"
                                                  alt="{{ m.guild.name }}"
                                                  loading="lazy" decoding="async" width="36" height="36"
-                                                 class="w-9 h-9 rounded-lg object-cover shrink-0">
+                                                 class="w-9 h-9 rounded-lg object-contain shrink-0">
                                         {% else %}
                                             <div class="w-9 h-9 rounded-lg bg-gray-800 flex items-center justify-center text-sm font-bold text-gray-400 shrink-0">
                                                 {{ m.guild.name|slice(0,1)|upper }}

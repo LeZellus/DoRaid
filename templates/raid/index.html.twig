@@ -189,7 +189,7 @@
                             {% if raid.guild.imagePath %}
                                 <img src="{{ asset('uploads/guildes/' ~ raid.guild.slug ~ '/' ~ raid.guild.imagePath) }}"
                                      alt="{{ raid.guild.name }}"
-                                     class="w-4 h-4 rounded object-cover">
+                                     class="w-4 h-4 rounded object-contain">
                             {% endif %}
                             <span>{{ raid.guild.name }}</span>
                             <span class="text-gray-700">·</span>
