@@ -17,7 +17,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class SeedGameDataCommand extends Command
 {
     private const CLASSES = [
-        'Cra', 'Ecaflip', 'Eniripsa', 'Enutrof', 'Feca', 'Iop',
+        'Cra', 'Ecaflip', 'Eniripsa', 'Enutrof', 'Feca', 'Forgelance', 'Iop',
         'Osamodas', 'Pandawa', 'Roublard', 'Sacrieur', 'Sadida',
         'Sram', 'Xelor', 'Zobal', 'Steamer', 'Eliotrope', 'Huppermage', 'Ouginak',
     ];
