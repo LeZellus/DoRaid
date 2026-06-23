@@ -91,6 +91,7 @@ export default class extends Controller {
                     this.commentsTarget.innerHTML = data.commentsHtml
                     this.updatedAtValue = data.updatedAt
                     input.value = ''
+                    this._scrollCommentsToBottom()
                 } else {
                     console.error('[enigme] comment error:', data.error)
                     alert('Erreur : ' + (data.error ?? 'Impossible d\'envoyer le commentaire'))
@@ -123,12 +124,22 @@ export default class extends Controller {
             .then(r => r.ok ? r.json() : null)
             .then(data => {
                 if (!data?.changed) return
+                // Ne resnap en bas que si l'utilisateur y était déjà, pour ne pas l'interrompre
+                // s'il est en train de relire d'anciens commentaires pendant le polling.
+                const c = this.commentsTarget
+                const wasNearBottom = c.scrollHeight - c.scrollTop - c.clientHeight < 40
+
                 this.imagesTarget.innerHTML   = data.imagesHtml
                 this.commentsTarget.innerHTML = data.commentsHtml
                 this.resolvedValue            = data.resolved ? 1 : 0
                 this.updatedAtValue           = data.updatedAt
+                if (wasNearBottom) this._scrollCommentsToBottom()
             })
             .catch(() => {})
+    }
+
+    _scrollCommentsToBottom() {
+        this.commentsTarget.scrollTop = this.commentsTarget.scrollHeight
     }
 
     _compress(blob, maxPx = 1920, quality = 0.85) {

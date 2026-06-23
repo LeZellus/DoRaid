@@ -389,14 +389,14 @@
             {% set totalComments = 0 %}
             {% for c in rootComments %}{% set totalComments = totalComments + 1 + c.children|length %}{% endfor %}
 
-            <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden flex flex-col" style="max-height: calc(100vh - 5rem)">
+            <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden flex flex-col" style="max-height: min(calc(100vh - 5rem), 34rem)">
 
                 <div class="px-5 py-4 border-b border-gray-800 shrink-0 flex items-center justify-between">
                     <h2 class="font-semibold text-white text-sm">Commentaires</h2>
                     {% if totalComments > 0 %}<span class="text-xs text-gray-500">{{ totalComments }}</span>{% endif %}
                 </div>
 
-                <div class="flex-1 min-h-0 overflow-y-auto">
+                <div class="flex-1 min-h-0 overflow-y-auto" {% if rootComments is not empty %}data-controller="scroll-bottom"{% endif %}>
                     {% if rootComments is empty %}
                         <p class="p-5 text-center text-xs text-gray-600">Aucun commentaire pour l'instant.</p>
                     {% else %}
