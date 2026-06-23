@@ -378,6 +378,64 @@ class RaidControllerTest extends WebTestCaseBase
         $this->assertStringContainsString('/guildes/' . $guildSlug, $this->client->getResponse()->headers->get('location'));
     }
 
+    public function testMemberWithoutRaidPermissionCannotCreateRaid(): void
+    {
+        $server    = $this->makeServer();
+        $owner     = $this->makeUser('rcperm-owner@test.com');
+        $ownerChar = $this->makeCharacter($owner, $server);
+        $guild     = $this->makeGuild($owner, $server);
+        $this->makeMembership($guild, $ownerChar, MemberStatus::Leader);
+
+        $member     = $this->makeUser('rcperm-member@test.com');
+        $memberChar = $this->makeCharacter($member, $server);
+        $this->makeMembership($guild, $memberChar, MemberStatus::Member);
+        $this->flush();
+        $guildId   = $guild->getId();
+        $guildSlug = $guild->getSlug();
+
+        $this->client->loginUser($member);
+        $this->client->request('GET', '/raids/creer?guild=' . $guildId);
+
+        $this->assertResponseRedirects('/guildes/' . $guildSlug);
+        $this->client->followRedirect();
+        $this->assertStringContainsString('permission', $this->client->getResponse()->getContent());
+    }
+
+    public function testMemberWithExplicitPermissionCanCreateRaid(): void
+    {
+        $server    = $this->makeServer();
+        $owner     = $this->makeUser('rcperm2-owner@test.com');
+        $ownerChar = $this->makeCharacter($owner, $server);
+        $guild     = $this->makeGuild($owner, $server);
+        $this->makeMembership($guild, $ownerChar, MemberStatus::Leader);
+
+        $officer     = $this->makeUser('rcperm2-officer@test.com');
+        $officerChar = $this->makeCharacter($officer, $server);
+        $membership  = $this->makeMembership($guild, $officerChar, MemberStatus::Member);
+        $membership->setCanCreateRaids(true);
+        $template = $this->makeRaidTemplate('Permission-' . uniqid('', true));
+        $this->flush();
+        $guildId     = $guild->getId();
+        $templateId  = $template->getId();
+        $officerCharId = $officerChar->getId();
+        $this->em->clear();
+
+        $this->client->loginUser($officer);
+        $crawler = $this->client->request('GET', '/raids/creer?guild=' . $guildId);
+        $token   = $crawler->filter('input[name="raid[_token]"]')->attr('value');
+
+        $this->client->request('POST', '/raids/creer?guild=' . $guildId, [
+            'raid' => ['_token' => $token],
+            'raid_template_id' => $templateId,
+            'character_id'      => $officerCharId,
+        ]);
+
+        $this->assertResponseStatusCodeSame(302);
+        $location = $this->client->getResponse()->headers->get('location');
+        $this->assertStringContainsString('/raids/', $location);
+        $this->assertStringNotContainsString('/guildes/', $location);
+    }
+
     public function testNonCreatorCannotCloseRaid(): void
     {
         [$raidId] = $this->createRaidWithGuild(isPublic: true);

@@ -47,6 +47,8 @@
                                 <span class="font-medium text-white truncate">{{ m.character.name }}</span>
                                 {% if m.status.value == 'leader' %}
                                     <span title="Meneur" class="text-base leading-none">👑</span>
+                                {% elseif m.canCreateRaids() %}
+                                    <span title="Peut créer des raids" class="text-base leading-none">⚔️</span>
                                 {% endif %}
                             </div>
                             <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
@@ -73,6 +75,17 @@
                                 </form>
                             {% endif %}
                             {% if isLeader and m.character.user.id != app.user.id and m.status.value != 'leader' %}
+                                {% if m.canCreateRaids() %}
+                                    <form method="post" action="{{ path('app_guild_revoke_raid_creator', {id: m.id}) }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('raid_creator_' ~ m.id) }}">
+                                        {{ ui.button('Retirer création de raids', 'ghost', 'submit', 'py-1.5 px-3 text-xs') }}
+                                    </form>
+                                {% else %}
+                                    <form method="post" action="{{ path('app_guild_grant_raid_creator', {id: m.id}) }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('raid_creator_' ~ m.id) }}">
+                                        {{ ui.button('Autoriser création de raids', 'secondary', 'submit', 'py-1.5 px-3 text-xs') }}
+                                    </form>
+                                {% endif %}
                                 <form method="post" action="{{ path('app_guild_transfer_leader', {id: m.id}) }}"
                                       onsubmit="return confirm('Nommer {{ m.character.name }} comme meneur ? Vous perdrez votre rôle de meneur.')">
                                     <input type="hidden" name="_token" value="{{ csrf_token('transfer_leader_' ~ m.id) }}">

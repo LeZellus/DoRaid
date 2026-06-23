@@ -123,10 +123,10 @@ class RaidController extends AbstractController
             throw $this->createNotFoundException('Guilde introuvable.');
         }
 
-        $characters = $charRepo->findConfirmedInGuild($this->getUser(), $guild);
+        $characters = $charRepo->findCanCreateRaidsInGuild($this->getUser(), $guild);
 
         if (empty($characters)) {
-            $this->addFlash('error', 'Vous devez être membre confirmé de cette guilde pour créer un raid.');
+            $this->addFlash('error', 'Vous devez être meneur ou avoir reçu la permission de créer des raids dans cette guilde.');
             return $this->redirectToRoute('app_guild_show', ['slug' => $guild->getSlug()]);
         }
 

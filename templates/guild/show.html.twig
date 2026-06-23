@@ -225,7 +225,7 @@
     <div class="mt-6 {{ ui.card_classes('overflow-hidden') }}" data-reveal data-reveal-delay="3">
         <div class="{{ ui.card_header_classes('flex items-center justify-between') }}">
             <h2 class="font-semibold text-white">Raids</h2>
-            {% if app.user and confirmedCharacters is not empty %}
+            {% if app.user and canCreateRaidCharacters is not empty %}
                 {{ ui.link_button('+ Créer un raid', path('app_raid_new', {guild: guild.id}), 'primary', 'py-1.5 px-3 text-xs') }}
             {% endif %}
         </div>
@@ -233,7 +233,7 @@
         {% if activeRaids is empty and closedRaids is empty %}
             <div class="{{ ui.card_body_classes('py-8 text-center') }}">
                 <p class="text-gray-500 text-sm">Aucun raid pour l'instant.</p>
-                {% if app.user and confirmedCharacters is not empty %}
+                {% if app.user and canCreateRaidCharacters is not empty %}
                     <div class="mt-3">
                         {{ ui.link_button('Créer le premier raid', path('app_raid_new', {guild: guild.id}), 'secondary') }}
                     </div>

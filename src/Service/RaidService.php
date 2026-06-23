@@ -36,6 +36,14 @@ class RaidService
      */
     public function createRaid(Raid $raid, Guild $guild, Character $character, RaidTemplate $template): void
     {
+        $membership = $character->getMembership();
+        if ($membership === null
+            || (int) $membership->getGuild()->getId() !== (int) $guild->getId()
+            || !$membership->canCreateRaids()
+        ) {
+            throw new BusinessRuleException('Ce personnage n\'a pas la permission de créer un raid pour cette guilde.');
+        }
+
         $raid->setGuild($guild)->setCreator($character)->setRaidTemplate($template);
         $this->em->persist($raid);
         $this->em->persist(

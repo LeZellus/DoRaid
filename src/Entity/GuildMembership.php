@@ -24,6 +24,9 @@ class GuildMembership
     #[ORM\Column(type: 'string', enumType: MemberStatus::class, length: 10)]
     private MemberStatus $status;
 
+    #[ORM\Column(options: ['default' => false])]
+    private bool $canCreateRaids = false;
+
     #[ORM\Column]
     private \DateTimeImmutable $requestedAt;
 
@@ -50,6 +53,9 @@ class GuildMembership
     // Méthodes utilisées exclusivement par le composant Workflow (attend/retourne des strings)
     public function getWorkflowStatus(): string { return $this->status->value; }
     public function setWorkflowStatus(string $status): static { return $this->setStatus($status); }
+
+    public function canCreateRaids(): bool { return $this->status === MemberStatus::Leader || $this->canCreateRaids; }
+    public function setCanCreateRaids(bool $canCreateRaids): static { $this->canCreateRaids = $canCreateRaids; return $this; }
 
     public function getRequestedAt(): \DateTimeImmutable { return $this->requestedAt; }
 }

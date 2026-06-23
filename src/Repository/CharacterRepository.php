@@ -49,6 +49,23 @@ class CharacterRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /** Characters of $user in $guild autorisés à créer des raids (meneur ou permission explicite) */
+    public function findCanCreateRaidsInGuild(User $user, Guild $guild): array
+    {
+        return $this->createQueryBuilder('c')
+            ->join('c.membership', 'm')
+            ->where('c.user = :user')
+            ->andWhere('m.guild = :guild')
+            ->andWhere('m.status = :leader OR m.canCreateRaids = :canCreate')
+            ->setParameter('user', $user)
+            ->setParameter('guild', $guild)
+            ->setParameter('leader', MemberStatus::Leader)
+            ->setParameter('canCreate', true)
+            ->orderBy('c.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     /** Confirmed guild members of $user in the raid's guild that haven't joined the raid yet */
     public function findEligibleForRaid(User $user, Raid $raid): array
     {

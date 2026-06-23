@@ -122,23 +122,25 @@ class GuildController extends AbstractController
             $this->guildService->autoPromoteOwner($guild, $currentUser);
         }
 
-        $isLeader            = $currentUser && $guild->isLeaderOf($currentUser);
-        $eligible            = $currentUser ? $this->charRepo->findEligibleForGuild($currentUser, $guild->getServer()) : [];
-        $confirmedCharacters = $currentUser ? $this->charRepo->findConfirmedInGuild($currentUser, $guild) : [];
-        $isMember            = $isLeader || !empty($confirmedCharacters);
+        $isLeader              = $currentUser && $guild->isLeaderOf($currentUser);
+        $eligible              = $currentUser ? $this->charRepo->findEligibleForGuild($currentUser, $guild->getServer()) : [];
+        $confirmedCharacters   = $currentUser ? $this->charRepo->findConfirmedInGuild($currentUser, $guild) : [];
+        $canCreateRaidCharacters = $currentUser ? $this->charRepo->findCanCreateRaidsInGuild($currentUser, $guild) : [];
+        $isMember              = $isLeader || !empty($confirmedCharacters);
 
         $allRaids    = array_filter($raidRepo->findByGuild($guild), fn($r) => $r->isPublic() || $isMember);
         $activeRaids = array_values(array_filter($allRaids, fn($r) => $r->getStatus() === RaidStatus::Open));
         $closedRaids = array_values(array_filter($allRaids, fn($r) => $r->getStatus() === RaidStatus::Closed));
 
         return $this->render('guild/show.html.twig', [
-            'guild'               => $guild,
-            'eligible'            => $eligible,
-            'confirmedCharacters' => $confirmedCharacters,
-            'isOwner'             => $isOwner,
-            'isLeader'            => $isLeader,
-            'activeRaids'         => $activeRaids,
-            'closedRaids'         => $closedRaids,
+            'guild'                   => $guild,
+            'eligible'                => $eligible,
+            'confirmedCharacters'     => $confirmedCharacters,
+            'canCreateRaidCharacters' => $canCreateRaidCharacters,
+            'isOwner'                 => $isOwner,
+            'isLeader'                => $isLeader,
+            'activeRaids'             => $activeRaids,
+            'closedRaids'             => $closedRaids,
         ]);
     }
 
@@ -215,6 +217,42 @@ class GuildController extends AbstractController
             $name = $membership->getCharacter()->getName();
             $this->guildService->rejectMembership($membership);
             $this->addFlash('success', $name . ' a été retiré de la guilde.');
+        } catch (BusinessRuleException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('app_guild_members', ['slug' => $guild->getSlug()]);
+    }
+
+    #[IsGranted('ROLE_USER')]
+    #[Route('/membres/{id}/autoriser-raids', name: 'app_guild_grant_raid_creator', methods: ['POST'])]
+    public function grantRaidCreator(GuildMembership $membership, Request $request): Response
+    {
+        $guild = $membership->getGuild();
+        $this->requireCsrfToken('raid_creator_' . $membership->getId(), $request);
+        $this->denyAccessUnlessGranted(GuildVoter::LEADER, $guild);
+
+        try {
+            $this->guildService->setCanCreateRaids($membership, true);
+            $this->addFlash('success', $membership->getCharacter()->getName() . ' peut maintenant créer des raids.');
+        } catch (BusinessRuleException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('app_guild_members', ['slug' => $guild->getSlug()]);
+    }
+
+    #[IsGranted('ROLE_USER')]
+    #[Route('/membres/{id}/revoquer-raids', name: 'app_guild_revoke_raid_creator', methods: ['POST'])]
+    public function revokeRaidCreator(GuildMembership $membership, Request $request): Response
+    {
+        $guild = $membership->getGuild();
+        $this->requireCsrfToken('raid_creator_' . $membership->getId(), $request);
+        $this->denyAccessUnlessGranted(GuildVoter::LEADER, $guild);
+
+        try {
+            $this->guildService->setCanCreateRaids($membership, false);
+            $this->addFlash('success', $membership->getCharacter()->getName() . ' ne peut plus créer de raids.');
         } catch (BusinessRuleException $e) {
             $this->addFlash('error', $e->getMessage());
         }

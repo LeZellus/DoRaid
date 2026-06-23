@@ -126,6 +126,16 @@ class GuildService
         $this->em->flush();
     }
 
+    public function setCanCreateRaids(GuildMembership $membership, bool $canCreateRaids): void
+    {
+        if ($membership->getStatus() === MemberStatus::Leader) {
+            throw new BusinessRuleException('Le meneur peut déjà créer des raids.');
+        }
+
+        $membership->setCanCreateRaids($canCreateRaids);
+        $this->em->flush();
+    }
+
     /**
      * Approves any pending memberships owned by $user in the guild (e.g. the guild owner joining with a second character).
      * Precondition: caller has verified $user is the guild owner.

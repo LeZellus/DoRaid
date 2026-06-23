@@ -377,6 +377,69 @@ class GuildControllerTest extends WebTestCaseBase
         $this->assertResponseStatusCodeSame(403);
     }
 
+    public function testLeaderCanGrantAndRevokeRaidCreatorPermission(): void
+    {
+        $server     = $this->makeServer();
+        $owner      = $this->makeUser('rc-owner@test.com');
+        $ownerChar  = $this->makeCharacter($owner, $server);
+        $guild      = $this->makeGuild($owner, $server);
+        $this->makeMembership($guild, $ownerChar, MemberStatus::Leader);
+
+        $member     = $this->makeUser('rc-member@test.com');
+        $memberChar = $this->makeCharacter($member, $server);
+        $memberM    = $this->makeMembership($guild, $memberChar, MemberStatus::Member);
+        $this->flush();
+        $memberMId = $memberM->getId();
+        $this->em->clear();
+
+        $this->client->loginUser($owner);
+        $crawler = $this->client->request('GET', '/guildes/' . $guild->getSlug() . '/membres');
+        $token   = $crawler->filter('form[action$="autoriser-raids"] input[name="_token"]')->attr('value');
+
+        $this->client->request('POST', '/guildes/membres/' . $memberMId . '/autoriser-raids', [
+            '_token' => $token,
+        ]);
+        $this->assertResponseStatusCodeSame(302);
+        $this->em->clear();
+        $this->assertTrue($this->em->find(\App\Entity\GuildMembership::class, $memberMId)->canCreateRaids());
+
+        $this->client->loginUser($owner);
+        $crawler = $this->client->request('GET', '/guildes/' . $guild->getSlug() . '/membres');
+        $token   = $crawler->filter('form[action$="revoquer-raids"] input[name="_token"]')->attr('value');
+
+        $this->client->request('POST', '/guildes/membres/' . $memberMId . '/revoquer-raids', [
+            '_token' => $token,
+        ]);
+        $this->assertResponseStatusCodeSame(302);
+        $this->em->clear();
+        $this->assertFalse($this->em->find(\App\Entity\GuildMembership::class, $memberMId)->canCreateRaids());
+    }
+
+    public function testNonLeaderCannotGrantRaidCreatorPermission(): void
+    {
+        $server     = $this->makeServer();
+        $owner      = $this->makeUser('rc2-owner@test.com');
+        $ownerChar  = $this->makeCharacter($owner, $server);
+        $guild      = $this->makeGuild($owner, $server);
+        $this->makeMembership($guild, $ownerChar, MemberStatus::Leader);
+
+        $member     = $this->makeUser('rc2-member@test.com');
+        $memberChar = $this->makeCharacter($member, $server);
+        $memberM    = $this->makeMembership($guild, $memberChar, MemberStatus::Member);
+        $this->flush();
+        $memberMId = $memberM->getId();
+
+        $rando = $this->makeUser('rc2-rando@test.com');
+        $this->flush();
+
+        $this->client->loginUser($rando);
+        $this->client->request('POST', '/guildes/membres/' . $memberMId . '/autoriser-raids', [
+            '_token' => 'bad-token',
+        ]);
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
     // ─── Helpers ───────────────────────────────────────────────────────────────
 
     /**

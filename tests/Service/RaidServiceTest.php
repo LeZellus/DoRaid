@@ -2,6 +2,7 @@
 
 namespace App\Tests\Service;
 
+use App\Entity\MemberStatus;
 use App\Entity\Raid;
 use App\Entity\RaidParticipant;
 use App\Entity\RaidParticipantStatus;
@@ -222,8 +223,10 @@ class RaidServiceTest extends WebTestCaseBase
         $owner    = $this->makeUser('creator@test.com');
         $char     = $this->makeCharacter($owner, $server);
         $guild    = $this->makeGuild($owner, $server);
+        $this->makeMembership($guild, $char, MemberStatus::Leader);
         $template = $this->makeRaidTemplate('Raid Alpha');
         $this->flush();
+        $this->em->refresh($char); // recharge la relation membership depuis la DB
 
         $raid = new \App\Entity\Raid();
         $this->service()->createRaid($raid, $guild, $char, $template);
@@ -235,6 +238,47 @@ class RaidServiceTest extends WebTestCaseBase
         $this->assertCount(1, $participants);
         $this->assertSame(RaidParticipantStatus::Accepted, $participants->first()->getStatus());
         $this->assertSame($char->getId(), $participants->first()->getCharacter()->getId());
+    }
+
+    public function testCreateRaidFailsWithoutPermission(): void
+    {
+        $server   = $this->makeServer();
+        $owner    = $this->makeUser('owner@test.com');
+        $ownerChar = $this->makeCharacter($owner, $server);
+        $guild    = $this->makeGuild($owner, $server);
+        $this->makeMembership($guild, $ownerChar, MemberStatus::Leader);
+
+        $user = $this->makeUser('member@test.com');
+        $char = $this->makeCharacter($user, $server);
+        $this->makeMembership($guild, $char, MemberStatus::Member);
+        $template = $this->makeRaidTemplate('Raid Beta');
+        $this->flush();
+        $this->em->refresh($char);
+
+        $this->expectException(BusinessRuleException::class);
+        $this->service()->createRaid(new \App\Entity\Raid(), $guild, $char, $template);
+    }
+
+    public function testCreateRaidSucceedsWithExplicitPermission(): void
+    {
+        $server   = $this->makeServer();
+        $owner    = $this->makeUser('owner2@test.com');
+        $ownerChar = $this->makeCharacter($owner, $server);
+        $guild    = $this->makeGuild($owner, $server);
+        $this->makeMembership($guild, $ownerChar, MemberStatus::Leader);
+
+        $user       = $this->makeUser('officer@test.com');
+        $char       = $this->makeCharacter($user, $server);
+        $membership = $this->makeMembership($guild, $char, MemberStatus::Member);
+        $membership->setCanCreateRaids(true);
+        $template = $this->makeRaidTemplate('Raid Gamma');
+        $this->flush();
+        $this->em->refresh($char);
+
+        $raid = new \App\Entity\Raid();
+        $this->service()->createRaid($raid, $guild, $char, $template);
+
+        $this->assertNotNull($raid->getId());
     }
 
     // ─── closeRaid / deleteRaid ───────────────────────────────────────────────
