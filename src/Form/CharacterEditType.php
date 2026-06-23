@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Character;
 use App\Entity\GameClass;
 use App\Entity\OptimizationLevel;
+use App\Entity\Server;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
@@ -34,6 +35,13 @@ class CharacterEditType extends AbstractType
                 'choice_label' => 'name',
                 'placeholder' => '— Choisir une classe —',
                 'constraints' => [new NotBlank(message: 'Choisissez une classe.')],
+            ])
+            ->add('server', EntityType::class, [
+                'label' => 'Serveur',
+                'class' => Server::class,
+                'choice_label' => 'name',
+                'placeholder' => '— Choisir un serveur —',
+                'constraints' => [new NotBlank(message: 'Choisissez un serveur.')],
             ])
             ->add('level', IntegerType::class, [
                 'label'       => 'Niveau',

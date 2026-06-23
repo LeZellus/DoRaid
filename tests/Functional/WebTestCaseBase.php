@@ -3,6 +3,10 @@
 namespace App\Tests\Functional;
 
 use App\Entity\Character;
+use App\Entity\Enigme;
+use App\Entity\EnigmeComment;
+use App\Entity\EnigmeImage;
+use App\Entity\EnigmeTemplate;
 use App\Entity\GameClass;
 use App\Entity\Guild;
 use App\Entity\GuildMembership;
@@ -182,6 +186,40 @@ abstract class WebTestCaseBase extends WebTestCase
         }
         $this->em->persist($c);
         return $c;
+    }
+
+    protected function makeEnigmeTemplate(RaidTemplate $raidTemplate, int $orderNumber = 1): EnigmeTemplate
+    {
+        $t = (new EnigmeTemplate())
+            ->setRaidTemplate($raidTemplate)
+            ->setTitle('Enigme-' . uniqid('', true))
+            ->setOrderNumber($orderNumber);
+        $this->em->persist($t);
+        return $t;
+    }
+
+    protected function makeEnigme(Raid $raid, int $orderNumber = 1): Enigme
+    {
+        $enigme = (new Enigme())
+            ->setRaid($raid)
+            ->setSourceTemplate($this->makeEnigmeTemplate($raid->getRaidTemplate(), $orderNumber))
+            ->setOrderNumber($orderNumber);
+        $this->em->persist($enigme);
+        return $enigme;
+    }
+
+    protected function makeEnigmeComment(Enigme $enigme, Character $author, string $content = 'Commentaire'): EnigmeComment
+    {
+        $c = (new EnigmeComment())->setEnigme($enigme)->setAuthor($author)->setContent($content);
+        $this->em->persist($c);
+        return $c;
+    }
+
+    protected function makeEnigmeImage(Enigme $enigme, Character $addedBy, string $filePath = 'preuve.png'): EnigmeImage
+    {
+        $img = (new EnigmeImage())->setEnigme($enigme)->setAddedBy($addedBy)->setFilePath($filePath);
+        $this->em->persist($img);
+        return $img;
     }
 
     /** Flush sans clear : les entités restent managées, les IDs sont disponibles. */

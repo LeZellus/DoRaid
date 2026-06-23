@@ -12,12 +12,18 @@ export default class extends Controller {
     native.hidden = true
     this._buildTrigger()
     this._buildList()
-    this._outside = e => { if (!this.element.contains(e.target)) this._close() }
+    this._outside = e => { if (!this.element.contains(e.target) && !this._list.contains(e.target)) this._close() }
+    this._reposition = e => { if (!this._list.contains(e.target)) this._close() }
     document.addEventListener('click', this._outside)
+    window.addEventListener('scroll', this._reposition, true)
+    window.addEventListener('resize', this._reposition)
   }
 
   disconnect () {
     document.removeEventListener('click', this._outside)
+    window.removeEventListener('scroll', this._reposition, true)
+    window.removeEventListener('resize', this._reposition)
+    this._list.remove()
   }
 
   _buildTrigger () {
@@ -51,7 +57,7 @@ export default class extends Controller {
     const ul = this._list = document.createElement('ul')
     ul.setAttribute('role', 'listbox')
     ul.hidden = true
-    ul.className = 'absolute z-50 left-0 right-0 mt-2 bg-gray-800 border border-gray-700 rounded-xl shadow-2xl overflow-y-auto max-h-60 py-1'
+    ul.className = 'fixed z-50 bg-gray-800 border border-gray-700 rounded-xl shadow-2xl overflow-y-auto max-h-60 py-1'
 
     Array.from(this._native.options).forEach(opt => {
       const li = document.createElement('li')
@@ -63,7 +69,24 @@ export default class extends Controller {
       ul.append(li)
     })
 
-    this.element.append(ul)
+    // Hors du conteneur : ne pas hériter d'un éventuel overflow-hidden d'un ancêtre
+    document.body.append(ul)
+  }
+
+  _position () {
+    const rect = this._btn.getBoundingClientRect()
+    this._list.style.left = `${rect.left}px`
+    this._list.style.width = `${rect.width}px`
+
+    const spaceBelow = window.innerHeight - rect.bottom
+    const openUpward = spaceBelow < 240 && rect.top > spaceBelow
+    if (openUpward) {
+      this._list.style.bottom = `${window.innerHeight - rect.top + 8}px`
+      this._list.style.top = ''
+    } else {
+      this._list.style.top = `${rect.bottom + 8}px`
+      this._list.style.bottom = ''
+    }
   }
 
   _pick (value, text) {
@@ -80,6 +103,7 @@ export default class extends Controller {
   _toggle () { this._list.hidden ? this._open() : this._close() }
 
   _open () {
+    this._position()
     this._list.hidden = false
     this._svg.classList.add('rotate-180')
     this._btn.setAttribute('aria-expanded', 'true')

@@ -70,19 +70,34 @@ class CharacterController extends AbstractController
     }
 
     #[Route('/{id}/modifier', name: 'app_character_edit', methods: ['GET', 'POST'])]
-    public function edit(Character $character, Request $request, EntityManagerInterface $em): Response
+    public function edit(Character $character, Request $request, EntityManagerInterface $em, CharacterService $characterService): Response
     {
         if ($character->getUser()->getId() !== $this->getUser()->getId()) {
             throw $this->createAccessDeniedException();
         }
 
+        $originalServerId = $character->getServer()->getId();
+
         $form = $this->createForm(CharacterEditType::class, $character);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em->flush();
-            $this->addFlash('success', 'Personnage mis à jour.');
-            return $this->redirectToRoute('app_character_index');
+            $serverChanged = (int) $character->getServer()->getId() !== (int) $originalServerId;
+
+            if ($serverChanged) {
+                try {
+                    $characterService->clearParticipationsForServerChange($character);
+                    $this->addFlash('info', 'Changement de serveur : guilde, candidatures aux raids, commentaires et images d\'énigmes liés à l\'ancien serveur ont été retirés.');
+                } catch (BusinessRuleException $e) {
+                    $form->get('server')->addError(new FormError($e->getMessage()));
+                }
+            }
+
+            if (!$form->get('server')->getErrors(true)->count()) {
+                $em->flush();
+                $this->addFlash('success', 'Personnage mis à jour.');
+                return $this->redirectToRoute('app_character_index');
+            }
         }
 
         return $this->render('character/edit.html.twig', [
