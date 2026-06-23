@@ -305,7 +305,7 @@ class GuildController extends AbstractController
             $imageFile = $form->get('imageFile')->getData();
             if ($imageFile) {
                 $uploadDir = $projectDir . '/public/uploads/guildes/' . $guild->getSlug();
-                $guild->setImagePath($this->fileUpload->replace($uploadDir, $guild->getImagePath(), $imageFile, 'cover'));
+                $guild->setImagePath($this->fileUpload->replace($uploadDir, $guild->getImagePath(), $imageFile, uniqid('cover-', true)));
             }
 
             $em->flush();

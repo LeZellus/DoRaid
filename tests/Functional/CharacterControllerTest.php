@@ -75,33 +75,21 @@ class CharacterControllerTest extends WebTestCaseBase
         $char      = $this->makeCharacter($mover, $serverA);
         $charName  = $char->getName();
         $this->flush();
-        $charId = $char->getId();
-        $this->em->clear();
 
-        // Le propriétaire change le personnage de serveur (serverA -> serverB)
-        $this->client->loginUser($mover);
-        $crawler = $this->client->request('GET', '/personnages/' . $charId . '/modifier');
-        $token   = $crawler->filter('input[name="character_edit[_token]"]')->attr('value');
-        $char    = $this->em->find(\App\Entity\Character::class, $charId);
+        // Le propriétaire change le personnage de serveur (serverA -> serverB) : couvert au
+        // niveau HTTP par testEditChangingServerAsSimpleMemberLeavesGuildAndClearsParticipations.
+        // Ici on déclenche directement le changement au niveau service pour ne garder qu'un seul
+        // loginUser() dans ce test (deux loginUser() sur le même client ont déjà cassé un autre
+        // test de la suite via une pollution du stockage de session/CSRF).
+        $char->setServer($serverB);
+        static::getContainer()->get(\App\Service\CharacterService::class)->clearParticipationsForServerChange($char);
+        $this->flush();
 
-        $this->client->request('POST', '/personnages/' . $charId . '/modifier', [
-            'character_edit' => [
-                'name'              => $charName,
-                'gameClass'         => $char->getGameClass()->getId(),
-                'server'            => $serverB->getId(),
-                'level'             => $char->getLevel(),
-                'optimizationLevel' => $char->getOptimizationLevel()->value,
-                '_token'            => $token,
-            ],
-        ]);
-        $this->assertResponseRedirects('/personnages');
-
-        // Un autre utilisateur (autre navigateur/session) crée un personnage avec le même nom sur l'ancien serveur : doit réussir
+        // Un autre utilisateur crée un personnage avec le même nom sur l'ancien serveur : doit réussir
         $other = $this->makeUser('other-namer@test.com');
         $this->flush();
         $this->em->clear();
 
-        $this->client->getCookieJar()->clear();
         $this->client->loginUser($other);
         $crawler = $this->client->request('GET', '/personnages/creer');
         $token   = $crawler->filter('input[name="character[_token]"]')->attr('value');
