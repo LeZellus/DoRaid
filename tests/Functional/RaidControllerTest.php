@@ -213,7 +213,7 @@ class RaidControllerTest extends WebTestCaseBase
 
     // ─── Raid complet ─────────────────────────────────────────────────────────
 
-    public function testApplyToFullRaidShowsError(): void
+    public function testApplyToFullRaidJoinsWaitlistInstead(): void
     {
         $server    = $this->makeServer();
         $owner     = $this->makeUser('raidowner@test.com');
@@ -257,6 +257,59 @@ class RaidControllerTest extends WebTestCaseBase
 
         $this->client->request('POST', '/raids/' . $raidId . '/candidater', [
             '_token' => $token, 'character_id' => $applicantChar->getId(),
+        ]);
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->client->followRedirect();
+        $this->assertStringContainsString('Candidature', $this->client->getResponse()->getContent());
+
+        $this->em->clear();
+        $raid = $this->em->find(\App\Entity\Raid::class, $raidId);
+        $this->assertCount(1, $raid->getPendingParticipants());
+    }
+
+    public function testAcceptingParticipantOnFullRaidShowsError(): void
+    {
+        $server    = $this->makeServer();
+        $owner     = $this->makeUser('raidowner2@test.com');
+        $ownerChar = $this->makeCharacter($owner, $server);
+        $guild     = $this->makeGuild($owner, $server);
+        $this->makeMembership($guild, $ownerChar, MemberStatus::Leader);
+
+        $template = (new \App\Entity\RaidTemplate())
+            ->setName('Mini-' . uniqid('', true))
+            ->setMaxParticipants(1)
+            ->setMinParticipants(1)
+            ->setDuration(60);
+        $this->em->persist($template);
+
+        $raid = (new \App\Entity\Raid())
+            ->setGuild($guild)
+            ->setCreator($ownerChar)
+            ->setRaidTemplate($template)
+            ->setIsPublic(true);
+        $this->em->persist($raid);
+        $this->em->persist(
+            (new \App\Entity\RaidParticipant())
+                ->setRaid($raid)
+                ->setCharacter($ownerChar)
+                ->setStatus(\App\Entity\RaidParticipantStatus::Accepted)
+        );
+
+        $waitlisted     = $this->makeUser('waitlisted2@test.com');
+        $waitlistedChar = $this->makeCharacter($waitlisted, $server);
+        $participant    = $this->makeParticipant($raid, $waitlistedChar, \App\Entity\RaidParticipantStatus::Pending);
+        $this->flush();
+        $raidId = $raid->getId();
+        $participantId = $participant->getId();
+        $this->em->clear();
+
+        $this->client->loginUser($owner);
+        $crawler = $this->client->request('GET', '/raids/' . $raidId);
+        $token   = $crawler->filter('form[action$="/' . $participantId . '/accepter"] input[name="_token"]')->attr('value');
+
+        $this->client->request('POST', '/raids/participants/' . $participantId . '/accepter', [
+            '_token' => $token,
         ]);
 
         $this->assertResponseStatusCodeSame(302);

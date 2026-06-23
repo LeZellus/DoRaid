@@ -351,6 +351,12 @@
                         </div>
                     {% elseif eligible is not empty %}
                         <div class="border-t border-gray-800/60 px-6 py-3">
+                            {% if raid.isFull() %}
+                                <p class="text-xs text-gray-500 mb-2">
+                                    Le raid est complet, mais vous pouvez rejoindre la liste des intéressés —
+                                    en cas de désistement, le créateur pourra vous accepter.
+                                </p>
+                            {% endif %}
                             <form method="post" action="{{ path('app_raid_apply', {id: raid.id}) }}" class="flex items-center gap-3">
                                 <input type="hidden" name="_token" value="{{ csrf_token('apply_raid_' ~ raid.id) }}">
                                 <div class="flex-1 min-w-0 relative" data-controller="select"><select name="character_id" class="hidden">
@@ -361,7 +367,7 @@
                                         <option value="{{ c.id }}">{{ c.name }} — {{ c.gameClass.name }}{{ levelInfo }}{{ optiInfo }}{{ isMember ? ' [Guilde]' : ' [Externe]' }}</option>
                                     {% endfor %}
                                 </select></div>
-                                {{ ui.button('Candidater', 'primary', 'submit', 'py-2 px-4 text-sm shrink-0') }}
+                                {{ ui.button(raid.isFull() ? 'Rejoindre la liste d\'attente' : 'Candidater', 'primary', 'submit', 'py-2 px-4 text-sm shrink-0') }}
                             </form>
                         </div>
                     {% elseif pendingApplications is empty and acceptedCharacters is empty %}

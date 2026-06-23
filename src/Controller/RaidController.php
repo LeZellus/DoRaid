@@ -283,7 +283,10 @@ class RaidController extends AbstractController
 
         try {
             $this->raidService->applyToRaid($raid, $character, $this->getUser());
-            $this->addFlash('success', 'Candidature de ' . $character->getName() . ' envoyée ! Le créateur du raid validera votre participation.');
+            $message = $raid->isFull()
+                ? 'Candidature de ' . $character->getName() . ' envoyée ! Le raid est complet, vous êtes sur la liste des intéressés en cas de désistement.'
+                : 'Candidature de ' . $character->getName() . ' envoyée ! Le créateur du raid validera votre participation.';
+            $this->addFlash('success', $message);
         } catch (BusinessRuleException $e) {
             $this->addFlash('error', $e->getMessage());
         }
@@ -299,9 +302,13 @@ class RaidController extends AbstractController
         $this->requireCsrfToken('accept_' . $participant->getId(), $request);
         $this->denyAccessUnlessGranted(RaidVoter::CREATOR, $raid);
 
-        $this->raidService->acceptParticipant($participant);
+        try {
+            $this->raidService->acceptParticipant($participant);
+            $this->addFlash('success', $participant->getCharacter()->getName() . ' a été accepté dans le raid !');
+        } catch (BusinessRuleException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
 
-        $this->addFlash('success', $participant->getCharacter()->getName() . ' a été accepté dans le raid !');
         return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
     }
 

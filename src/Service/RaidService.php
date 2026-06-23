@@ -72,10 +72,8 @@ class RaidService
             throw new BusinessRuleException('Ce personnage a déjà candidaté à ce raid.');
         }
 
-        if ($raid->isFull()) {
-            throw new BusinessRuleException('Ce raid est complet.');
-        }
-
+        // Le raid plein reste ouvert aux candidatures : elles alimentent la liste des
+        // intéressés, dans laquelle le créateur peut piocher en cas de désistement.
         $participant = (new RaidParticipant())->setRaid($raid)->setCharacter($character);
         $this->em->persist($participant);
         $this->notificationService->notifyParticipationReceived($participant);
@@ -86,6 +84,10 @@ class RaidService
 
     public function acceptParticipant(RaidParticipant $participant): void
     {
+        if ($participant->getRaid()->isFull()) {
+            throw new BusinessRuleException('Le raid est complet. Retirez un participant avant d\'en accepter un nouveau.');
+        }
+
         try {
             $this->participantWorkflow->apply($participant, 'accept');
         } catch (\Symfony\Component\Workflow\Exception\NotEnabledTransitionException) {

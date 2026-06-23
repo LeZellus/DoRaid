@@ -93,7 +93,7 @@ class RaidServiceTest extends WebTestCaseBase
         $this->service()->applyToRaid($raid, $char, $user);
     }
 
-    public function testApplyToRaidFailsWhenFull(): void
+    public function testApplyToRaidSucceedsWhenFullAndJoinsWaitlist(): void
     {
         $server    = $this->makeServer();
         $owner     = $this->makeUser('owner@test.com');
@@ -110,8 +110,11 @@ class RaidServiceTest extends WebTestCaseBase
         $this->flush();
         $this->em->refresh($raid); // recharge isFull() depuis la DB
 
-        $this->expectException(BusinessRuleException::class);
         $this->service()->applyToRaid($raid, $char, $user);
+
+        $this->em->refresh($raid);
+        $this->assertTrue($raid->isParticipant($char));
+        $this->assertCount(1, $raid->getPendingParticipants());
     }
 
     public function testApplyToPrivateRaidFailsForNonMember(): void
@@ -148,6 +151,28 @@ class RaidServiceTest extends WebTestCaseBase
         $this->service()->acceptParticipant($participant);
 
         $this->assertSame(RaidParticipantStatus::Accepted, $participant->getStatus());
+    }
+
+    public function testAcceptParticipantFailsWhenRaidAlreadyFull(): void
+    {
+        $server    = $this->makeServer();
+        $owner     = $this->makeUser('owner@test.com');
+        $ownerChar = $this->makeCharacter($owner, $server);
+        $guild     = $this->makeGuild($owner, $server);
+        $template  = $this->makeRaidTemplate('Mini');
+        $template->setMaxParticipants(1);
+        $raid      = (new Raid())->setGuild($guild)->setCreator($ownerChar)->setRaidTemplate($template)->setIsPublic(true);
+        $this->em->persist($raid);
+        $this->makeParticipant($raid, $ownerChar, RaidParticipantStatus::Accepted);
+
+        $user        = $this->makeUser('waitlisted@test.com');
+        $char        = $this->makeCharacter($user, $server);
+        $participant = $this->makeParticipant($raid, $char, RaidParticipantStatus::Pending);
+        $this->flush();
+        $this->em->refresh($raid); // recharge isFull() depuis la DB
+
+        $this->expectException(BusinessRuleException::class);
+        $this->service()->acceptParticipant($participant);
     }
 
     public function testKickParticipantRemovesIt(): void
