@@ -6,6 +6,7 @@ framework:
     session:
         handler_id: null
         cookie_secure: auto
+        cookie_httponly: true
         cookie_samesite: lax
         gc_maxlifetime: 2592000
         cookie_lifetime: 2592000
