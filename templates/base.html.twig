@@ -6,14 +6,14 @@
         <title>{% block title %}Zeminal – Organisez vos raids Dofus en guilde{% endblock %}</title>
         <meta name="description" content="{% block meta_description %}Zeminal est l'outil de gestion de raids pour guildes Dofus. Planifiez vos raids, gérez vos personnages et coordonnez votre guilde efficacement.{% endblock %}">
         <meta name="robots" content="{% block meta_robots %}index, follow{% endblock %}">
-        <link rel="canonical" href="{{ canonical_url }}{{ app.request.requestUri }}">
+        <link rel="canonical" href="{{ canonical_url }}{{ app.request.pathInfo }}">
 
         {# Open Graph #}
         <meta property="og:type" content="website">
         <meta property="og:site_name" content="Zeminal">
         <meta property="og:title" content="{% block og_title %}{{ block('title') }}{% endblock %}">
         <meta property="og:description" content="{% block og_description %}{{ block('meta_description') }}{% endblock %}">
-        <meta property="og:url" content="{{ canonical_url }}{{ app.request.requestUri }}">
+        <meta property="og:url" content="{{ canonical_url }}{{ app.request.pathInfo }}">
         <meta property="og:image" content="{% block og_image %}{{ canonical_url }}{{ asset('og/default.png') }}{% endblock %}">
 
         {# Twitter Card #}

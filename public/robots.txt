@@ -4,5 +4,6 @@ Disallow: /admin/
 Disallow: /connexion
 Disallow: /inscription
 Disallow: /oauth/
+Disallow: /api/
 
 Sitemap: https://zeminal.tech/sitemap.xml
