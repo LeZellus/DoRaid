@@ -46,7 +46,7 @@ class DiscordNotifier
                     '',
                     sprintf("[🗡️ Rejoindre le raid](%s)  ·  [🌐 DoRaid](%s)", $raidUrl, $siteUrl),
                 ]),
-                'footer'    => ['text' => 'DoRaid'],
+                'footer'    => ['text' => 'Zeminal'],
                 'timestamp' => (new \DateTimeImmutable())->format(\DateTimeInterface::ATOM),
             ]],
         ];

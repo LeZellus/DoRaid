@@ -121,7 +121,12 @@ class GuildController extends AbstractController
             throw $this->createNotFoundException('Guilde introuvable.');
         }
 
-        $data = $this->guildService->buildShowData($guild, $this->getUser());
+        $user = $this->getUser();
+        if ($user && $guild->isOwnedBy($user)) {
+            $this->guildService->autoPromoteOwner($guild, $user);
+        }
+
+        $data = $this->guildService->buildShowData($guild, $user);
 
         return $this->render('guild/show.html.twig', ['guild' => $guild] + $data);
     }

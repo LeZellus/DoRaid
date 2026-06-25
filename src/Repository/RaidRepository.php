@@ -54,36 +54,45 @@ class RaidRepository extends ServiceEntityRepository
 
     /**
      * Returns open raids split into three pre-sorted groups for the index page.
+     * When $filterSoon is true, only upcoming raids within 48 h are returned and started/ongoing are skipped.
      * @return array{upcoming: Raid[], started: Raid[], ongoing: Raid[]}
      */
-    public function findGroupedOpen(array $userGuildIds = [], ?string $serverName = null): array
+    public function findGroupedOpen(array $userGuildIds = [], ?string $serverName = null, bool $filterSoon = false): array
     {
-        $now   = new \DateTimeImmutable();
-        $raids = $this->buildVisibleQb($userGuildIds, $serverName)
+        $now = new \DateTimeImmutable();
+
+        $upcomingQb = $this->buildVisibleQb($userGuildIds, $serverName)
             ->andWhere('r.status = :open')
+            ->andWhere('r.scheduledAt > :now')
             ->setParameter('open', RaidStatus::Open)
-            ->getQuery()->getResult();
+            ->setParameter('now', $now)
+            ->orderBy('r.scheduledAt', 'ASC');
 
-        $upcoming = [];
-        $started  = [];
-        $ongoing  = [];
+        if ($filterSoon) {
+            $upcomingQb
+                ->andWhere('r.scheduledAt <= :threshold')
+                ->setParameter('threshold', $now->modify('+48 hours'));
 
-        foreach ($raids as $r) {
-            $scheduledAt = $r->getScheduledAt();
-            if ($scheduledAt === null) {
-                $ongoing[] = $r;
-            } elseif ($scheduledAt > $now) {
-                $upcoming[] = $r;
-            } else {
-                $started[] = $r;
-            }
+            return ['upcoming' => $upcomingQb->getQuery()->getResult(), 'started' => [], 'ongoing' => []];
         }
 
-        usort($upcoming, fn($a, $b) => $a->getScheduledAt() <=> $b->getScheduledAt());
-        usort($started,  fn($a, $b) => $b->getScheduledAt() <=> $a->getScheduledAt());
-        usort($ongoing,  fn($a, $b) => $b->getCreatedAt() <=> $a->getCreatedAt());
+        $started = $this->buildVisibleQb($userGuildIds, $serverName)
+            ->andWhere('r.status = :open')
+            ->andWhere('r.scheduledAt IS NOT NULL')
+            ->andWhere('r.scheduledAt <= :now')
+            ->setParameter('open', RaidStatus::Open)
+            ->setParameter('now', $now)
+            ->orderBy('r.scheduledAt', 'DESC')
+            ->getQuery()->getResult();
 
-        return ['upcoming' => $upcoming, 'started' => $started, 'ongoing' => $ongoing];
+        $ongoing = $this->buildVisibleQb($userGuildIds, $serverName)
+            ->andWhere('r.status = :open')
+            ->andWhere('r.scheduledAt IS NULL')
+            ->setParameter('open', RaidStatus::Open)
+            ->orderBy('r.createdAt', 'DESC')
+            ->getQuery()->getResult();
+
+        return ['upcoming' => $upcomingQb->getQuery()->getResult(), 'started' => $started, 'ongoing' => $ongoing];
     }
 
     /** @return Raid[] All public raids with minimal joins, for sitemap generation */

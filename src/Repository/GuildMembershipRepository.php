@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Guild;
 use App\Entity\GuildMembership;
 use App\Entity\MemberStatus;
 use App\Entity\User;
@@ -65,6 +66,21 @@ class GuildMembershipRepository extends ServiceEntityRepository
             ->getScalarResult();
 
         return array_map(fn($r) => (int) $r['guild_id'], $rows);
+    }
+
+    /** @return GuildMembership[] Leaders of $guild, with character and user eagerly loaded */
+    public function findLeadersByGuild(Guild $guild): array
+    {
+        return $this->createQueryBuilder('m')
+            ->addSelect('c', 'u')
+            ->join('m.character', 'c')
+            ->join('c.user', 'u')
+            ->where('m.guild = :guild')
+            ->andWhere('m.status = :leader')
+            ->setParameter('guild', $guild)
+            ->setParameter('leader', MemberStatus::Leader)
+            ->getQuery()
+            ->getResult();
     }
 
     /** @return GuildMembership[] */

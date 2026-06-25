@@ -193,29 +193,32 @@ class GuildService
     /** Assemble les données d'éligibilité et les raids visibles pour la page de détail d'une guilde. */
     public function buildShowData(Guild $guild, ?User $user): array
     {
-        $isOwner = $guild->isOwnedBy($user);
-        if ($isOwner) {
-            $this->autoPromoteOwner($guild, $user);
-        }
-
         $isLeader                = $user && $guild->isLeaderOf($user);
         $confirmedCharacters     = $user ? $this->charRepo->findConfirmedInGuild($user, $guild) : [];
         $canCreateRaidCharacters = $user ? $this->charRepo->findCanCreateRaidsInGuild($user, $guild) : [];
         $isMember                = $isLeader || !empty($confirmedCharacters);
 
-        $allRaids = array_filter(
-            $this->raidRepo->findByGuild($guild),
-            fn($r) => $r->isPublic() || $isMember
-        );
+        $activeRaids = [];
+        $closedRaids = [];
+        foreach ($this->raidRepo->findByGuild($guild) as $r) {
+            if (!$r->isPublic() && !$isMember) {
+                continue;
+            }
+            if ($r->getStatus() === RaidStatus::Open) {
+                $activeRaids[] = $r;
+            } else {
+                $closedRaids[] = $r;
+            }
+        }
 
         return [
             'eligible'                => $user ? $this->charRepo->findEligibleForGuild($user, $guild->getServer()) : [],
             'confirmedCharacters'     => $confirmedCharacters,
             'canCreateRaidCharacters' => $canCreateRaidCharacters,
-            'isOwner'                 => $isOwner,
+            'isOwner'                 => $guild->isOwnedBy($user),
             'isLeader'                => $isLeader,
-            'activeRaids'             => array_values(array_filter($allRaids, fn($r) => $r->getStatus() === RaidStatus::Open)),
-            'closedRaids'             => array_values(array_filter($allRaids, fn($r) => $r->getStatus() === RaidStatus::Closed)),
+            'activeRaids'             => $activeRaids,
+            'closedRaids'             => $closedRaids,
         ];
     }
 
