@@ -24,6 +24,8 @@ export default class extends Controller {
     window.removeEventListener('scroll', this._reposition, true)
     window.removeEventListener('resize', this._reposition)
     this._list.remove()
+    this._btn.remove()
+    this._native.hidden = false
   }
 
   _buildTrigger () {
