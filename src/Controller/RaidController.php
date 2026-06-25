@@ -4,14 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Raid;
 use App\Entity\RaidParticipant;
-use App\Entity\RaidParticipantStatus;
 use App\Exception\BusinessRuleException;
 use App\Form\RaidType;
 use App\Repository\CharacterRepository;
-use App\Repository\GuildMembershipRepository;
 use App\Repository\GuildRepository;
-use App\Repository\RaidCommentRepository;
-use App\Repository\RaidParticipantRepository;
 use App\Repository\RaidRepository;
 use App\Repository\RaidTemplateRepository;
 use App\Repository\ServerRepository;
@@ -38,77 +34,27 @@ class RaidController extends AbstractController
     public function __construct(private readonly RaidService $raidService) {}
 
     #[Route('', name: 'app_raid_index')]
-    public function index(
-        Request $request,
-        RaidRepository $raidRepo,
-        ServerRepository $serverRepo,
-        GuildMembershipRepository $membershipRepo,
-        RaidParticipantRepository $participantRepo,
-    ): Response {
-        $user          = $this->getUser();
+    public function index(Request $request, ServerRepository $serverRepo): Response
+    {
         $serverName    = $request->query->get('server') ?: null;
         $filterType    = $request->query->get('type');
         $filterNotFull = (bool) $request->query->get('not_full');
         $filterSoon    = (bool) $request->query->get('soon');
 
-        $userGuildIds = $user
-            ? array_map(fn($m) => $m->getGuild()->getId(), $membershipRepo->findConfirmedForUser($user))
-            : [];
+        $data = $this->raidService->buildIndexData(
+            $this->getUser(),
+            $serverName,
+            $filterType,
+            $filterNotFull,
+            $filterSoon,
+        );
 
-        $grouped = $raidRepo->findGroupedOpen($userGuildIds, $serverName);
-
-        $upcomingRaids = $grouped['upcoming'];
-        // Un raid "démarré" peut avoir dépassé sa durée planifiée depuis la dernière
-        // exécution de app:close-expired-raids : on le clôture à la volée plutôt que
-        // de l'afficher comme encore ouvert.
-        $startedRaids  = array_values(array_filter(
-            $grouped['started'],
-            fn($r) => !$this->raidService->closeIfExpired($r)
-        ));
-        $ongoingRaids  = $grouped['ongoing'];
-
-        // Collect available types from all open raids before applying the type filter
-        $raidTypes = array_unique(array_map(
-            fn($r) => $r->getRaidTemplate()->getName(),
-            array_merge($upcomingRaids, $startedRaids, $ongoingRaids)
-        ));
-        sort($raidTypes);
-
-        if ($filterType) {
-            $byType        = fn($r) => $r->getRaidTemplate()->getName() === $filterType;
-            $upcomingRaids = array_values(array_filter($upcomingRaids, $byType));
-            $startedRaids  = array_values(array_filter($startedRaids,  $byType));
-            $ongoingRaids  = array_values(array_filter($ongoingRaids,  $byType));
-        }
-
-        if ($filterNotFull) {
-            $notFull       = fn($r) => !$r->isFull();
-            $upcomingRaids = array_values(array_filter($upcomingRaids, $notFull));
-            $startedRaids  = array_values(array_filter($startedRaids,  $notFull));
-            $ongoingRaids  = array_values(array_filter($ongoingRaids,  $notFull));
-        }
-
-        if ($filterSoon) {
-            $threshold     = (new \DateTimeImmutable())->modify('+48 hours');
-            $upcomingRaids = array_values(array_filter($upcomingRaids, fn($r) => $r->getScheduledAt() <= $threshold));
-            $startedRaids  = [];
-            $ongoingRaids  = [];
-        }
-
-        $myParticipations = $user ? $participantRepo->findOpenParticipationsForUser($user) : [];
-
-        return $this->render('raid/index.html.twig', [
-            'upcomingRaids'    => $upcomingRaids,
-            'startedRaids'     => $startedRaids,
-            'ongoingRaids'     => $ongoingRaids,
-            'servers'          => $serverRepo->findAll(),
-            'currentServer'    => $serverName,
-            'filterNotFull'    => $filterNotFull,
-            'filterSoon'       => $filterSoon,
-            'filterType'       => $filterType,
-            'raidTypes'        => $raidTypes,
-            'userGuildIds'     => $userGuildIds,
-            'myParticipations' => $myParticipations,
+        return $this->render('raid/index.html.twig', $data + [
+            'servers'       => $serverRepo->findAll(),
+            'currentServer' => $serverName,
+            'filterNotFull' => $filterNotFull,
+            'filterSoon'    => $filterSoon,
+            'filterType'    => $filterType,
         ]);
     }
 
@@ -186,8 +132,13 @@ class RaidController extends AbstractController
     }
 
     #[Route('/{id}/participants', name: 'app_raid_participants')]
-    public function participants(Raid $raid, RaidRepository $raidRepo): Response
+    public function participants(int $id, RaidRepository $raidRepo): Response
     {
+        $raid = $raidRepo->findWithParticipants($id);
+        if (!$raid) {
+            throw $this->createNotFoundException('Raid introuvable.');
+        }
+
         if ($r = $this->checkRaidAccess($raid)) return $r;
 
         $currentUser = $this->getUser();
@@ -201,46 +152,21 @@ class RaidController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_raid_show')]
-    public function show(
-        Raid $raid,
-        CharacterRepository $charRepo,
-        RaidCommentRepository $commentRepo,
-        RaidRepository $raidRepo,
-    ): Response {
+    public function show(int $id, RaidRepository $raidRepo): Response
+    {
+        $raid = $raidRepo->findWithParticipants($id);
+        if (!$raid) {
+            throw $this->createNotFoundException('Raid introuvable.');
+        }
+
         if ($r = $this->checkRaidAccess($raid)) return $r;
 
         $this->raidService->closeIfExpired($raid);
         $this->raidService->syncEnigmes($raid);
 
-        $currentUser = $this->getUser();
-        $userId      = $currentUser ? (int) $currentUser->getId() : null;
-        $eligible    = $currentUser ? $charRepo->findAllEligibleForRaid($currentUser, $raid) : [];
-        $isCreator   = $currentUser && $raid->isCreatedBy($currentUser);
+        $data = $this->raidService->buildShowData($raid, $this->getUser());
 
-        $acceptedCharacters  = [];
-        $pendingApplications = [];
-        $participantsByUser  = [];
-        foreach ($raid->getParticipants() as $p) {
-            $participantsByUser[(int) $p->getCharacter()->getUser()->getId()] = $p->getCharacter();
-            if ($userId && (int) $p->getCharacter()->getUser()->getId() === $userId) {
-                if ($p->getStatus() === RaidParticipantStatus::Accepted) {
-                    $acceptedCharacters[] = $p->getCharacter();
-                } else {
-                    $pendingApplications[] = $p;
-                }
-            }
-        }
-
-        return $this->render('raid/show.html.twig', [
-            'raid'                => $raid,
-            'eligible'            => $eligible,
-            'isCreator'           => $isCreator,
-            'acceptedCharacters'  => $acceptedCharacters,
-            'pendingApplications' => $pendingApplications,
-            'participantsByUser'  => $participantsByUser,
-            'rootComments'        => $commentRepo->findRootByRaid($raid),
-            'myOtherRaids'        => $isCreator ? $raidRepo->findOpenByGuild($raid->getGuild(), $raid) : [],
-        ]);
+        return $this->render('raid/show.html.twig', ['raid' => $raid] + $data);
     }
 
     private function checkRaidAccess(Raid $raid): ?Response

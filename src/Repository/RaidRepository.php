@@ -71,9 +71,10 @@ class RaidRepository extends ServiceEntityRepository
     public function findByGuild(Guild $guild): array
     {
         return $this->createQueryBuilder('r')
-            ->addSelect('rt', 'creator')
+            ->addSelect('rt', 'creator', 'p')
             ->join('r.raidTemplate', 'rt')
             ->join('r.creator', 'creator')
+            ->leftJoin('r.participants', 'p')
             ->where('r.guild = :guild')
             ->setParameter('guild', $guild)
             ->orderBy('r.scheduledAt', 'DESC')
@@ -174,6 +175,26 @@ class RaidRepository extends ServiceEntityRepository
             ->setParameter('open', RaidStatus::Open)
             ->getQuery()
             ->getResult();
+    }
+
+    /** Charge le raid avec ses participants (personnage, classe, utilisateur, adhésion) pour éviter le N+1 d'affichage. */
+    public function findWithParticipants(int $id): ?Raid
+    {
+        return $this->createQueryBuilder('r')
+            ->addSelect('rt', 'creator', 'g', 's', 'p', 'pc', 'pcgc', 'pcu', 'pcm')
+            ->join('r.raidTemplate', 'rt')
+            ->join('r.creator', 'creator')
+            ->join('r.guild', 'g')
+            ->join('g.server', 's')
+            ->leftJoin('r.participants', 'p')
+            ->leftJoin('p.character', 'pc')
+            ->leftJoin('pc.gameClass', 'pcgc')
+            ->leftJoin('pc.user', 'pcu')
+            ->leftJoin('pc.membership', 'pcm')
+            ->where('r.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     /** @return Raid[] Autres raids ouverts de la même guilde — utilisé pour déplacer un participant. */

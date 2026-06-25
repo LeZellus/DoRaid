@@ -12,6 +12,10 @@ use App\Entity\RaidTemplate;
 use App\Entity\User;
 use App\Exception\BusinessRuleException;
 use App\Repository\CharacterRepository;
+use App\Repository\GuildMembershipRepository;
+use App\Repository\RaidCommentRepository;
+use App\Repository\RaidParticipantRepository;
+use App\Repository\RaidRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Workflow\WorkflowInterface;
@@ -20,6 +24,10 @@ class RaidService
 {
     public function __construct(
         private readonly CharacterRepository $charRepo,
+        private readonly RaidRepository $raidRepo,
+        private readonly RaidParticipantRepository $participantRepo,
+        private readonly RaidCommentRepository $commentRepo,
+        private readonly GuildMembershipRepository $membershipRepo,
         private readonly EnigmeSyncService $enigmeSyncService,
         private readonly DiscordNotifier $discord,
         private readonly NotificationService $notificationService,
@@ -210,5 +218,99 @@ class RaidService
         if ($this->enigmeSyncService->syncFromTemplate($raid, $this->em)) {
             $this->em->flush();
         }
+    }
+
+    /** Assemble les raids groupés/filtrés et les données associées pour la liste des raids. */
+    public function buildIndexData(
+        ?User $user,
+        ?string $serverName,
+        ?string $filterType,
+        bool $filterNotFull,
+        bool $filterSoon,
+    ): array {
+        $userGuildIds = $user
+            ? array_map(fn($m) => $m->getGuild()->getId(), $this->membershipRepo->findConfirmedForUser($user))
+            : [];
+
+        $grouped = $this->raidRepo->findGroupedOpen($userGuildIds, $serverName);
+
+        $upcomingRaids = $grouped['upcoming'];
+        // Un raid "démarré" peut avoir dépassé sa durée planifiée depuis la dernière
+        // exécution de app:close-expired-raids : on le clôture à la volée plutôt que
+        // de l'afficher comme encore ouvert.
+        $startedRaids = array_values(array_filter(
+            $grouped['started'],
+            fn($r) => !$this->closeIfExpired($r)
+        ));
+        $ongoingRaids = $grouped['ongoing'];
+
+        // Collect available types from all open raids before applying the type filter
+        $raidTypes = array_unique(array_map(
+            fn($r) => $r->getRaidTemplate()->getName(),
+            array_merge($upcomingRaids, $startedRaids, $ongoingRaids)
+        ));
+        sort($raidTypes);
+
+        if ($filterType) {
+            $byType        = fn($r) => $r->getRaidTemplate()->getName() === $filterType;
+            $upcomingRaids = array_values(array_filter($upcomingRaids, $byType));
+            $startedRaids  = array_values(array_filter($startedRaids,  $byType));
+            $ongoingRaids  = array_values(array_filter($ongoingRaids,  $byType));
+        }
+
+        if ($filterNotFull) {
+            $notFull       = fn($r) => !$r->isFull();
+            $upcomingRaids = array_values(array_filter($upcomingRaids, $notFull));
+            $startedRaids  = array_values(array_filter($startedRaids,  $notFull));
+            $ongoingRaids  = array_values(array_filter($ongoingRaids,  $notFull));
+        }
+
+        if ($filterSoon) {
+            $threshold     = (new \DateTimeImmutable())->modify('+48 hours');
+            $upcomingRaids = array_values(array_filter($upcomingRaids, fn($r) => $r->getScheduledAt() <= $threshold));
+            $startedRaids  = [];
+            $ongoingRaids  = [];
+        }
+
+        return [
+            'upcomingRaids'    => $upcomingRaids,
+            'startedRaids'     => $startedRaids,
+            'ongoingRaids'     => $ongoingRaids,
+            'raidTypes'        => $raidTypes,
+            'userGuildIds'     => $userGuildIds,
+            'myParticipations' => $user ? $this->participantRepo->findOpenParticipationsForUser($user) : [],
+        ];
+    }
+
+    /** Assemble les données de candidatures/participants pour la page de détail d'un raid. */
+    public function buildShowData(Raid $raid, ?User $user): array
+    {
+        $userId    = $user ? (int) $user->getId() : null;
+        $eligible  = $user ? $this->charRepo->findAllEligibleForRaid($user, $raid) : [];
+        $isCreator = $user && $raid->isCreatedBy($user);
+
+        $acceptedCharacters  = [];
+        $pendingApplications = [];
+        $participantsByUser  = [];
+        foreach ($raid->getParticipants() as $p) {
+            $participantsByUser[(int) $p->getCharacter()->getUser()->getId()] = $p->getCharacter();
+            if ($userId && (int) $p->getCharacter()->getUser()->getId() === $userId) {
+                if ($p->getStatus() === RaidParticipantStatus::Accepted) {
+                    $acceptedCharacters[] = $p->getCharacter();
+                } else {
+                    $pendingApplications[] = $p;
+                }
+            }
+        }
+
+        return [
+            'eligible'            => $eligible,
+            'isCreator'           => $isCreator,
+            'acceptedCharacters'  => $acceptedCharacters,
+            'pendingApplications' => $pendingApplications,
+            'participantsByUser'  => $participantsByUser,
+            'rootComments'        => $this->commentRepo->findRootByRaid($raid),
+            'myOtherRaids'        => $isCreator ? $this->raidRepo->findOpenByGuild($raid->getGuild(), $raid) : [],
+        ];
     }
 }

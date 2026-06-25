@@ -5,11 +5,14 @@ namespace App\Service;
 use App\Entity\Guild;
 use App\Entity\GuildMembership;
 use App\Entity\MemberStatus;
+use App\Entity\RaidStatus;
 use App\Entity\User;
 use App\Entity\Character;
 use App\Exception\BusinessRuleException;
+use App\Repository\CharacterRepository;
 use App\Repository\GuildMembershipRepository;
 use App\Repository\GuildRepository;
+use App\Repository\RaidRepository;
 use App\Service\DiscordNotifier;
 use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,6 +25,8 @@ class GuildService
     public function __construct(
         private readonly GuildRepository $guildRepo,
         private readonly GuildMembershipRepository $membershipRepo,
+        private readonly CharacterRepository $charRepo,
+        private readonly RaidRepository $raidRepo,
         private readonly NotificationService $notificationService,
         private readonly DiscordNotifier $discord,
         private readonly EntityManagerInterface $em,
@@ -183,6 +188,35 @@ class GuildService
     {
         $this->em->remove($guild);
         $this->em->flush();
+    }
+
+    /** Assemble les données d'éligibilité et les raids visibles pour la page de détail d'une guilde. */
+    public function buildShowData(Guild $guild, ?User $user): array
+    {
+        $isOwner = $guild->isOwnedBy($user);
+        if ($isOwner) {
+            $this->autoPromoteOwner($guild, $user);
+        }
+
+        $isLeader                = $user && $guild->isLeaderOf($user);
+        $confirmedCharacters     = $user ? $this->charRepo->findConfirmedInGuild($user, $guild) : [];
+        $canCreateRaidCharacters = $user ? $this->charRepo->findCanCreateRaidsInGuild($user, $guild) : [];
+        $isMember                = $isLeader || !empty($confirmedCharacters);
+
+        $allRaids = array_filter(
+            $this->raidRepo->findByGuild($guild),
+            fn($r) => $r->isPublic() || $isMember
+        );
+
+        return [
+            'eligible'                => $user ? $this->charRepo->findEligibleForGuild($user, $guild->getServer()) : [],
+            'confirmedCharacters'     => $confirmedCharacters,
+            'canCreateRaidCharacters' => $canCreateRaidCharacters,
+            'isOwner'                 => $isOwner,
+            'isLeader'                => $isLeader,
+            'activeRaids'             => array_values(array_filter($allRaids, fn($r) => $r->getStatus() === RaidStatus::Open)),
+            'closedRaids'             => array_values(array_filter($allRaids, fn($r) => $r->getStatus() === RaidStatus::Closed)),
+        ];
     }
 
     private function uniqueSlug(string $name, ?int $excludeId = null): string

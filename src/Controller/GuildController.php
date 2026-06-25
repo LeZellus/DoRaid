@@ -5,13 +5,11 @@ namespace App\Controller;
 use App\Entity\Guild;
 use App\Entity\GuildMembership;
 use App\Entity\MemberStatus;
-use App\Entity\RaidStatus;
 use App\Form\GuildEditType;
 use App\Form\GuildType;
 use App\Repository\CharacterRepository;
 use App\Repository\GuildMembershipRepository;
 use App\Repository\GuildRepository;
-use App\Repository\RaidRepository;
 use App\Security\GuildVoter;
 use App\Service\FileUploadService;
 use App\Service\GuildService;
@@ -116,45 +114,31 @@ class GuildController extends AbstractController
     }
 
     #[Route('/{slug}', name: 'app_guild_show')]
-    public function show(#[MapEntity(mapping: ['slug' => 'slug'])] Guild $guild, RaidRepository $raidRepo): Response
+    public function show(string $slug, GuildRepository $guildRepo): Response
     {
-        $currentUser = $this->getUser();
-        $isOwner     = $currentUser && (int) $guild->getOwner()->getId() === (int) $currentUser->getId();
-
-        if ($isOwner) {
-            $this->guildService->autoPromoteOwner($guild, $currentUser);
+        $guild = $guildRepo->findBySlugWithMembers($slug);
+        if (!$guild) {
+            throw $this->createNotFoundException('Guilde introuvable.');
         }
 
-        $isLeader              = $currentUser && $guild->isLeaderOf($currentUser);
-        $eligible              = $currentUser ? $this->charRepo->findEligibleForGuild($currentUser, $guild->getServer()) : [];
-        $confirmedCharacters   = $currentUser ? $this->charRepo->findConfirmedInGuild($currentUser, $guild) : [];
-        $canCreateRaidCharacters = $currentUser ? $this->charRepo->findCanCreateRaidsInGuild($currentUser, $guild) : [];
-        $isMember              = $isLeader || !empty($confirmedCharacters);
+        $data = $this->guildService->buildShowData($guild, $this->getUser());
 
-        $allRaids    = array_filter($raidRepo->findByGuild($guild), fn($r) => $r->isPublic() || $isMember);
-        $activeRaids = array_values(array_filter($allRaids, fn($r) => $r->getStatus() === RaidStatus::Open));
-        $closedRaids = array_values(array_filter($allRaids, fn($r) => $r->getStatus() === RaidStatus::Closed));
-
-        return $this->render('guild/show.html.twig', [
-            'guild'                   => $guild,
-            'eligible'                => $eligible,
-            'confirmedCharacters'     => $confirmedCharacters,
-            'canCreateRaidCharacters' => $canCreateRaidCharacters,
-            'isOwner'                 => $isOwner,
-            'isLeader'                => $isLeader,
-            'activeRaids'             => $activeRaids,
-            'closedRaids'             => $closedRaids,
-        ]);
+        return $this->render('guild/show.html.twig', ['guild' => $guild] + $data);
     }
 
     #[Route('/{slug}/membres', name: 'app_guild_members')]
-    public function members(#[MapEntity(mapping: ['slug' => 'slug'])] Guild $guild): Response
+    public function members(string $slug, GuildRepository $guildRepo): Response
     {
+        $guild = $guildRepo->findBySlugWithMembers($slug);
+        if (!$guild) {
+            throw $this->createNotFoundException('Guilde introuvable.');
+        }
+
         $currentUser = $this->getUser();
 
         return $this->render('guild/members.html.twig', [
             'guild'    => $guild,
-            'isOwner'  => $currentUser && (int) $guild->getOwner()->getId() === (int) $currentUser->getId(),
+            'isOwner'  => $guild->isOwnedBy($currentUser),
             'isLeader' => $currentUser && $guild->isLeaderOf($currentUser),
         ]);
     }

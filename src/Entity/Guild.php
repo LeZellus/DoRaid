@@ -129,6 +129,11 @@ class Guild
         );
     }
 
+    public function isOwnedBy(?User $user): bool
+    {
+        return $user !== null && (int) $this->owner->getId() === (int) $user->getId();
+    }
+
     public function isLeaderOf(User $user): bool
     {
         foreach ($this->memberships as $m) {
