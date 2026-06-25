@@ -16,7 +16,7 @@ class RaidParticipantRepository extends ServiceEntityRepository
         parent::__construct($registry, RaidParticipant::class);
     }
 
-    /** @return RaidParticipant[] Pending participants on raids created by $user */
+    /** @return RaidParticipant[] Pending participants on open raids created by $user */
     public function findPendingForCreator(User $user): array
     {
         return $this->createQueryBuilder('rp')
@@ -29,8 +29,10 @@ class RaidParticipantRepository extends ServiceEntityRepository
             ->join('creator.user', 'cu')
             ->where('rp.status = :pending')
             ->andWhere('cu = :user')
+            ->andWhere('r.status = :open')
             ->setParameter('pending', RaidParticipantStatus::Pending)
             ->setParameter('user', $user)
+            ->setParameter('open', \App\Entity\RaidStatus::Open)
             ->orderBy('r.createdAt', 'DESC')
             ->getQuery()
             ->getResult();

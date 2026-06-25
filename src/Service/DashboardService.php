@@ -25,13 +25,15 @@ class DashboardService
         $completedRaids = [];
 
         foreach ($this->participantRepo->findByUser($user) as $p) {
-            if ($p->getStatus() === RaidParticipantStatus::Pending) {
+            $raidOpen = $p->getRaid()->getStatus() === RaidStatus::Open;
+            if ($p->getStatus() === RaidParticipantStatus::Pending && $raidOpen) {
                 $pendingRaids[] = $p;
-            } elseif ($p->getRaid()->getStatus() === RaidStatus::Open) {
+            } elseif ($raidOpen) {
                 $activeRaids[] = $p;
-            } else {
+            } elseif ($p->getStatus() === RaidParticipantStatus::Accepted) {
                 $completedRaids[] = $p;
             }
+            // intéressé sur raid fermé : ignoré
         }
 
         $confirmedMemberships = [];
