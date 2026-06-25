@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\Url;
 
 class GuildEditType extends AbstractType
@@ -24,6 +25,9 @@ class GuildEditType extends AbstractType
             ->add('description', TextareaType::class, [
                 'label'    => 'Description',
                 'required' => false,
+                'constraints' => [
+                    new Length(max: 5000, maxMessage: 'La description ne peut pas dépasser {{ limit }} caractères.'),
+                ],
                 'attr'     => ['rows' => 5],
             ])
             ->add('imageFile', FileType::class, [

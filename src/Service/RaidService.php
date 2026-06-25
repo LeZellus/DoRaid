@@ -100,6 +100,9 @@ class RaidService
 
     public function acceptParticipant(RaidParticipant $participant): void
     {
+        if ($participant->getRaid()->getStatus() !== RaidStatus::Open) {
+            throw new BusinessRuleException('Ce raid est terminé, impossible d\'accepter un participant.');
+        }
         if ($participant->getRaid()->isFull()) {
             throw new BusinessRuleException('Le raid est complet. Retirez un participant avant d\'en accepter un nouveau.');
         }
@@ -130,6 +133,9 @@ class RaidService
     {
         $sourceRaid = $participant->getRaid();
 
+        if ($sourceRaid->getStatus() !== RaidStatus::Open) {
+            throw new BusinessRuleException('Ce raid est terminé, impossible d\'en déplacer un participant.');
+        }
         if ($sourceRaid->getId() === $targetRaid->getId()) {
             throw new BusinessRuleException('Ce participant est déjà sur ce raid.');
         }

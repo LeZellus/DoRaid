@@ -20,6 +20,8 @@ class RaidCommentController extends AbstractController
 {
     use CsrfGuardTrait;
 
+    private const MAX_CONTENT_LENGTH = 5000;
+
     public function __construct(
         private readonly RaidParticipantRepository $participantRepo,
         private readonly RaidCommentService $commentService,
@@ -35,8 +37,10 @@ class RaidCommentController extends AbstractController
         }
 
         $content = trim($request->request->get('content', ''));
-        if ($content !== '') {
+        if ($content !== '' && mb_strlen($content) <= self::MAX_CONTENT_LENGTH) {
             $this->commentService->addComment($raid, $this->getUser(), $content);
+        } elseif (mb_strlen($content) > self::MAX_CONTENT_LENGTH) {
+            $this->addFlash('error', 'Le commentaire est trop long (' . self::MAX_CONTENT_LENGTH . ' caractères maximum).');
         }
 
         return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId(), '_fragment' => 'commentaires']);
@@ -52,12 +56,14 @@ class RaidCommentController extends AbstractController
         }
 
         $content = trim($request->request->get('content', ''));
-        if ($content !== '') {
+        if ($content !== '' && mb_strlen($content) <= self::MAX_CONTENT_LENGTH) {
             try {
                 $this->commentService->addReply($parent, $this->getUser(), $content);
             } catch (BusinessRuleException $e) {
                 $this->addFlash('error', $e->getMessage());
             }
+        } elseif (mb_strlen($content) > self::MAX_CONTENT_LENGTH) {
+            $this->addFlash('error', 'Le commentaire est trop long (' . self::MAX_CONTENT_LENGTH . ' caractères maximum).');
         }
 
         return $this->redirectToRoute('app_raid_show', ['id' => $parent->getRaid()->getId(), '_fragment' => 'commentaires']);

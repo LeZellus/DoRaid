@@ -270,7 +270,8 @@ class GuildController extends AbstractController
         }
 
         $referer = $request->headers->get('referer');
-        return $referer ? $this->redirect($referer) : $this->redirectToRoute('app_guild_show', ['slug' => $guildSlug]);
+        $safeReferer = $referer && str_starts_with($referer, $request->getSchemeAndHttpHost() . '/') ? $referer : null;
+        return $safeReferer ? $this->redirect($safeReferer) : $this->redirectToRoute('app_guild_show', ['slug' => $guildSlug]);
     }
 
     #[IsGranted('GUILD_LEADER', subject: 'guild')]

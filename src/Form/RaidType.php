@@ -10,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
+use Symfony\Component\Validator\Constraints\Length;
 
 class RaidType extends AbstractType
 {
@@ -19,6 +20,9 @@ class RaidType extends AbstractType
             ->add('description', TextareaType::class, [
                 'label'    => 'Description / consignes',
                 'required' => false,
+                'constraints' => [
+                    new Length(max: 5000, maxMessage: 'La description ne peut pas dépasser {{ limit }} caractères.'),
+                ],
                 'attr'     => ['rows' => 4, 'placeholder' => 'Objectifs, niveau requis, composition souhaitée...'],
             ])
             ->add('isPublic', CheckboxType::class, [

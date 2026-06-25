@@ -21,6 +21,8 @@ class EnigmeController extends AbstractController
 {
     use CsrfGuardTrait;
 
+    private const MAX_COMMENT_LENGTH = 5000;
+
     public function __construct(
         private readonly RaidParticipantRepository $participantRepo,
         private readonly EnigmeService $enigmeService,
@@ -101,6 +103,9 @@ class EnigmeController extends AbstractController
         $content = trim($request->request->get('content', ''));
         if ($content === '') {
             return new JsonResponse(['success' => false, 'error' => 'Commentaire vide'], 400);
+        }
+        if (mb_strlen($content) > self::MAX_COMMENT_LENGTH) {
+            return new JsonResponse(['success' => false, 'error' => 'Commentaire trop long (' . self::MAX_COMMENT_LENGTH . ' caractères maximum)'], 400);
         }
 
         $this->enigmeService->addComment($enigme, $content, $author);
