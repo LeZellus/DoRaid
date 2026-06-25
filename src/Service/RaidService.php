@@ -117,6 +117,21 @@ class RaidService
         $this->em->flush();
     }
 
+    /** Transfère la création du raid à un autre participant accepté (ex. absence du créateur initial). */
+    public function transferCreator(Raid $raid, Character $newCreator): void
+    {
+        if ($raid->getCreator() === $newCreator || $raid->getCreator()->getId() === $newCreator->getId()) {
+            throw new BusinessRuleException('Ce personnage est déjà créateur du raid.');
+        }
+        if (!$raid->isAcceptedParticipant($newCreator)) {
+            throw new BusinessRuleException('Seul un participant accepté peut devenir créateur du raid.');
+        }
+
+        $raid->setCreator($newCreator);
+        $this->notificationService->notifyRaidCreatorTransferred($raid, $newCreator);
+        $this->em->flush();
+    }
+
     public function kickParticipant(RaidParticipant $participant): void
     {
         $this->notificationService->notifyParticipationKicked($participant);

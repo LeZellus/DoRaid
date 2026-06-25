@@ -47,6 +47,17 @@ class NotificationService
         );
     }
 
+    public function notifyRaidCreatorTransferred(Raid $raid, Character $newCreator): void
+    {
+        $this->persist(
+            $newCreator->getUser(),
+            'raid_creator_transferred',
+            'Vous êtes maintenant créateur du raid',
+            'Vous gérez désormais les candidatures du raid ' . $raid->getRaidTemplate()->getName() . ' (' . $raid->getGuild()->getName() . ')',
+            $this->router->generate('app_raid_show', ['id' => $raid->getId()]),
+        );
+    }
+
     public function notifyParticipationMovedToWaitlist(RaidParticipant $participant): void
     {
         $raid = $participant->getRaid();

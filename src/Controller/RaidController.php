@@ -327,6 +327,22 @@ class RaidController extends AbstractController
         return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
     }
 
+    #[IsGranted('ROLE_USER')]
+    #[Route('/participants/{id}/nommer-createur', name: 'app_raid_transfer_creator', methods: ['POST'])]
+    public function transferCreator(RaidParticipant $participant, Request $request): Response
+    {
+        $raid = $participant->getRaid();
+        $this->requireCsrfToken('transfer_creator_' . $participant->getId(), $request);
+        $this->denyAccessUnlessGranted(RaidVoter::CREATOR, $raid);
+
+        $this->handleBusinessRule(
+            fn() => $this->raidService->transferCreator($raid, $participant->getCharacter()),
+            $participant->getCharacter()->getName() . ' est maintenant créateur du raid.'
+        );
+
+        return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
+    }
+
     #[IsGranted('RAID_CREATOR', subject: 'raid')]
     #[IsGranted('ROLE_USER')]
     #[Route('/{id}/clore', name: 'app_raid_close', methods: ['POST'])]

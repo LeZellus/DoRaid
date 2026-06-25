@@ -140,6 +140,14 @@ class Raid
         return $this->creator->getUser()->getId() === $user->getId();
     }
 
+    public function isAcceptedParticipant(Character $character): bool
+    {
+        return $this->getAcceptedParticipants()->exists(
+            fn($_, RaidParticipant $p) => $p->getCharacter() === $character
+                || ($character->getId() !== null && $p->getCharacter()->getId() === $character->getId())
+        );
+    }
+
     public function __toString(): string
     {
         return $this->raidTemplate->getName() . ' — ' . $this->guild->getName();
