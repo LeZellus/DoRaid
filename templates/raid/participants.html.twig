@@ -68,6 +68,22 @@
                         </div>
                         {% if isCreator and p.character !== raid.creator %}
                             <div class="flex items-center gap-2 shrink-0">
+                                {% if myOtherRaids is not empty %}
+                                    <form method="post" action="{{ path('app_raid_move', {id: p.id}) }}" class="flex items-center gap-1">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('move_' ~ p.id) }}">
+                                        <select name="target_raid_id" class="bg-gray-800 border border-gray-700 text-gray-300 text-xs rounded px-1.5 py-1.5 max-w-[6.5rem] focus:outline-none focus:ring-1 focus:ring-sky-500">
+                                            {% for r in myOtherRaids %}
+                                                <option value="{{ r.id }}">{{ r.raidTemplate.name }} ({{ r.creator.name }}){{ r.scheduledAt ? ' · ' ~ r.scheduledAt|date('d/m') : '' }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <button type="submit" title="Déplacer vers un autre raid"
+                                            class="w-8 h-8 rounded-full flex items-center justify-center bg-sky-600/15 hover:bg-sky-600/35 border border-sky-600/30 text-sky-400 hover:text-sky-300 transition shrink-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.939 5.7a.75.75 0 111.122-.998l4.25 4.75a.75.75 0 010 .997l-4.25 4.75a.75.75 0 11-1.122-.998l3.45-3.55H3.75A.75.75 0 013 10z" clip-rule="evenodd"/>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                {% endif %}
                                 <form method="post" action="{{ path('app_raid_transfer_creator', {id: p.id}) }}"
                                       onsubmit="return confirm('Nommer {{ p.character.name }} créateur du raid ? Il gérera les candidatures à votre place.')">
                                     <input type="hidden" name="_token" value="{{ csrf_token('transfer_creator_' ~ p.id) }}">
@@ -138,6 +154,22 @@
                         </div>
                         {% if isCreator %}
                             <div class="flex items-center gap-2 shrink-0">
+                                {% if myOtherRaids is not empty %}
+                                    <form method="post" action="{{ path('app_raid_move', {id: p.id}) }}" class="flex items-center gap-1">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('move_' ~ p.id) }}">
+                                        <select name="target_raid_id" class="bg-gray-800 border border-gray-700 text-gray-300 text-xs rounded px-1.5 py-1.5 max-w-[6.5rem] focus:outline-none focus:ring-1 focus:ring-sky-500">
+                                            {% for r in myOtherRaids %}
+                                                <option value="{{ r.id }}">{{ r.raidTemplate.name }} ({{ r.creator.name }}){{ r.scheduledAt ? ' · ' ~ r.scheduledAt|date('d/m') : '' }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <button type="submit" title="Déplacer vers un autre raid"
+                                            class="w-8 h-8 rounded-full flex items-center justify-center bg-sky-600/15 hover:bg-sky-600/35 border border-sky-600/30 text-sky-400 hover:text-sky-300 transition shrink-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.939 5.7a.75.75 0 111.122-.998l4.25 4.75a.75.75 0 010 .997l-4.25 4.75a.75.75 0 11-1.122-.998l3.45-3.55H3.75A.75.75 0 013 10z" clip-rule="evenodd"/>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                {% endif %}
                                 <form method="post" action="{{ path('app_raid_accept', {id: p.id}) }}">
                                     <input type="hidden" name="_token" value="{{ csrf_token('accept_' ~ p.id) }}">
                                     <button type="submit" title="Accepter"

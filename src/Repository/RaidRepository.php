@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\Entity\Guild;
 use App\Entity\Raid;
 use App\Entity\RaidStatus;
-use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -173,6 +172,24 @@ class RaidRepository extends ServiceEntityRepository
             ->andWhere('r.scheduledAt IS NOT NULL')
             ->andWhere('rt.duration IS NOT NULL')
             ->setParameter('open', RaidStatus::Open)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /** @return Raid[] Autres raids ouverts de la même guilde — utilisé pour déplacer un participant. */
+    public function findOpenByGuild(Guild $guild, Raid $exclude): array
+    {
+        return $this->createQueryBuilder('r')
+            ->addSelect('rt', 'creator')
+            ->join('r.raidTemplate', 'rt')
+            ->join('r.creator', 'creator')
+            ->where('r.guild = :guild')
+            ->andWhere('r.status = :open')
+            ->andWhere('r != :exclude')
+            ->setParameter('guild', $guild)
+            ->setParameter('open', RaidStatus::Open)
+            ->setParameter('exclude', $exclude)
+            ->orderBy('r.scheduledAt', 'ASC')
             ->getQuery()
             ->getResult();
     }

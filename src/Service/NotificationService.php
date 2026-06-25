@@ -47,6 +47,19 @@ class NotificationService
         );
     }
 
+    public function notifyParticipantMoved(RaidParticipant $participant, Raid $fromRaid): void
+    {
+        $toRaid = $participant->getRaid();
+
+        $this->persist(
+            $participant->getCharacter()->getUser(),
+            'participation_moved',
+            'Déplacé vers un autre raid',
+            'Votre personnage ' . $participant->getCharacter()->getName() . ' a été déplacé du raid ' . $fromRaid->getRaidTemplate()->getName() . ' vers le raid ' . $toRaid->getRaidTemplate()->getName() . ' (' . $toRaid->getGuild()->getName() . ')',
+            $this->router->generate('app_raid_show', ['id' => $toRaid->getId()]),
+        );
+    }
+
     public function notifyRaidCreatorTransferred(Raid $raid, Character $newCreator): void
     {
         $this->persist(

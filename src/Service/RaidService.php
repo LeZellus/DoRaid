@@ -117,6 +117,32 @@ class RaidService
         $this->em->flush();
     }
 
+    /** Déplace un participant (accepté ou intéressé) vers un autre raid de la même guilde. */
+    public function moveParticipant(RaidParticipant $participant, Raid $targetRaid): void
+    {
+        $sourceRaid = $participant->getRaid();
+
+        if ($sourceRaid->getId() === $targetRaid->getId()) {
+            throw new BusinessRuleException('Ce participant est déjà sur ce raid.');
+        }
+        if ($sourceRaid->getGuild()->getId() !== $targetRaid->getGuild()->getId()) {
+            throw new BusinessRuleException('Le raid de destination doit appartenir à la même guilde.');
+        }
+        if ($targetRaid->getStatus() !== RaidStatus::Open) {
+            throw new BusinessRuleException('Le raid de destination est terminé.');
+        }
+        if ($targetRaid->isParticipant($participant->getCharacter())) {
+            throw new BusinessRuleException('Ce personnage participe déjà au raid de destination.');
+        }
+        if ($participant->getStatus() === RaidParticipantStatus::Accepted && $targetRaid->isFull()) {
+            throw new BusinessRuleException('Le raid de destination est complet.');
+        }
+
+        $participant->setRaid($targetRaid);
+        $this->notificationService->notifyParticipantMoved($participant, $sourceRaid);
+        $this->em->flush();
+    }
+
     /** Transfère la création du raid à un autre participant accepté (ex. absence du créateur initial). */
     public function transferCreator(Raid $raid, Character $newCreator): void
     {

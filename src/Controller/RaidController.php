@@ -186,13 +186,17 @@ class RaidController extends AbstractController
     }
 
     #[Route('/{id}/participants', name: 'app_raid_participants')]
-    public function participants(Raid $raid): Response
+    public function participants(Raid $raid, RaidRepository $raidRepo): Response
     {
         if ($r = $this->checkRaidAccess($raid)) return $r;
 
+        $currentUser = $this->getUser();
+        $isCreator   = $currentUser && $raid->isCreatedBy($currentUser);
+
         return $this->render('raid/participants.html.twig', [
-            'raid'      => $raid,
-            'isCreator' => $this->getUser() && $raid->isCreatedBy($this->getUser()),
+            'raid'         => $raid,
+            'isCreator'    => $isCreator,
+            'myOtherRaids' => $isCreator ? $raidRepo->findOpenByGuild($raid->getGuild(), $raid) : [],
         ]);
     }
 
@@ -201,6 +205,7 @@ class RaidController extends AbstractController
         Raid $raid,
         CharacterRepository $charRepo,
         RaidCommentRepository $commentRepo,
+        RaidRepository $raidRepo,
     ): Response {
         if ($r = $this->checkRaidAccess($raid)) return $r;
 
@@ -234,6 +239,7 @@ class RaidController extends AbstractController
             'pendingApplications' => $pendingApplications,
             'participantsByUser'  => $participantsByUser,
             'rootComments'        => $commentRepo->findRootByRaid($raid),
+            'myOtherRaids'        => $isCreator ? $raidRepo->findOpenByGuild($raid->getGuild(), $raid) : [],
         ]);
     }
 
@@ -322,6 +328,29 @@ class RaidController extends AbstractController
         $this->handleBusinessRule(
             fn() => $this->raidService->moveToWaitlist($participant),
             $participant->getCharacter()->getName() . ' a été replacé sur la liste des intéressés.'
+        );
+
+        return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
+    }
+
+    #[IsGranted('ROLE_USER')]
+    #[Route('/participants/{id}/deplacer', name: 'app_raid_move', methods: ['POST'])]
+    public function move(RaidParticipant $participant, Request $request, RaidRepository $raidRepo): Response
+    {
+        $raid = $participant->getRaid();
+        $this->requireCsrfToken('move_' . $participant->getId(), $request);
+        $this->denyAccessUnlessGranted(RaidVoter::CREATOR, $raid);
+
+        $targetRaid = $raidRepo->find((int) $request->request->get('target_raid_id'));
+        if (!$targetRaid) {
+            $this->addFlash('error', 'Raid de destination introuvable.');
+            return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
+        }
+
+        $name = $participant->getCharacter()->getName();
+        $this->handleBusinessRule(
+            fn() => $this->raidService->moveParticipant($participant, $targetRaid),
+            $name . ' a été déplacé vers ' . $targetRaid->getRaidTemplate()->getName() . '.'
         );
 
         return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
