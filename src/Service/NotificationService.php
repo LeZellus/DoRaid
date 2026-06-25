@@ -47,6 +47,19 @@ class NotificationService
         );
     }
 
+    public function notifyParticipationMovedToWaitlist(RaidParticipant $participant): void
+    {
+        $raid = $participant->getRaid();
+
+        $this->persist(
+            $participant->getCharacter()->getUser(),
+            'participation_waitlisted',
+            'Replacé sur la liste des intéressés',
+            'Votre personnage ' . $participant->getCharacter()->getName() . ' a été replacé sur la liste des intéressés pour le raid ' . $raid->getRaidTemplate()->getName() . ' (' . $raid->getGuild()->getName() . ')',
+            $this->router->generate('app_raid_show', ['id' => $raid->getId()]),
+        );
+    }
+
     public function notifyParticipationKicked(RaidParticipant $participant): void
     {
         $raid = $participant->getRaid();

@@ -76,12 +76,12 @@
                             {% endif %}
                             {% if isLeader and m.character.user.id != app.user.id and m.status.value != 'leader' %}
                                 {% if m.canCreateRaids() %}
-                                    <form method="post" action="{{ path('app_guild_revoke_raid_creator', {id: m.id}) }}">
+                                    <form method="post" action="{{ path('app_guild_raid_permission', {id: m.id, action: 'revoquer-raids'}) }}">
                                         <input type="hidden" name="_token" value="{{ csrf_token('raid_creator_' ~ m.id) }}">
                                         {{ ui.button('Retirer création de raids', 'ghost', 'submit', 'py-1.5 px-3 text-xs') }}
                                     </form>
                                 {% else %}
-                                    <form method="post" action="{{ path('app_guild_grant_raid_creator', {id: m.id}) }}">
+                                    <form method="post" action="{{ path('app_guild_raid_permission', {id: m.id, action: 'autoriser-raids'}) }}">
                                         <input type="hidden" name="_token" value="{{ csrf_token('raid_creator_' ~ m.id) }}">
                                         {{ ui.button('Autoriser création de raids', 'secondary', 'submit', 'py-1.5 px-3 text-xs') }}
                                     </form>

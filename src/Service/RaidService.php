@@ -105,6 +105,18 @@ class RaidService
         $this->em->flush();
     }
 
+    /** Remet un participant accepté dans la liste des intéressés (ex. désistement géré par le créateur). */
+    public function moveToWaitlist(RaidParticipant $participant): void
+    {
+        try {
+            $this->participantWorkflow->apply($participant, 'unaccept');
+        } catch (\Symfony\Component\Workflow\Exception\NotEnabledTransitionException) {
+            throw new BusinessRuleException('Ce participant n\'est pas accepté.');
+        }
+        $this->notificationService->notifyParticipationMovedToWaitlist($participant);
+        $this->em->flush();
+    }
+
     public function kickParticipant(RaidParticipant $participant): void
     {
         $this->notificationService->notifyParticipationKicked($participant);

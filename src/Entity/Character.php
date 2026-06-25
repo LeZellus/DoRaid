@@ -53,6 +53,7 @@ class Character
 
     public function getUser(): User { return $this->user; }
     public function setUser(User $user): static { $this->user = $user; return $this; }
+    public function belongsTo(User $user): bool { return (int) $this->user->getId() === (int) $user->getId(); }
 
     public function getGameClass(): GameClass { return $this->gameClass; }
     public function setGameClass(GameClass $gameClass): static { $this->gameClass = $gameClass; return $this; }

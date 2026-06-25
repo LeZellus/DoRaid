@@ -6,7 +6,6 @@ use App\Entity\Guild;
 use App\Entity\GuildMembership;
 use App\Entity\MemberStatus;
 use App\Entity\RaidStatus;
-use App\Exception\BusinessRuleException;
 use App\Form\GuildEditType;
 use App\Form\GuildType;
 use App\Repository\CharacterRepository;
@@ -16,6 +15,8 @@ use App\Repository\RaidRepository;
 use App\Security\GuildVoter;
 use App\Service\FileUploadService;
 use App\Service\GuildService;
+use App\Traits\BusinessRuleFlashTrait;
+use App\Traits\CharacterOwnershipTrait;
 use App\Traits\CsrfGuardTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -30,6 +31,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/guildes')]
 class GuildController extends AbstractController
 {
+    use BusinessRuleFlashTrait;
+    use CharacterOwnershipTrait;
     use CsrfGuardTrait;
 
     public function __construct(
@@ -88,23 +91,23 @@ class GuildController extends AbstractController
             $characterId = (int) $request->request->get('character_id');
             $character   = $characterId > 0 ? $this->charRepo->find($characterId) : null;
 
-            if (!$character || (int) $character->getUser()->getId() !== (int) $user->getId()) {
+            if (!$character || !$character->belongsTo($user)) {
                 $this->addFlash('error', 'Sélectionnez un personnage meneur pour cette guilde.');
                 return $this->render('guild/new.html.twig', [
                     'form' => $form, 'charsByServerId' => $charsByServerId, 'submittedCharId' => $characterId,
                 ]);
             }
 
-            try {
-                $this->guildService->createGuild($guild, $character, $user);
-                $this->addFlash('success', $character->getName() . ' est maintenant meneur de ' . $guild->getName() . ' !');
+            if ($this->handleBusinessRule(
+                fn() => $this->guildService->createGuild($guild, $character, $user),
+                $character->getName() . ' est maintenant meneur de ' . $guild->getName() . ' !'
+            )) {
                 return $this->redirectToRoute('app_guild_show', ['slug' => $guild->getSlug()]);
-            } catch (BusinessRuleException $e) {
-                $this->addFlash('error', $e->getMessage());
-                return $this->render('guild/new.html.twig', [
-                    'form' => $form, 'charsByServerId' => $charsByServerId, 'submittedCharId' => $characterId,
-                ]);
             }
+
+            return $this->render('guild/new.html.twig', [
+                'form' => $form, 'charsByServerId' => $charsByServerId, 'submittedCharId' => $characterId,
+            ]);
         }
 
         return $this->render('guild/new.html.twig', [
@@ -169,24 +172,21 @@ class GuildController extends AbstractController
             $this->addFlash('error', 'Trop de demandes d\'adhésion en peu de temps. Réessayez dans quelques instants.');
             return $this->redirectToRoute('app_guild_show', ['slug' => $guild->getSlug()]);
         }
-        $characterId = (int) $request->request->get('character_id');
-        $character   = $characterId > 0 ? $this->charRepo->find($characterId) : null;
+        $character = $this->resolveOwnCharacter($request, $this->charRepo);
 
-        if (!$character || (int) $character->getUser()->getId() !== (int) $currentUser->getId()) {
+        if (!$character) {
             $this->addFlash('error', 'Personnage invalide.');
             return $this->redirectToRoute('app_guild_show', ['slug' => $guild->getSlug()]);
         }
 
-        try {
-            $status = $this->guildService->joinGuild($guild, $character, $currentUser);
-            $this->addFlash('success', match($status) {
+        $this->handleBusinessRule(
+            fn() => $this->guildService->joinGuild($guild, $character, $currentUser),
+            fn(MemberStatus $status) => match($status) {
                 MemberStatus::Leader  => $character->getName() . ' est maintenant meneur de ' . $guild->getName() . ' !',
                 MemberStatus::Member  => $character->getName() . ' a rejoint ' . $guild->getName() . ' !',
                 MemberStatus::Pending => $character->getName() . ' a demandé à rejoindre ' . $guild->getName() . '. En attente de validation.',
-            });
-        } catch (BusinessRuleException $e) {
-            $this->addFlash('error', $e->getMessage());
-        }
+            }
+        );
 
         return $this->redirectToRoute('app_guild_show', ['slug' => $guild->getSlug()]);
     }
@@ -199,9 +199,11 @@ class GuildController extends AbstractController
         $this->requireCsrfToken('membership_' . $membership->getId(), $request);
         $this->denyAccessUnlessGranted(GuildVoter::LEADER, $guild);
 
-        $this->guildService->approveMembership($membership);
+        $this->handleBusinessRule(
+            fn() => $this->guildService->approveMembership($membership),
+            $membership->getCharacter()->getName() . ' est maintenant membre.'
+        );
 
-        $this->addFlash('success', $membership->getCharacter()->getName() . ' est maintenant membre.');
         return $this->redirectToRoute('app_guild_members', ['slug' => $guild->getSlug()]);
     }
 
@@ -213,49 +215,28 @@ class GuildController extends AbstractController
         $this->requireCsrfToken('membership_' . $membership->getId(), $request);
         $this->denyAccessUnlessGranted(GuildVoter::LEADER, $guild);
 
-        try {
-            $name = $membership->getCharacter()->getName();
-            $this->guildService->rejectMembership($membership);
-            $this->addFlash('success', $name . ' a été retiré de la guilde.');
-        } catch (BusinessRuleException $e) {
-            $this->addFlash('error', $e->getMessage());
-        }
+        $name = $membership->getCharacter()->getName();
+        $this->handleBusinessRule(
+            fn() => $this->guildService->rejectMembership($membership),
+            $name . ' a été retiré de la guilde.'
+        );
 
         return $this->redirectToRoute('app_guild_members', ['slug' => $guild->getSlug()]);
     }
 
     #[IsGranted('ROLE_USER')]
-    #[Route('/membres/{id}/autoriser-raids', name: 'app_guild_grant_raid_creator', methods: ['POST'])]
-    public function grantRaidCreator(GuildMembership $membership, Request $request): Response
+    #[Route('/membres/{id}/{action}', name: 'app_guild_raid_permission', methods: ['POST'], requirements: ['action' => 'autoriser-raids|revoquer-raids'])]
+    public function setRaidCreatorPermission(GuildMembership $membership, string $action, Request $request): Response
     {
         $guild = $membership->getGuild();
         $this->requireCsrfToken('raid_creator_' . $membership->getId(), $request);
         $this->denyAccessUnlessGranted(GuildVoter::LEADER, $guild);
 
-        try {
-            $this->guildService->setCanCreateRaids($membership, true);
-            $this->addFlash('success', $membership->getCharacter()->getName() . ' peut maintenant créer des raids.');
-        } catch (BusinessRuleException $e) {
-            $this->addFlash('error', $e->getMessage());
-        }
-
-        return $this->redirectToRoute('app_guild_members', ['slug' => $guild->getSlug()]);
-    }
-
-    #[IsGranted('ROLE_USER')]
-    #[Route('/membres/{id}/revoquer-raids', name: 'app_guild_revoke_raid_creator', methods: ['POST'])]
-    public function revokeRaidCreator(GuildMembership $membership, Request $request): Response
-    {
-        $guild = $membership->getGuild();
-        $this->requireCsrfToken('raid_creator_' . $membership->getId(), $request);
-        $this->denyAccessUnlessGranted(GuildVoter::LEADER, $guild);
-
-        try {
-            $this->guildService->setCanCreateRaids($membership, false);
-            $this->addFlash('success', $membership->getCharacter()->getName() . ' ne peut plus créer de raids.');
-        } catch (BusinessRuleException $e) {
-            $this->addFlash('error', $e->getMessage());
-        }
+        $grant = $action === 'autoriser-raids';
+        $this->handleBusinessRule(
+            fn() => $this->guildService->setCanCreateRaids($membership, $grant),
+            $membership->getCharacter()->getName() . ($grant ? ' peut maintenant créer des raids.' : ' ne peut plus créer de raids.')
+        );
 
         return $this->redirectToRoute('app_guild_members', ['slug' => $guild->getSlug()]);
     }
@@ -270,8 +251,7 @@ class GuildController extends AbstractController
 
         $from = null;
         foreach ($guild->getMemberships() as $m) {
-            if ($m->getStatus() === MemberStatus::Leader
-                && (int) $m->getCharacter()->getUser()->getId() === (int) $this->getUser()->getId()) {
+            if ($m->getStatus() === MemberStatus::Leader && $m->belongsTo($this->getUser())) {
                 $from = $m;
                 break;
             }
@@ -281,12 +261,10 @@ class GuildController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        try {
-            $this->guildService->transferLeadership($from, $to);
-            $this->addFlash('success', $to->getCharacter()->getName() . ' est maintenant meneur de ' . $guild->getName() . '.');
-        } catch (BusinessRuleException $e) {
-            $this->addFlash('error', $e->getMessage());
-        }
+        $this->handleBusinessRule(
+            fn() => $this->guildService->transferLeadership($from, $to),
+            $to->getCharacter()->getName() . ' est maintenant meneur de ' . $guild->getName() . '.'
+        );
 
         return $this->redirectToRoute('app_guild_members', ['slug' => $guild->getSlug()]);
     }
@@ -297,17 +275,13 @@ class GuildController extends AbstractController
     {
         $this->requireCsrfToken('leave_' . $membership->getId(), $request);
 
-        if ((int) $membership->getCharacter()->getUser()->getId() !== (int) $this->getUser()->getId()) {
+        if (!$membership->belongsTo($this->getUser())) {
             throw $this->createAccessDeniedException();
         }
 
         $guildSlug = $membership->getGuild()->getSlug();
 
-        try {
-            $this->guildService->leaveGuild($membership);
-            $this->addFlash('success', 'Vous avez quitté la guilde.');
-        } catch (BusinessRuleException $e) {
-            $this->addFlash('error', $e->getMessage());
+        if (!$this->handleBusinessRule(fn() => $this->guildService->leaveGuild($membership), 'Vous avez quitté la guilde.')) {
             return $this->redirectToRoute('app_guild_show', ['slug' => $guildSlug]);
         }
 

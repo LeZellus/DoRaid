@@ -42,6 +42,7 @@ class GuildMembership
 
     public function getCharacter(): Character { return $this->character; }
     public function setCharacter(Character $character): static { $this->character = $character; return $this; }
+    public function belongsTo(User $user): bool { return $this->character->belongsTo($user); }
 
     public function getStatus(): MemberStatus { return $this->status; }
     public function setStatus(MemberStatus|string $status): static

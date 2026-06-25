@@ -32,6 +32,9 @@ framework:
                 accept:
                     from: pending
                     to:   accepted
+                unaccept:
+                    from: accepted
+                    to:   pending
 
         guild_membership_status:
             type: state_machine

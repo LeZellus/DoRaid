@@ -8,6 +8,7 @@ use App\Form\CharacterEditType;
 use App\Form\CharacterType;
 use App\Repository\CharacterRepository;
 use App\Service\CharacterService;
+use App\Traits\BusinessRuleFlashTrait;
 use App\Traits\CsrfGuardTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,7 +22,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/personnages')]
 class CharacterController extends AbstractController
 {
+    use BusinessRuleFlashTrait;
     use CsrfGuardTrait;
+
     #[Route('', name: 'app_character_index')]
     public function index(CharacterRepository $repo): Response
     {
@@ -72,7 +75,7 @@ class CharacterController extends AbstractController
     #[Route('/{id}/modifier', name: 'app_character_edit', methods: ['GET', 'POST'])]
     public function edit(Character $character, Request $request, EntityManagerInterface $em, CharacterService $characterService): Response
     {
-        if ($character->getUser()->getId() !== $this->getUser()->getId()) {
+        if (!$character->belongsTo($this->getUser())) {
             throw $this->createAccessDeniedException();
         }
 
@@ -109,18 +112,16 @@ class CharacterController extends AbstractController
     #[Route('/{id}/supprimer', name: 'app_character_delete', methods: ['POST'])]
     public function delete(Character $character, CharacterService $characterService, Request $request): Response
     {
-        if ($character->getUser()->getId() !== $this->getUser()->getId()) {
+        if (!$character->belongsTo($this->getUser())) {
             throw $this->createAccessDeniedException();
         }
 
         $this->requireCsrfToken('delete_character_' . $character->getId(), $request);
 
-        try {
-            $characterService->deleteCharacter($character);
-            $this->addFlash('success', 'Personnage supprimé.');
-        } catch (BusinessRuleException $e) {
-            $this->addFlash('error', $e->getMessage());
-        }
+        $this->handleBusinessRule(
+            fn() => $characterService->deleteCharacter($character),
+            'Personnage supprimé.'
+        );
 
         return $this->redirectToRoute('app_character_index');
     }

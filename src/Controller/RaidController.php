@@ -17,6 +17,8 @@ use App\Repository\RaidTemplateRepository;
 use App\Repository\ServerRepository;
 use App\Security\RaidVoter;
 use App\Service\RaidService;
+use App\Traits\BusinessRuleFlashTrait;
+use App\Traits\CharacterOwnershipTrait;
 use App\Traits\CsrfGuardTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,6 +31,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/raids')]
 class RaidController extends AbstractController
 {
+    use BusinessRuleFlashTrait;
+    use CharacterOwnershipTrait;
     use CsrfGuardTrait;
 
     public function __construct(private readonly RaidService $raidService) {}
@@ -146,7 +150,7 @@ class RaidController extends AbstractController
             }
 
             $template  = $templateRepo->find((int) $request->request->get('raid_template_id'));
-            $character = $charRepo->find((int) $request->request->get('character_id'));
+            $character = $this->resolveOwnCharacter($request, $charRepo);
 
             if (!$template) {
                 $this->addFlash('error', 'Veuillez sélectionner un type de raid.');
@@ -156,7 +160,7 @@ class RaidController extends AbstractController
                 ]);
             }
 
-            if (!$character || (int) $character->getUser()->getId() !== (int) $this->getUser()->getId()) {
+            if (!$character) {
                 throw $this->createAccessDeniedException();
             }
 
@@ -275,21 +279,18 @@ class RaidController extends AbstractController
             return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
         }
 
-        $character = $charRepo->find((int) $request->request->get('character_id'));
+        $character = $this->resolveOwnCharacter($request, $charRepo);
 
-        if (!$character || (int) $character->getUser()->getId() !== (int) $this->getUser()->getId()) {
+        if (!$character) {
             throw $this->createAccessDeniedException();
         }
 
-        try {
-            $this->raidService->applyToRaid($raid, $character, $this->getUser());
-            $message = $raid->isFull()
+        $this->handleBusinessRule(
+            fn() => $this->raidService->applyToRaid($raid, $character, $this->getUser()),
+            fn() => $raid->isFull()
                 ? 'Candidature de ' . $character->getName() . ' envoyée ! Le raid est complet, vous êtes sur la liste des intéressés en cas de désistement.'
-                : 'Candidature de ' . $character->getName() . ' envoyée ! Le créateur du raid validera votre participation.';
-            $this->addFlash('success', $message);
-        } catch (BusinessRuleException $e) {
-            $this->addFlash('error', $e->getMessage());
-        }
+                : 'Candidature de ' . $character->getName() . ' envoyée ! Le créateur du raid validera votre participation.'
+        );
 
         return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
     }
@@ -302,12 +303,26 @@ class RaidController extends AbstractController
         $this->requireCsrfToken('accept_' . $participant->getId(), $request);
         $this->denyAccessUnlessGranted(RaidVoter::CREATOR, $raid);
 
-        try {
-            $this->raidService->acceptParticipant($participant);
-            $this->addFlash('success', $participant->getCharacter()->getName() . ' a été accepté dans le raid !');
-        } catch (BusinessRuleException $e) {
-            $this->addFlash('error', $e->getMessage());
-        }
+        $this->handleBusinessRule(
+            fn() => $this->raidService->acceptParticipant($participant),
+            $participant->getCharacter()->getName() . ' a été accepté dans le raid !'
+        );
+
+        return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
+    }
+
+    #[IsGranted('ROLE_USER')]
+    #[Route('/participants/{id}/remettre-en-attente', name: 'app_raid_unaccept', methods: ['POST'])]
+    public function unaccept(RaidParticipant $participant, Request $request): Response
+    {
+        $raid = $participant->getRaid();
+        $this->requireCsrfToken('unaccept_' . $participant->getId(), $request);
+        $this->denyAccessUnlessGranted(RaidVoter::CREATOR, $raid);
+
+        $this->handleBusinessRule(
+            fn() => $this->raidService->moveToWaitlist($participant),
+            $participant->getCharacter()->getName() . ' a été replacé sur la liste des intéressés.'
+        );
 
         return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
     }
@@ -318,9 +333,8 @@ class RaidController extends AbstractController
     public function close(Raid $raid, Request $request): Response
     {
         $this->requireCsrfToken('close_raid_' . $raid->getId(), $request);
-        $this->raidService->closeRaid($raid);
+        $this->handleBusinessRule(fn() => $this->raidService->closeRaid($raid), 'Raid marqué comme terminé.');
 
-        $this->addFlash('success', 'Raid marqué comme terminé.');
         return $this->redirectToRoute('app_raid_show', ['id' => $raid->getId()]);
     }
 
