@@ -107,20 +107,26 @@
                 {% if raid.description %}
                     <p class="text-gray-400 text-sm mt-3 leading-relaxed border-t border-gray-800/60 pt-3">{{ raid.description }}</p>
                 {% endif %}
-                {% if app.user %}
-                    {% set _myChar = participantsByUser[app.user.id] ?? null %}
-                    {% if _myChar %}
-                        {% set _myAccepted = false %}
-                        {% for _p in raid.acceptedParticipants %}
-                            {% if _p.character.id == _myChar.id %}{% set _myAccepted = true %}{% endif %}
-                        {% endfor %}
-                        <div class="flex items-center gap-2 text-xs mt-3 border-t border-gray-800/60 pt-3 {{ _myAccepted ? 'text-emerald-400' : 'text-yellow-400' }}">
-                            <img src="{{ asset('classes/' ~ _myChar.gameClass.name|lower ~ '.png') }}" alt="{{ _myChar.gameClass.name }}" class="w-4 h-4 rounded-full object-cover shrink-0">
-                            {{ _myAccepted ? 'Vous participez avec' : 'Candidature en attente avec' }}
-                            <span class="font-semibold {{ _myAccepted ? 'text-emerald-300' : 'text-yellow-300' }}">{{ _myChar.name }}</span>
-                            <span class="text-gray-500">— {{ _myChar.gameClass.name }}</span>
+                {% if app.user and myParticipants is not empty %}
+                    {% for myP in myParticipants %}
+                        {% set _isAccepted = myP.status == constant('App\\Entity\\RaidParticipantStatus::Accepted') %}
+                        <div class="flex items-center justify-between gap-2 text-xs mt-3 border-t border-gray-800/60 pt-3">
+                            <div class="flex items-center gap-2 {{ _isAccepted ? 'text-emerald-400' : 'text-yellow-400' }}">
+                                <img src="{{ asset('classes/' ~ myP.character.gameClass.name|lower ~ '.png') }}" alt="{{ myP.character.gameClass.name }}" class="w-4 h-4 rounded-full object-cover shrink-0">
+                                {{ _isAccepted ? 'Vous participez avec' : 'Candidature en attente avec' }}
+                                <span class="font-semibold {{ _isAccepted ? 'text-emerald-300' : 'text-yellow-300' }}">{{ myP.character.name }}</span>
+                                <span class="text-gray-500">— {{ myP.character.gameClass.name }}</span>
+                            </div>
+                            {% if raid.status == constant('App\\Entity\\RaidStatus::Open') and myP.character.id != raid.creator.id %}
+                                <form method="post" action="{{ path('app_raid_cancel', {id: myP.id}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('cancel_' ~ myP.id) }}">
+                                    <button type="submit"
+                                            onclick="return confirm('Se retirer de ce raid ?')"
+                                            class="text-xs text-gray-500 hover:text-red-400 transition shrink-0">Se retirer</button>
+                                </form>
+                            {% endif %}
                         </div>
-                    {% endif %}
+                    {% endfor %}
                 {% endif %}
             </div>
 
@@ -344,7 +350,7 @@
                                 {{ ui.button(raid.isFull() ? 'Rejoindre la liste d\'attente' : 'Candidater', 'primary', 'submit', 'py-2 px-4 text-sm shrink-0') }}
                             </form>
                         </div>
-                    {% elseif pendingApplications is empty and acceptedCharacters is empty %}
+                    {% elseif myParticipants is empty %}
                         <div class="border-t border-gray-800/60 px-6 py-3">
                             <p class="text-xs text-center text-orange-400/90">
                                 Vous n'avez aucun personnage sur le serveur <strong class="text-orange-300">{{ raid.guild.server }}</strong>.

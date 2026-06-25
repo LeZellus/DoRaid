@@ -5,10 +5,10 @@ namespace App\Service;
 use App\Entity\Character;
 use App\Entity\GuildMembership;
 use App\Entity\Notification;
-use App\Entity\MemberStatus;
 use App\Entity\Raid;
 use App\Entity\RaidParticipant;
 use App\Entity\User;
+use App\Repository\GuildMembershipRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -17,6 +17,7 @@ class NotificationService
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly UrlGeneratorInterface $router,
+        private readonly GuildMembershipRepository $membershipRepo,
     ) {}
 
     public function notifyParticipationReceived(RaidParticipant $participant): void
@@ -96,21 +97,32 @@ class NotificationService
         );
     }
 
+    public function notifyParticipationCancelledByUser(RaidParticipant $participant): void
+    {
+        $raid = $participant->getRaid();
+
+        $this->persist(
+            $raid->getCreator()->getUser(),
+            'participation_cancelled',
+            'Participant retiré',
+            $participant->getCharacter()->getName() . ' s\'est retiré du raid ' . $raid->getRaidTemplate()->getName() . ' (' . $raid->getGuild()->getName() . ')',
+            $this->router->generate('app_raid_show', ['id' => $raid->getId()]),
+        );
+    }
+
     public function notifyMembershipRequested(GuildMembership $membership): void
     {
         $character = $membership->getCharacter();
         $guild     = $membership->getGuild();
 
-        foreach ($guild->getMemberships() as $m) {
-            if ($m->getStatus() === MemberStatus::Leader) {
-                $this->persist(
-                    $m->getCharacter()->getUser(),
-                    'membership_pending',
-                    'Nouvelle demande d\'adhésion',
-                    $character->getName() . ' demande à rejoindre ' . $guild->getName(),
-                    $this->router->generate('app_guild_members', ['slug' => $guild->getSlug()]),
-                );
-            }
+        foreach ($this->membershipRepo->findLeadersByGuild($guild) as $m) {
+            $this->persist(
+                $m->getCharacter()->getUser(),
+                'membership_pending',
+                'Nouvelle demande d\'adhésion',
+                $character->getName() . ' demande à rejoindre ' . $guild->getName(),
+                $this->router->generate('app_guild_members', ['slug' => $guild->getSlug()]),
+            );
         }
     }
 

@@ -212,6 +212,25 @@ class RaidService
         return true;
     }
 
+    public function cancelParticipation(RaidParticipant $participant, User $user): void
+    {
+        if ((int) $participant->getCharacter()->getUser()->getId() !== (int) $user->getId()) {
+            throw new BusinessRuleException('Vous ne pouvez pas annuler la participation d\'un autre joueur.');
+        }
+
+        $creator = $participant->getRaid()->getCreator();
+        if ($creator->getId() === $participant->getCharacter()->getId()) {
+            throw new BusinessRuleException('Le créateur du raid ne peut pas se retirer. Transférez d\'abord le rôle de créateur.');
+        }
+
+        if ($participant->getStatus() === RaidParticipantStatus::Accepted) {
+            $this->notificationService->notifyParticipationCancelledByUser($participant);
+        }
+
+        $this->em->remove($participant);
+        $this->em->flush();
+    }
+
     public function deleteRaid(Raid $raid): void
     {
         $this->em->remove($raid);
@@ -238,7 +257,7 @@ class RaidService
             ? array_map(fn($m) => $m->getGuild()->getId(), $this->membershipRepo->findConfirmedForUser($user))
             : [];
 
-        $grouped = $this->raidRepo->findGroupedOpen($userGuildIds, $serverName);
+        $grouped = $this->raidRepo->findGroupedOpen($userGuildIds, $serverName, $filterSoon);
 
         $upcomingRaids = $grouped['upcoming'];
         // Un raid "démarré" peut avoir dépassé sa durée planifiée depuis la dernière
@@ -271,13 +290,6 @@ class RaidService
             $ongoingRaids  = array_values(array_filter($ongoingRaids,  $notFull));
         }
 
-        if ($filterSoon) {
-            $threshold     = (new \DateTimeImmutable())->modify('+48 hours');
-            $upcomingRaids = array_values(array_filter($upcomingRaids, fn($r) => $r->getScheduledAt() <= $threshold));
-            $startedRaids  = [];
-            $ongoingRaids  = [];
-        }
-
         return [
             'upcomingRaids'    => $upcomingRaids,
             'startedRaids'     => $startedRaids,
@@ -298,9 +310,11 @@ class RaidService
         $acceptedCharacters  = [];
         $pendingApplications = [];
         $participantsByUser  = [];
+        $myParticipants      = [];
         foreach ($raid->getParticipants() as $p) {
             $participantsByUser[(int) $p->getCharacter()->getUser()->getId()] = $p->getCharacter();
             if ($userId && (int) $p->getCharacter()->getUser()->getId() === $userId) {
+                $myParticipants[] = $p;
                 if ($p->getStatus() === RaidParticipantStatus::Accepted) {
                     $acceptedCharacters[] = $p->getCharacter();
                 } else {
@@ -314,6 +328,7 @@ class RaidService
             'isCreator'           => $isCreator,
             'acceptedCharacters'  => $acceptedCharacters,
             'pendingApplications' => $pendingApplications,
+            'myParticipants'      => $myParticipants,
             'participantsByUser'  => $participantsByUser,
             'rootComments'        => $this->commentRepo->findRootByRaid($raid),
             'myOtherRaids'        => $isCreator ? $this->raidRepo->findOpenByGuild($raid->getGuild(), $raid) : [],

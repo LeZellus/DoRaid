@@ -310,6 +310,21 @@ class RaidController extends AbstractController
     }
 
     #[IsGranted('ROLE_USER')]
+    #[Route('/participants/{id}/annuler', name: 'app_raid_cancel', methods: ['POST'])]
+    public function cancel(RaidParticipant $participant, Request $request): Response
+    {
+        $raidId = $participant->getRaid()->getId();
+        $this->requireCsrfToken('cancel_' . $participant->getId(), $request);
+
+        $this->handleBusinessRule(
+            fn() => $this->raidService->cancelParticipation($participant, $this->getUser()),
+            'Votre participation a été annulée.'
+        );
+
+        return $this->redirectToRoute('app_raid_show', ['id' => $raidId]);
+    }
+
+    #[IsGranted('ROLE_USER')]
     #[Route('/participants/{id}/exclure', name: 'app_raid_kick', methods: ['POST'])]
     public function kick(RaidParticipant $participant, Request $request): Response
     {
