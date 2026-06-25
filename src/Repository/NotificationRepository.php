@@ -14,15 +14,36 @@ class NotificationRepository extends ServiceEntityRepository
         parent::__construct($registry, Notification::class);
     }
 
-    public function findForUser(User $user, int $limit = 50): array
+    public function findForUser(User $user, int $limit = 15, int $offset = 0): array
     {
         return $this->createQueryBuilder('n')
             ->where('n.user = :user')
             ->setParameter('user', $user)
             ->orderBy('n.createdAt', 'DESC')
             ->setMaxResults($limit)
+            ->setFirstResult($offset)
             ->getQuery()
             ->getResult();
+    }
+
+    public function countForUser(User $user): int
+    {
+        return (int) $this->createQueryBuilder('n')
+            ->select('COUNT(n.id)')
+            ->where('n.user = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function deleteAllForUser(User $user): void
+    {
+        $this->createQueryBuilder('n')
+            ->delete()
+            ->where('n.user = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->execute();
     }
 
     public function countUnreadForUser(User $user): int

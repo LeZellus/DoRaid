@@ -1,0 +1,48 @@
+{% import 'components/_ui.html.twig' as ui %}
+{% if n.type == 'participation_pending' %}
+    {% set icon = '⚔' %}
+    {% set iconCls = 'bg-yellow-950/50 border-yellow-800/40 text-yellow-400' %}
+{% elseif n.type in ['participation_accepted', 'membership_approved'] %}
+    {% set icon = '✓' %}
+    {% set iconCls = 'bg-emerald-950/50 border-emerald-800/40 text-emerald-400' %}
+{% elseif n.type in ['participation_kicked', 'membership_rejected'] %}
+    {% set icon = '✕' %}
+    {% set iconCls = 'bg-red-950/50 border-red-800/40 text-red-400' %}
+{% elseif n.type == 'membership_pending' %}
+    {% set icon = '🛡' %}
+    {% set iconCls = 'bg-yellow-950/50 border-yellow-800/40 text-yellow-400' %}
+{% else %}
+    {% set icon = '🔔' %}
+    {% set iconCls = 'bg-indigo-950/50 border-indigo-800/40 text-indigo-400' %}
+{% endif %}
+
+<div class="flex items-start gap-4 bg-gray-900 border border-gray-800 rounded-xl px-5 py-4 group/card">
+
+    <span class="w-9 h-9 rounded-lg border {{ iconCls }} flex items-center justify-center font-bold shrink-0">{{ icon }}</span>
+
+    {% if n.link %}
+        <a href="{{ n.link }}" class="flex-1 min-w-0 group/link">
+            <div class="font-medium text-white text-sm group-hover/link:text-indigo-300 transition">{{ n.title }}</div>
+            <div class="text-xs text-gray-400 mt-0.5">{{ n.message }}</div>
+            <div class="text-xs text-gray-600 mt-1">{{ n.createdAt|date('d/m/Y à H:i') }}</div>
+        </a>
+        <span class="text-gray-600 group-hover/link:text-indigo-400 transition shrink-0 text-sm self-center mr-2">→</span>
+    {% else %}
+        <div class="flex-1 min-w-0">
+            <div class="font-medium text-white text-sm">{{ n.title }}</div>
+            <div class="text-xs text-gray-400 mt-0.5">{{ n.message }}</div>
+            <div class="text-xs text-gray-600 mt-1">{{ n.createdAt|date('d/m/Y à H:i') }}</div>
+        </div>
+    {% endif %}
+
+    <form method="post" action="{{ path('app_notification_delete', {id: n.id}) }}" class="shrink-0 self-center">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete_notif_' ~ n.id) }}">
+        <button type="submit" title="Supprimer"
+                class="opacity-0 group-hover/card:opacity-100 transition text-gray-600 hover:text-red-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+            </svg>
+        </button>
+    </form>
+
+</div>
