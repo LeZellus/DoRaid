@@ -66,28 +66,6 @@ class CharacterRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /** Confirmed guild members of $user in the raid's guild that haven't joined the raid yet */
-    public function findEligibleForRaid(User $user, Raid $raid): array
-    {
-        return $this->createQueryBuilder('c')
-            ->join('c.membership', 'm')
-            ->leftJoin(
-                RaidParticipant::class, 'rp',
-                'WITH', 'rp.character = c AND rp.raid = :raid'
-            )
-            ->where('c.user = :user')
-            ->andWhere('m.guild = :guild')
-            ->andWhere('m.status != :pending')
-            ->andWhere('rp.id IS NULL')
-            ->setParameter('user', $user)
-            ->setParameter('raid', $raid)
-            ->setParameter('guild', $raid->getGuild())
-            ->setParameter('pending', MemberStatus::Pending)
-            ->orderBy('c.name', 'ASC')
-            ->getQuery()
-            ->getResult();
-    }
-
     /** All user characters on the same server as the raid (guild members or external) that haven't joined yet */
     public function findAllEligibleForRaid(User $user, Raid $raid): array
     {

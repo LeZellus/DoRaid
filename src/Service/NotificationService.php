@@ -3,7 +3,6 @@
 namespace App\Service;
 
 use App\Entity\Character;
-use App\Entity\Guild;
 use App\Entity\GuildMembership;
 use App\Entity\Notification;
 use App\Entity\MemberStatus;

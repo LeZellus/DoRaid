@@ -15,37 +15,6 @@ class RaidRepository extends ServiceEntityRepository
         parent::__construct($registry, Raid::class);
     }
 
-    /** @return Raid[] Raids visibles par un utilisateur (publics + guildes de l'utilisateur), filtrés par serveur */
-    public function findVisibleForUser(array $userGuildIds = [], ?string $serverName = null): array
-    {
-        $qb = $this->createQueryBuilder('r')
-            ->addSelect('g', 's', 'rt', 'creator', 'gc')
-            ->join('r.guild', 'g')
-            ->join('g.server', 's')
-            ->join('r.raidTemplate', 'rt')
-            ->join('r.creator', 'creator')
-            ->join('creator.gameClass', 'gc')
-            ->orderBy('r.createdAt', 'DESC');
-
-        if (!empty($userGuildIds)) {
-            $qb->where(
-                $qb->expr()->orX(
-                    'r.isPublic = true',
-                    $qb->expr()->in('g', ':guildIds')
-                )
-            )->setParameter('guildIds', $userGuildIds);
-        } else {
-            $qb->where('r.isPublic = true');
-        }
-
-        if ($serverName) {
-            $qb->andWhere('s.name = :server')
-               ->setParameter('server', $serverName);
-        }
-
-        return $qb->getQuery()->getResult();
-    }
-
     /** @return Raid[] */
     public function findPublicOpen(array $excludeGuildIds = []): array
     {
@@ -81,43 +50,6 @@ class RaidRepository extends ServiceEntityRepository
             ->addOrderBy('r.createdAt', 'DESC')
             ->getQuery()
             ->getResult();
-    }
-
-    /** @return Raid[] Raids ouverts à venir (scheduledAt futur) */
-    public function findUpcomingOpen(array $userGuildIds = [], ?string $serverName = null): array
-    {
-        return $this->buildVisibleQb($userGuildIds, $serverName)
-            ->andWhere('r.status = :open')
-            ->andWhere('r.scheduledAt IS NOT NULL')
-            ->andWhere('r.scheduledAt > :now')
-            ->setParameter('open', RaidStatus::Open)
-            ->setParameter('now', new \DateTimeImmutable())
-            ->orderBy('r.scheduledAt', 'ASC')
-            ->getQuery()->getResult();
-    }
-
-    /** @return Raid[] Raids ouverts commencés (scheduledAt passé) */
-    public function findStartedOpen(array $userGuildIds = [], ?string $serverName = null): array
-    {
-        return $this->buildVisibleQb($userGuildIds, $serverName)
-            ->andWhere('r.status = :open')
-            ->andWhere('r.scheduledAt IS NOT NULL')
-            ->andWhere('r.scheduledAt <= :now')
-            ->setParameter('open', RaidStatus::Open)
-            ->setParameter('now', new \DateTimeImmutable())
-            ->orderBy('r.scheduledAt', 'DESC')
-            ->getQuery()->getResult();
-    }
-
-    /** @return Raid[] Raids ouverts sans date planifiée */
-    public function findOngoingOpen(array $userGuildIds = [], ?string $serverName = null): array
-    {
-        return $this->buildVisibleQb($userGuildIds, $serverName)
-            ->andWhere('r.status = :open')
-            ->andWhere('r.scheduledAt IS NULL')
-            ->setParameter('open', RaidStatus::Open)
-            ->orderBy('r.createdAt', 'DESC')
-            ->getQuery()->getResult();
     }
 
     /**

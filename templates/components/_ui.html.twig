@@ -77,33 +77,6 @@
 {% endmacro %}
 
 {#
-  textarea(id, name, rows, placeholder, extra_class, attrs)
-#}
-{% macro textarea(id, name, rows=4, placeholder='', extra_class='', attrs={}) %}
-    {% set base = 'w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder-gray-500 resize-y' %}
-    <textarea
-        id="{{ id }}"
-        name="{{ name }}"
-        rows="{{ rows }}"
-        {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
-        class="{{ base }} {{ extra_class }}"
-        {%- for k, v in attrs %}{{ k }}="{{ v }}" {% endfor %}></textarea>
-{% endmacro %}
-
-{#
-  select(id, name, options, selected, extra_class)
-  options: { value: label, ... }
-#}
-{% macro select(id, name, options={}, selected='', extra_class='') %}
-    {% set base = 'w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent' %}
-    <select id="{{ id }}" name="{{ name }}" class="{{ base }} {{ extra_class }}">
-        {% for value, label in options %}
-            <option value="{{ value }}"{% if value == selected %} selected{% endif %}>{{ label }}</option>
-        {% endfor %}
-    </select>
-{% endmacro %}
-
-{#
   checkbox(id, name, label_text, checked, extra_class)
 #}
 {% macro checkbox(id, name, label_text, checked=false, extra_class='') %}

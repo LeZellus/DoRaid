@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\Guild;
-use App\Entity\Server;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -39,15 +38,5 @@ class GuildRepository extends ServiceEntityRepository
             ->setParameter('slug', $slug)
             ->getQuery()
             ->getOneOrNullResult();
-    }
-
-    public function findByServer(Server $server): array
-    {
-        return $this->createQueryBuilder('g')
-            ->where('g.server = :server')
-            ->setParameter('server', $server)
-            ->orderBy('g.name', 'ASC')
-            ->getQuery()
-            ->getResult();
     }
 }
