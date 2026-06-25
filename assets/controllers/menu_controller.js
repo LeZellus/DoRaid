@@ -1,18 +1,18 @@
 import { Controller } from '@hotwired/stimulus'
 
-// Menu d'actions (⋮) dont le panneau est sorti du flux (porté dans <body>, position fixed)
-// pour ne pas être rogné par les conteneurs avec overflow (ex : listes de participants scrollables).
+// Menu d'actions (⋮). Le panneau reste à sa place dans le DOM — passer en position
+// fixed suffit à échapper au overflow des listes scrollables, pas besoin de le
+// déplacer dans <body> (ça casse la restauration de page de Turbo : le contrôleur
+// "select" imbriqué se reconnecte sur un nœud déjà déplacé et finit orphelin).
 export default class extends Controller {
   static targets = ['panel']
 
   connect() {
-    this._panel = this.panelTarget
-    document.body.append(this._panel)
     this._open = false
 
     this._onClickOutside = e => {
       if (!this._open) return
-      if (this.element.contains(e.target) || this._panel.contains(e.target)) return
+      if (this.element.contains(e.target)) return
       if (e.target.closest('[role="listbox"]')) return
       this.close()
     }
@@ -27,7 +27,6 @@ export default class extends Controller {
     document.removeEventListener('click', this._onClickOutside)
     window.removeEventListener('scroll', this._onReposition, true)
     window.removeEventListener('resize', this._onReposition)
-    this._panel.remove()
   }
 
   toggle(event) {
@@ -37,26 +36,26 @@ export default class extends Controller {
 
   open() {
     this._position()
-    this._panel.classList.remove('hidden')
+    this.panelTarget.classList.remove('hidden')
     this._open = true
   }
 
   close() {
-    this._panel.classList.add('hidden')
+    this.panelTarget.classList.add('hidden')
     this._open = false
   }
 
   _position() {
     const rect = this.element.getBoundingClientRect()
-    this._panel.style.right = `${window.innerWidth - rect.right}px`
+    this.panelTarget.style.right = `${window.innerWidth - rect.right}px`
 
     const spaceBelow = window.innerHeight - rect.bottom
     if (spaceBelow < 320 && rect.top > spaceBelow) {
-      this._panel.style.bottom = `${window.innerHeight - rect.top + 6}px`
-      this._panel.style.top = ''
+      this.panelTarget.style.bottom = `${window.innerHeight - rect.top + 6}px`
+      this.panelTarget.style.top = ''
     } else {
-      this._panel.style.top = `${rect.bottom + 6}px`
-      this._panel.style.bottom = ''
+      this.panelTarget.style.top = `${rect.bottom + 6}px`
+      this.panelTarget.style.bottom = ''
     }
   }
 }
