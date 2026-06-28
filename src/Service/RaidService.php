@@ -323,6 +323,11 @@ class RaidService
             }
         }
 
+        $characterIds = array_values(array_filter(
+            array_map(fn($p) => $p->getCharacter()->getId(), iterator_to_array($raid->getParticipants())),
+            fn($id) => $id !== null
+        ));
+
         return [
             'eligible'            => $eligible,
             'isCreator'           => $isCreator,
@@ -332,6 +337,7 @@ class RaidService
             'participantsByUser'  => $participantsByUser,
             'rootComments'        => $this->commentRepo->findRootByRaid($raid),
             'myOtherRaids'        => $isCreator ? $this->raidRepo->findOpenByGuild($raid->getGuild(), $raid) : [],
+            'completedRaidCounts' => $this->participantRepo->countCompletedByCharacters($characterIds),
         ];
     }
 }

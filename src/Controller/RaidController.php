@@ -8,6 +8,7 @@ use App\Exception\BusinessRuleException;
 use App\Form\RaidType;
 use App\Repository\CharacterRepository;
 use App\Repository\GuildRepository;
+use App\Repository\RaidParticipantRepository;
 use App\Repository\RaidRepository;
 use App\Repository\RaidTemplateRepository;
 use App\Repository\ServerRepository;
@@ -132,7 +133,7 @@ class RaidController extends AbstractController
     }
 
     #[Route('/{id}/participants', name: 'app_raid_participants')]
-    public function participants(int $id, RaidRepository $raidRepo): Response
+    public function participants(int $id, RaidRepository $raidRepo, RaidParticipantRepository $participantRepo): Response
     {
         $raid = $raidRepo->findWithParticipants($id);
         if (!$raid) {
@@ -144,10 +145,16 @@ class RaidController extends AbstractController
         $currentUser = $this->getUser();
         $isCreator   = $currentUser && $raid->isCreatedBy($currentUser);
 
+        $characterIds = array_values(array_filter(
+            $raid->getParticipants()->map(fn($p) => $p->getCharacter()->getId())->toArray(),
+            fn($id) => $id !== null
+        ));
+
         return $this->render('raid/participants.html.twig', [
-            'raid'         => $raid,
-            'isCreator'    => $isCreator,
-            'myOtherRaids' => $isCreator ? $raidRepo->findOpenByGuild($raid->getGuild(), $raid) : [],
+            'raid'                => $raid,
+            'isCreator'           => $isCreator,
+            'myOtherRaids'        => $isCreator ? $raidRepo->findOpenByGuild($raid->getGuild(), $raid) : [],
+            'completedRaidCounts' => $participantRepo->countCompletedByCharacters($characterIds),
         ]);
     }
 

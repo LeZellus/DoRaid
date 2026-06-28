@@ -240,6 +240,8 @@
                                         {% if p.character === raid.creator %}<span title="Créateur" class="text-sm leading-none">⭐</span>{% endif %}
                                         {% if p.guildMember %}{{ ui.badge('Guilde', 'indigo') }}{% else %}{{ ui.badge('Externe', 'warning') }}{% endif %}
                                         {% if app.user and p.character.user.id == app.user.id %}<span class="text-xs text-indigo-400 font-medium">vous</span>{% endif %}
+                                        {% set _done = completedRaidCounts[p.character.id] ?? 0 %}
+                                        {% if _done > 0 %}<span class="text-xs text-gray-500" title="{{ _done }} raid{{ _done > 1 ? 's' : '' }} terminé{{ _done > 1 ? 's' : '' }}">✓ {{ _done }}</span>{% endif %}
                                     </div>
                                     <div class="mt-2 space-y-2 text-xs text-gray-500">
                                         <div class="flex items-center gap-3">
@@ -258,6 +260,13 @@
                                 </div>
                                 {% if isCreator and p.character !== raid.creator %}
                                     {{ pmenu.menu(p, raid, myOtherRaids, true) }}
+                                {% elseif app.user and p.character.user.id == app.user.id and raid.status == constant('App\\Entity\\RaidStatus::Open') and p.character.id != raid.creator.id %}
+                                    <form method="post" action="{{ path('app_raid_cancel', {id: p.id}) }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('cancel_' ~ p.id) }}">
+                                        <button type="submit"
+                                                onclick="return confirm('Se retirer de ce raid ?')"
+                                                class="text-xs text-gray-500 hover:text-red-400 transition shrink-0">Se retirer</button>
+                                    </form>
                                 {% endif %}
                             </li>
                         {% endfor %}
@@ -296,6 +305,8 @@
                                     <div class="flex items-center gap-2">
                                         <span class="font-semibold text-white text-sm truncate">{{ p.character.name }}</span>
                                         {% if p.guildMember %}{{ ui.badge('Guilde', 'indigo') }}{% else %}{{ ui.badge('Externe', 'warning') }}{% endif %}
+                                        {% set _done = completedRaidCounts[p.character.id] ?? 0 %}
+                                        {% if _done > 0 %}<span class="text-xs text-gray-500" title="{{ _done }} raid{{ _done > 1 ? 's' : '' }} terminé{{ _done > 1 ? 's' : '' }}">✓ {{ _done }}</span>{% endif %}
                                     </div>
                                     <div class="mt-2 space-y-2 text-xs text-gray-500">
                                         <div class="flex items-center gap-3">
@@ -312,6 +323,13 @@
                                 </div>
                                 {% if isCreator %}
                                     {{ pmenu.menu(p, raid, myOtherRaids, false) }}
+                                {% elseif app.user and p.character.user.id == app.user.id and raid.status == constant('App\\Entity\\RaidStatus::Open') %}
+                                    <form method="post" action="{{ path('app_raid_cancel', {id: p.id}) }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('cancel_' ~ p.id) }}">
+                                        <button type="submit"
+                                                onclick="return confirm('Annuler la candidature ?')"
+                                                class="text-xs text-gray-500 hover:text-red-400 transition shrink-0">Annuler</button>
+                                    </form>
                                 {% endif %}
                             </li>
                         {% endfor %}
