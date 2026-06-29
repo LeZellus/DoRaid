@@ -146,8 +146,21 @@
     animation: backdrop-hide 0.2s ease both;
 }
 
+/* ── Ko-fi FAB ── */
+@keyframes kofi-float {
+    0%, 100% { transform: translateY(0); box-shadow: 0 8px 24px -4px rgba(245,158,11,0.3); }
+    50%       { transform: translateY(-5px); box-shadow: 0 16px 32px -4px rgba(245,158,11,0.45); }
+}
+.kofi-fab {
+    animation: kofi-float 3s ease-in-out infinite;
+}
+.kofi-fab:hover {
+    animation: none;
+    transform: translateY(-2px);
+}
+
 /* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
     [data-reveal], [data-reveal].is-revealed { transition: none !important; }
-    .hero-animate, .hero-glow-animated, .nav-cta-pulse, .nav-cta-star, .bell-active svg { animation: none !important; opacity: 1 !important; transform: none !important; }
+    .hero-animate, .hero-glow-animated, .nav-cta-pulse, .nav-cta-star, .bell-active svg, .kofi-fab { animation: none !important; opacity: 1 !important; transform: none !important; }
 }
