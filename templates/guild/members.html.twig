@@ -96,12 +96,10 @@
                                     {% if m.character.optimizationLevel %}
                                         {{ ui.badge(m.character.optimizationLevel.label(), m.character.optimizationLevel.color()) }}
                                     {% endif %}
-                                    {% if m.character.guildatons is not null %}
-                                        <span class="flex items-center gap-1">
-                                            <img src="{{ asset('uploads/divers/guildatons.png') }}" alt="Guildatons" class="w-3.5 h-3.5 object-contain">
-                                            <span class="text-xs text-gray-400 tabular-nums">{{ m.character.guildatons }}</span>
-                                        </span>
-                                    {% endif %}
+                                    <span class="flex items-center gap-1">
+                                        <img src="{{ asset('uploads/divers/guildatons.png') }}" alt="Guildatons" class="w-3.5 h-3.5 object-contain">
+                                        <span class="text-xs {{ m.character.guildatons is not null ? 'text-gray-400' : 'text-gray-600' }} tabular-nums">{{ m.character.guildatons ?? 'N/A' }}</span>
+                                    </span>
                                     {% if app.user and m.character.user.id == app.user.id %}
                                         <span class="text-xs text-indigo-400 font-medium">· vous</span>
                                     {% else %}
