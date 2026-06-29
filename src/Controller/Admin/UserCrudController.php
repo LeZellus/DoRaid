@@ -8,8 +8,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\TextFilter;
@@ -51,15 +50,8 @@ class UserCrudController extends AbstractCrudController
         yield IdField::new('id', 'ID')->onlyOnIndex();
         yield TextField::new('username', 'Pseudo');
         yield TextField::new('email', 'Email');
-        yield TextField::new('discordId', 'Discord ID')->hideOnForm();
-        yield ChoiceField::new('roles', 'Rôles')
-            ->setChoices([
-                'Utilisateur' => 'ROLE_USER',
-                'Admin'       => 'ROLE_ADMIN',
-            ])
-            ->allowMultipleChoices()
-            ->renderExpanded(false)
-            ->hideOnIndex();
-        yield ArrayField::new('roles', 'Rôles')->onlyOnIndex();
+        yield DateTimeField::new('createdAt', 'Membre depuis')
+            ->setFormat('dd/MM/yyyy HH:mm')
+            ->hideOnForm();
     }
 }

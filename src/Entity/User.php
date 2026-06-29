@@ -34,6 +34,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 30, nullable: true, unique: true)]
     private ?string $discordId = null;
 
+    #[ORM\Column]
+    private \DateTimeImmutable $createdAt;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -100,6 +108,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->username = $username;
         return $this;
     }
+
+    public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
 
     public function eraseCredentials(): void {}
 }
