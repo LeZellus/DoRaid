@@ -14,48 +14,49 @@
     </div>
 
     <form method="post" action="{{ path('app_feedback_new') }}" class="px-5 py-5 space-y-4"
-          onsubmit="this.closest('dialog').close()">
+          id="feedback-form">
         <input type="hidden" name="_token" value="{{ csrf_token('feedback_new') }}">
         <input type="hidden" name="page" id="feedback-page">
+        <input type="hidden" name="type" id="feedback-type-value">
 
         {# Type #}
         <div class="flex gap-3">
-            <label class="flex-1 cursor-pointer">
-                <input type="radio" name="type" value="bug" class="sr-only peer" required>
-                <div class="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-700 bg-gray-800/50
-                            peer-checked:border-red-500/60 peer-checked:bg-red-950/30 transition text-sm text-gray-400 peer-checked:text-red-300">
-                    <span class="text-base">🐛</span> Bug
-                </div>
-            </label>
-            <label class="flex-1 cursor-pointer">
-                <input type="radio" name="type" value="suggestion" class="sr-only peer" required>
-                <div class="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-700 bg-gray-800/50
-                            peer-checked:border-indigo-500/60 peer-checked:bg-indigo-950/30 transition text-sm text-gray-400 peer-checked:text-indigo-300">
-                    <span class="text-base">💡</span> Suggestion
-                </div>
-            </label>
+            <button type="button" class="feedback-type-btn" data-type="bug"
+                    onclick="feedbackSelectType('bug')">
+                <span>🐛</span> Bug
+            </button>
+            <button type="button" class="feedback-type-btn" data-type="suggestion"
+                    onclick="feedbackSelectType('suggestion')">
+                <span>💡</span> Suggestion
+            </button>
         </div>
+        <p id="feedback-type-error" class="hidden text-xs text-red-400">Sélectionne un type.</p>
 
         {# Titre #}
         <div>
-            <label class="block text-xs font-medium text-gray-400 mb-1.5">Titre <span class="text-red-500">*</span></label>
-            <input type="text" name="title" required maxlength="200" placeholder="Résumé en quelques mots…"
-                   class="w-full bg-gray-800 border border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-600
-                          focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/40 transition">
+            <label for="feedback-title" class="block text-xs font-medium text-gray-400 mb-1.5">
+                Titre <span class="text-red-500">*</span>
+            </label>
+            <input id="feedback-title" type="text" name="title" required maxlength="200"
+                   placeholder="Résumé en quelques mots…"
+                   class="feedback-input">
         </div>
 
         {# Description #}
         <div>
-            <label class="block text-xs font-medium text-gray-400 mb-1.5">Description <span class="text-gray-600">(optionnel)</span></label>
-            <textarea name="description" rows="4" maxlength="2000"
+            <label for="feedback-desc" class="block text-xs font-medium text-gray-400 mb-1.5">
+                Description <span class="text-gray-600">(optionnel)</span>
+            </label>
+            <textarea id="feedback-desc" name="description" rows="4" maxlength="2000"
                       placeholder="Décris le problème ou la suggestion en détail…"
-                      class="w-full bg-gray-800 border border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-600
-                             focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/40 transition resize-none"></textarea>
+                      class="feedback-input resize-none"></textarea>
         </div>
 
         <div class="flex items-center justify-between pt-1">
-            <p class="text-xs text-gray-600">Page : <span id="feedback-page-display" class="text-gray-500"></span></p>
-            <button type="submit"
+            <p class="text-xs text-gray-600">
+                Page : <span id="feedback-page-display" class="text-gray-500"></span>
+            </p>
+            <button type="submit" id="feedback-submit"
                     class="bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium px-5 py-2.5 rounded-xl transition cursor-pointer">
                 Envoyer
             </button>
@@ -64,19 +65,42 @@
 </dialog>
 
 <script>
-(function() {
-    const d = document.getElementById('feedback-dialog');
-    if (!d) return;
-    d.addEventListener('show', setPage);
-    document.getElementById('feedback-dialog').addEventListener('toggle', function() {
-        if (this.open) setPage();
+function feedbackSelectType(type) {
+    document.querySelectorAll('.feedback-type-btn').forEach(function(btn) {
+        delete btn.dataset.selected;
     });
-    function setPage() {
-        const url = window.location.pathname;
-        const inp = document.getElementById('feedback-page');
-        const lbl = document.getElementById('feedback-page-display');
-        if (inp) inp.value = url;
-        if (lbl) lbl.textContent = url;
+    var btn = document.querySelector('.feedback-type-btn[data-type="' + type + '"]');
+    if (btn) btn.dataset.selected = type;
+    document.getElementById('feedback-type-value').value = type;
+    document.getElementById('feedback-type-error').classList.add('hidden');
+}
+
+(function() {
+    var dialog = document.getElementById('feedback-dialog');
+    var form   = document.getElementById('feedback-form');
+
+    if (dialog) {
+        dialog.addEventListener('toggle', function() {
+            if (this.open) {
+                var url = window.location.pathname;
+                var inp = document.getElementById('feedback-page');
+                var lbl = document.getElementById('feedback-page-display');
+                if (inp) inp.value = url;
+                if (lbl) lbl.textContent = url;
+            }
+        });
+    }
+
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            var typeVal = document.getElementById('feedback-type-value').value;
+            if (!typeVal) {
+                e.preventDefault();
+                document.getElementById('feedback-type-error').classList.remove('hidden');
+                return;
+            }
+            dialog.close();
+        });
     }
 })();
 </script>

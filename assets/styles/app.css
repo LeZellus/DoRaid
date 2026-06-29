@@ -160,6 +160,49 @@
     transform: translateY(-2px);
 }
 
+/* ── Feedback modal — radio type ── */
+.feedback-type-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid #374151;
+    background: rgb(31 41 55 / 0.5);
+    color: #9ca3af;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+    user-select: none;
+    flex: 1;
+}
+.feedback-type-btn[data-selected="bug"] {
+    border-color: rgb(239 68 68 / 0.6);
+    background: rgb(127 29 29 / 0.3);
+    color: #fca5a5;
+}
+.feedback-type-btn[data-selected="suggestion"] {
+    border-color: rgb(99 102 241 / 0.6);
+    background: rgb(30 27 75 / 0.3);
+    color: #a5b4fc;
+}
+
+/* ── Feedback modal — inputs ── */
+.feedback-input {
+    width: 100%;
+    background: #1f2937;
+    border: 1px solid #374151;
+    border-radius: 0.75rem;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+    color: #fff;
+    outline: none;
+    transition: border-color 0.15s;
+    appearance: none;
+}
+.feedback-input::placeholder { color: #4b5563; }
+.feedback-input:focus { border-color: #6366f1; box-shadow: 0 0 0 1px rgb(99 102 241 / 0.4); }
+
 /* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
     [data-reveal], [data-reveal].is-revealed { transition: none !important; }
