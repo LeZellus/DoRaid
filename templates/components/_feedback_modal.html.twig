@@ -1,0 +1,83 @@
+{#
+  Modal de feedback global — inclus dans base.html.twig.
+  Déclenché par : document.getElementById('feedback-dialog').showModal()
+#}
+{% if app.user %}
+<dialog id="feedback-dialog"
+        class="member-notes-dialog bg-gray-900 border border-gray-700/50 rounded-2xl shadow-2xl p-0 text-white w-full max-w-lg fixed top-1/2 left-1/2"
+        onclick="if(event.target===this)this.close()">
+
+    <div class="flex items-center justify-between px-5 py-4 border-b border-gray-800">
+        <h3 class="font-semibold text-white text-sm">Signaler / Suggérer</h3>
+        <button type="button" onclick="this.closest('dialog').close()"
+                class="text-gray-500 hover:text-gray-300 transition text-xl leading-none cursor-pointer">✕</button>
+    </div>
+
+    <form method="post" action="{{ path('app_feedback_new') }}" class="px-5 py-5 space-y-4"
+          onsubmit="this.closest('dialog').close()">
+        <input type="hidden" name="_token" value="{{ csrf_token('feedback_new') }}">
+        <input type="hidden" name="page" id="feedback-page">
+
+        {# Type #}
+        <div class="flex gap-3">
+            <label class="flex-1 cursor-pointer">
+                <input type="radio" name="type" value="bug" class="sr-only peer" required>
+                <div class="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-700 bg-gray-800/50
+                            peer-checked:border-red-500/60 peer-checked:bg-red-950/30 transition text-sm text-gray-400 peer-checked:text-red-300">
+                    <span class="text-base">🐛</span> Bug
+                </div>
+            </label>
+            <label class="flex-1 cursor-pointer">
+                <input type="radio" name="type" value="suggestion" class="sr-only peer" required>
+                <div class="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-700 bg-gray-800/50
+                            peer-checked:border-indigo-500/60 peer-checked:bg-indigo-950/30 transition text-sm text-gray-400 peer-checked:text-indigo-300">
+                    <span class="text-base">💡</span> Suggestion
+                </div>
+            </label>
+        </div>
+
+        {# Titre #}
+        <div>
+            <label class="block text-xs font-medium text-gray-400 mb-1.5">Titre <span class="text-red-500">*</span></label>
+            <input type="text" name="title" required maxlength="200" placeholder="Résumé en quelques mots…"
+                   class="w-full bg-gray-800 border border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-600
+                          focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/40 transition">
+        </div>
+
+        {# Description #}
+        <div>
+            <label class="block text-xs font-medium text-gray-400 mb-1.5">Description <span class="text-gray-600">(optionnel)</span></label>
+            <textarea name="description" rows="4" maxlength="2000"
+                      placeholder="Décris le problème ou la suggestion en détail…"
+                      class="w-full bg-gray-800 border border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-600
+                             focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/40 transition resize-none"></textarea>
+        </div>
+
+        <div class="flex items-center justify-between pt-1">
+            <p class="text-xs text-gray-600">Page : <span id="feedback-page-display" class="text-gray-500"></span></p>
+            <button type="submit"
+                    class="bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium px-5 py-2.5 rounded-xl transition cursor-pointer">
+                Envoyer
+            </button>
+        </div>
+    </form>
+</dialog>
+
+<script>
+(function() {
+    const d = document.getElementById('feedback-dialog');
+    if (!d) return;
+    d.addEventListener('show', setPage);
+    document.getElementById('feedback-dialog').addEventListener('toggle', function() {
+        if (this.open) setPage();
+    });
+    function setPage() {
+        const url = window.location.pathname;
+        const inp = document.getElementById('feedback-page');
+        const lbl = document.getElementById('feedback-page-display');
+        if (inp) inp.value = url;
+        if (lbl) lbl.textContent = url;
+    }
+})();
+</script>
+{% endif %}

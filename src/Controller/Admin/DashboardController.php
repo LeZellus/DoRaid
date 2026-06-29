@@ -36,6 +36,7 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkTo(UserCrudController::class, 'Membres', 'fa fa-users')->setAction('index');
         yield MenuItem::linkTo(GuildCrudController::class, 'Guildes', 'fa fa-shield')->setAction('index');
         yield MenuItem::linkTo(RaidCrudController::class, 'Raids', 'fa fa-shield-halved')->setAction('index');
+        yield MenuItem::linkTo(FeedbackCrudController::class, 'Feedbacks', 'fa fa-comments')->setAction('index');
 
         yield MenuItem::section();
         yield MenuItem::linkToUrl('← Retour au site', 'fa fa-arrow-left', '/');

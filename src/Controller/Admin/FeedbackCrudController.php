@@ -1,0 +1,97 @@
+<?php
+
+namespace App\Controller\Admin;
+
+use App\Entity\Feedback;
+use App\Entity\FeedbackStatus;
+use App\Entity\FeedbackType;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Filter\ChoiceFilter;
+
+class FeedbackCrudController extends AbstractCrudController
+{
+    public static function getEntityFqcn(): string
+    {
+        return Feedback::class;
+    }
+
+    public function configureCrud(Crud $crud): Crud
+    {
+        return $crud
+            ->setEntityLabelInSingular('Feedback')
+            ->setEntityLabelInPlural('Feedbacks')
+            ->setDefaultSort(['createdAt' => 'DESC'])
+            ->setPaginatorPageSize(30)
+            ->showEntityActionsInlined()
+            ->setSearchFields(['title', 'description']);
+    }
+
+    public function configureActions(Actions $actions): Actions
+    {
+        return $actions
+            ->disable(Action::NEW)
+            ->add(Crud::PAGE_INDEX, Action::DETAIL);
+    }
+
+    public function configureFilters(Filters $filters): Filters
+    {
+        return $filters
+            ->add(ChoiceFilter::new('type')->setChoices([
+                'Bug'        => FeedbackType::Bug->value,
+                'Suggestion' => FeedbackType::Suggestion->value,
+            ]))
+            ->add(ChoiceFilter::new('status')->setChoices([
+                'Ouvert'   => FeedbackStatus::Open->value,
+                'En cours' => FeedbackStatus::InProgress->value,
+                'Résolu'   => FeedbackStatus::Done->value,
+                'Rejeté'   => FeedbackStatus::Rejected->value,
+            ]));
+    }
+
+    public function configureFields(string $pageName): iterable
+    {
+        $typeChoices   = [
+            '🐛 Bug'        => FeedbackType::Bug->value,
+            '💡 Suggestion' => FeedbackType::Suggestion->value,
+        ];
+        $statusChoices = [
+            'Ouvert'   => FeedbackStatus::Open->value,
+            'En cours' => FeedbackStatus::InProgress->value,
+            'Résolu'   => FeedbackStatus::Done->value,
+            'Rejeté'   => FeedbackStatus::Rejected->value,
+        ];
+
+        yield IdField::new('id', 'ID')->onlyOnIndex();
+        yield ChoiceField::new('type', 'Type')
+            ->setChoices($typeChoices)
+            ->renderAsBadges([
+                FeedbackType::Bug->value        => 'danger',
+                FeedbackType::Suggestion->value => 'primary',
+            ]);
+        yield ChoiceField::new('status', 'Statut')
+            ->setChoices($statusChoices)
+            ->renderAsBadges([
+                FeedbackStatus::Open->value       => 'warning',
+                FeedbackStatus::InProgress->value => 'primary',
+                FeedbackStatus::Done->value       => 'success',
+                FeedbackStatus::Rejected->value   => 'danger',
+            ]);
+        yield TextField::new('title', 'Titre');
+        yield TextareaField::new('description', 'Description')->hideOnIndex();
+        yield TextField::new('page', 'Page')->hideOnIndex();
+        yield AssociationField::new('user', 'Utilisateur')->hideOnForm();
+        yield DateTimeField::new('createdAt', 'Soumis le')
+            ->setFormat('dd/MM/yyyy HH:mm')
+            ->hideOnForm();
+    }
+}

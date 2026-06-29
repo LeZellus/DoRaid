@@ -133,6 +133,10 @@
                                         ⚙ Administration
                                     </a>
                                 {% endif %}
+                                <button type="button" onclick="document.getElementById('feedback-dialog').showModal()"
+                                        class="w-full text-left px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-700/60 hover:text-white transition cursor-pointer">
+                                    🐛 Signaler / Suggérer
+                                </button>
                                 <a href="{{ path('app_logout') }}"
                                    class="block px-4 py-2.5 text-sm text-red-400 hover:bg-red-900/20 hover:text-red-300 transition">
                                     Déconnexion
@@ -261,6 +265,14 @@
                         <ul class="space-y-2">
                             <li><a href="{{ path('app_legal_mentions') }}" class="text-xs text-gray-500 hover:text-gray-300 transition">Mentions légales</a></li>
                             <li><a href="mailto:contact@zeminal.tech" class="text-xs text-gray-500 hover:text-gray-300 transition">Contact</a></li>
+                            {% if app.user %}
+                            <li>
+                                <button type="button" onclick="document.getElementById('feedback-dialog').showModal()"
+                                        class="text-xs text-gray-500 hover:text-gray-300 transition cursor-pointer">
+                                    🐛 Signaler un bug / Suggérer
+                                </button>
+                            </li>
+                            {% endif %}
                             <li>
                                 <a href="https://ko-fi.com/zeminal" target="_blank" rel="noopener"
                                    class="inline-flex items-center gap-1.5 text-xs text-amber-500 hover:text-amber-400 transition font-medium">
@@ -288,5 +300,6 @@
             </div>
         </footer>
 
+    {% include 'components/_feedback_modal.html.twig' %}
     </body>
 </html>
