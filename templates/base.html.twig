@@ -176,6 +176,7 @@
                     <a href="{{ path('app_raid_guide_index') }}" data-action="click->navbar#close" class="px-3 py-2.5 rounded-lg text-sm font-medium transition {{ route starts with 'app_raid_template_guide' or route == 'app_raid_guide_index' ? 'text-white bg-gray-800' : 'text-gray-300 hover:text-white hover:bg-gray-800/60' }}">Encyclopédie</a>
                     <a href="{{ path('app_raid_index') }}" data-action="click->navbar#close" class="px-3 py-2.5 rounded-lg text-sm font-semibold transition text-yellow-400 hover:text-yellow-300 hover:bg-yellow-400/10">⚔ Trouver un raid</a>
 
+                    <a href="{{ path('app_changelog') }}" data-action="click->navbar#close" class="px-3 py-2.5 rounded-lg text-sm font-medium transition {{ route == 'app_changelog' ? 'text-white bg-gray-800' : 'text-gray-300 hover:text-white hover:bg-gray-800/60' }}">Mises à jour</a>
                     <a href="https://ko-fi.com/zeminal" target="_blank" rel="noopener"
                        class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium text-amber-400 hover:text-amber-300 hover:bg-amber-500/10 transition">
                         ☕ Faire un don
@@ -263,6 +264,7 @@
                     <div>
                         <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Légal</p>
                         <ul class="space-y-2">
+                            <li><a href="{{ path('app_changelog') }}" class="text-xs text-gray-500 hover:text-gray-300 transition">Mises à jour</a></li>
                             <li><a href="{{ path('app_legal_mentions') }}" class="text-xs text-gray-500 hover:text-gray-300 transition">Mentions légales</a></li>
                             <li><a href="mailto:contact@zeminal.tech" class="text-xs text-gray-500 hover:text-gray-300 transition">Contact</a></li>
                             {% if app.user %}
