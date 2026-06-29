@@ -16,6 +16,10 @@
     {% set icon = '🛡' %}
     {% set iconCls = 'bg-yellow-950/60 border-yellow-700/50 text-yellow-400' %}
     {% set accentCls = 'border-l-yellow-500' %}
+{% elseif n.type == 'guildatons_reminder' %}
+    {% set icon = '💰' %}
+    {% set iconCls = 'bg-amber-950/60 border-amber-700/50 text-amber-400' %}
+    {% set accentCls = 'border-l-amber-500' %}
 {% else %}
     {% set icon = '🔔' %}
     {% set iconCls = 'bg-indigo-950/60 border-indigo-700/50 text-indigo-400' %}

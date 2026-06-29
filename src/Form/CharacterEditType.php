@@ -57,6 +57,12 @@ class CharacterEditType extends AbstractType
                 'placeholder'  => '— Choisir —',
                 'choice_label' => fn(OptimizationLevel $o) => $o->label(),
                 'constraints'  => [new NotBlank(message: 'Choisissez un niveau d\'optimisation.')],
+            ])
+            ->add('guildatons', IntegerType::class, [
+                'label'    => 'Guildatons',
+                'required' => false,
+                'attr'     => ['placeholder' => 'Ex : 250', 'min' => 0],
+                'constraints' => [new Range(min: 0)],
             ]);
     }
 

@@ -97,6 +97,9 @@ class CharacterController extends AbstractController
             }
 
             if (!$form->get('server')->getErrors(true)->count()) {
+                if ($character->getGuildatons() !== null) {
+                    $character->setGuildatonsUpdatedAt(new \DateTimeImmutable());
+                }
                 $em->flush();
                 $this->addFlash('success', 'Personnage mis à jour.');
                 return $this->redirectToRoute('app_character_index');

@@ -43,6 +43,12 @@ class Character
     #[ORM\Column(type: 'string', enumType: OptimizationLevel::class, nullable: true)]
     private ?OptimizationLevel $optimizationLevel = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $guildatons = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $guildatonsUpdatedAt = null;
+
     #[ORM\OneToOne(mappedBy: 'character')]
     private ?GuildMembership $membership = null;
 
@@ -66,6 +72,19 @@ class Character
 
     public function getOptimizationLevel(): ?OptimizationLevel { return $this->optimizationLevel; }
     public function setOptimizationLevel(?OptimizationLevel $o): static { $this->optimizationLevel = $o; return $this; }
+
+    public function getGuildatons(): ?int { return $this->guildatons; }
+    public function setGuildatons(?int $guildatons): static { $this->guildatons = $guildatons; return $this; }
+
+    public function getGuildatonsUpdatedAt(): ?\DateTimeImmutable { return $this->guildatonsUpdatedAt; }
+    public function setGuildatonsUpdatedAt(\DateTimeImmutable $dt): static { $this->guildatonsUpdatedAt = $dt; return $this; }
+
+    public function needsGuildatonsUpdate(): bool
+    {
+        if ($this->guildatons === null) return true;
+        if ($this->guildatonsUpdatedAt === null) return true;
+        return (new \DateTimeImmutable())->diff($this->guildatonsUpdatedAt)->days >= 7;
+    }
 
     public function getMembership(): ?GuildMembership { return $this->membership; }
 

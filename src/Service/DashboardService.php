@@ -6,6 +6,7 @@ use App\Entity\MemberStatus;
 use App\Entity\RaidParticipantStatus;
 use App\Entity\RaidStatus;
 use App\Entity\User;
+use App\Repository\CharacterRepository;
 use App\Repository\GuildMembershipRepository;
 use App\Repository\RaidParticipantRepository;
 use App\Repository\RaidRepository;
@@ -16,6 +17,7 @@ class DashboardService
         private readonly RaidParticipantRepository $participantRepo,
         private readonly GuildMembershipRepository $membershipRepo,
         private readonly RaidRepository $raidRepo,
+        private readonly CharacterRepository $characterRepo,
     ) {}
 
     public function getDataForUser(User $user): array
@@ -76,6 +78,9 @@ class DashboardService
 
         $userGuildIds = array_map(fn($m) => $m->getGuild()->getId(), $confirmedMemberships);
 
+        $myCharacters = $this->characterRepo->findByUser($user);
+        $guildatonsAlert = array_filter($myCharacters, fn($c) => $c->needsGuildatonsUpdate());
+
         return [
             'activeRaids'          => $activeRaids,
             'pendingRaids'         => $pendingRaids,
@@ -86,6 +91,8 @@ class DashboardService
             'pendingByGuild'       => $pendingByGuild,
             'pendingByRaid'        => $pendingByRaid,
             'publicRaids'          => $this->raidRepo->findPublicOpen($userGuildIds),
+            'myCharacters'         => $myCharacters,
+            'guildatonsAlert'      => array_values($guildatonsAlert),
         ];
     }
 }

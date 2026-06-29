@@ -354,6 +354,19 @@
         {{ ui.link_button('Voir les guildes', path('app_guild_index'), 'secondary') }}
     </div>
 
+    {# ── Bandeau guildatons ── #}
+    {% if guildatonsAlert is defined and guildatonsAlert is not empty %}
+    <a href="{{ path('app_character_index') }}"
+       class="flex items-center gap-3 bg-amber-900/15 border border-amber-700/30 rounded-xl px-5 py-3.5 mb-6 hover:bg-amber-900/25 transition">
+        <img src="{{ asset('uploads/divers/guildatons.png') }}" alt="Guildatons" class="w-6 h-6 object-contain shrink-0">
+        <p class="text-sm text-amber-200 flex-1">
+            <span class="font-semibold">Rappel :</span>
+            mettez à jour les guildatons de <span class="font-semibold">{{ guildatonsAlert|map(c => c.name)|join(', ') }}</span>.
+        </p>
+        <span class="text-xs text-amber-500 shrink-0">Mettre à jour →</span>
+    </a>
+    {% endif %}
+
     {# ── Notifications en attente ── #}
     {% if pendingByGuild is not empty or pendingByRaid is not empty %}
     <div class="mb-8 space-y-3">
@@ -405,6 +418,37 @@
             <div class="text-xs text-gray-500 uppercase tracking-wider mt-1">Guilde{{ guildMap|length > 1 ? 's' : '' }}</div>
         </div>
     </div>
+
+    {# ── Mes personnages ── #}
+    {% if myCharacters is defined and myCharacters is not empty %}
+    <div class="{{ ui.card_classes('overflow-hidden mb-6') }}">
+        <div class="{{ ui.card_header_classes('flex items-center justify-between') }}">
+            <h2 class="font-semibold text-white">Mes personnages</h2>
+            {{ ui.link_button('Gérer', path('app_character_index'), 'secondary') }}
+        </div>
+        <ul class="divide-y divide-gray-800/60">
+            {% for c in myCharacters %}
+            <li class="flex items-center gap-4 px-5 py-3 hover:bg-gray-800/30 transition">
+                <img src="{{ asset('classes/' ~ c.gameClass.name|lower ~ '.png') }}"
+                     alt="{{ c.gameClass.name }}"
+                     class="w-9 h-9 rounded-full object-cover shrink-0">
+                <div class="flex-1 min-w-0">
+                    <div class="text-sm font-medium text-white truncate">{{ c.name }}</div>
+                    <div class="text-xs text-gray-500 mt-0.5">{{ c.gameClass.name }}{% if c.level %} · Niv. {{ c.level }}{% endif %} · {{ c.server.name }}</div>
+                </div>
+                <div class="flex items-center gap-1.5 shrink-0">
+                    <img src="{{ asset('uploads/divers/guildatons.png') }}" alt="Guildatons" class="w-4 h-4 object-contain">
+                    {% if c.guildatons is not null %}
+                        <span class="text-sm font-semibold {{ c.needsGuildatonsUpdate() ? 'text-amber-400' : 'text-emerald-400' }} tabular-nums">{{ c.guildatons }}</span>
+                    {% else %}
+                        <span class="text-xs text-gray-600 italic">—</span>
+                    {% endif %}
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
 
     {# ── Grille principale ── #}
     <div class="grid gap-6 lg:grid-cols-2">

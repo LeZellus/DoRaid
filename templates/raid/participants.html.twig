@@ -63,10 +63,16 @@
                                         {{ ui.whisper(p.character.name) }}
                                     {% endif %}
                                 </div>
-                                {% if p.character.level or p.character.optimizationLevel %}
+                                {% if p.character.level or p.character.optimizationLevel or p.character.guildatons is not null %}
                                     <div class="flex items-center gap-3">
                                         {% if p.character.level %}<span class="text-gray-400">Niv. {{ p.character.level }}</span>{% endif %}
                                         {% if p.character.optimizationLevel %}{{ ui.badge('Opti ' ~ p.character.optimizationLevel.label(), p.character.optimizationLevel.color()) }}{% endif %}
+                                        {% if p.character.guildatons is not null %}
+                                            <span class="flex items-center gap-1">
+                                                <img src="{{ asset('uploads/divers/guildatons.png') }}" alt="Guildatons" class="w-3.5 h-3.5 object-contain">
+                                                <span class="text-gray-400 tabular-nums">{{ p.character.guildatons }}</span>
+                                            </span>
+                                        {% endif %}
                                     </div>
                                 {% endif %}
                             </div>
@@ -116,10 +122,16 @@
                                     <span>{{ p.character.user.username }}</span>
                                     {{ ui.whisper(p.character.name) }}
                                 </div>
-                                {% if p.character.level or p.character.optimizationLevel %}
+                                {% if p.character.level or p.character.optimizationLevel or p.character.guildatons is not null %}
                                     <div class="flex items-center gap-3">
                                         {% if p.character.level %}<span class="text-gray-400">Niv. {{ p.character.level }}</span>{% endif %}
                                         {% if p.character.optimizationLevel %}{{ ui.badge('Opti ' ~ p.character.optimizationLevel.label(), p.character.optimizationLevel.color()) }}{% endif %}
+                                        {% if p.character.guildatons is not null %}
+                                            <span class="flex items-center gap-1">
+                                                <img src="{{ asset('uploads/divers/guildatons.png') }}" alt="Guildatons" class="w-3.5 h-3.5 object-contain">
+                                                <span class="text-gray-400 tabular-nums">{{ p.character.guildatons }}</span>
+                                            </span>
+                                        {% endif %}
                                     </div>
                                 {% endif %}
                             </div>

@@ -148,6 +148,22 @@ class NotificationService
         );
     }
 
+    public function notifyGuildatonsReminder(User $user, array $characterNames): void
+    {
+        $names = implode(', ', array_slice($characterNames, 0, 3));
+        if (count($characterNames) > 3) {
+            $names .= '…';
+        }
+
+        $this->persist(
+            $user,
+            'guildatons_reminder',
+            'Rappel : guildatons à mettre à jour',
+            'Pensez à renseigner vos guildatons pour : ' . $names,
+            $this->router->generate('app_character_index'),
+        );
+    }
+
     private function persist(User $user, string $type, string $title, string $message, ?string $link = null): void
     {
         $this->em->persist(

@@ -69,4 +69,20 @@ class NotificationRepository extends ServiceEntityRepository
             ->getQuery()
             ->execute();
     }
+
+    public function hasRecentByType(User $user, string $type, int $days = 7): bool
+    {
+        $since = new \DateTimeImmutable("-{$days} days");
+
+        return (bool) $this->createQueryBuilder('n')
+            ->select('COUNT(n.id)')
+            ->where('n.user = :user')
+            ->andWhere('n.type = :type')
+            ->andWhere('n.createdAt >= :since')
+            ->setParameter('user', $user)
+            ->setParameter('type', $type)
+            ->setParameter('since', $since)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }
