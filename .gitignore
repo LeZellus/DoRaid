@@ -24,4 +24,5 @@
 
 /public/uploads/*
 !/public/uploads/raid-guides/
+!/public/uploads/divers/
 /deploy.config.ps1

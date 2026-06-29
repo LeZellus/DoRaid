@@ -94,7 +94,15 @@
                             Durée : {{ raid.raidTemplate.formattedDuration }}
                         </span>
                     {% endif %}
-                    {% if raid.expectedEndTime %}
+                    {% if raid.status == constant('App\\Entity\\RaidStatus::Closed') %}
+                        <span class="text-gray-700">·</span>
+                        <span class="inline-flex items-center gap-1 text-gray-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707a1 1 0 00-1.414-1.414L9 10.172 7.707 8.879a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            Raid terminé
+                        </span>
+                    {% elseif raid.expectedEndTime %}
                         <span class="text-gray-700">·</span>
                         <span class="inline-flex items-center gap-1 {{ raid.expectedEndTime < date() ? 'text-red-400' : 'text-emerald-400' }}">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
@@ -108,17 +116,19 @@
                 {% if raid.description %}
                     <p class="text-gray-400 text-sm mt-3 leading-relaxed border-t border-gray-800/60 pt-3">{{ raid.description }}</p>
                 {% endif %}
+                {% set _isClosed = raid.status == constant('App\\Entity\\RaidStatus::Closed') %}
                 {% if app.user and myParticipants is not empty %}
                     {% for myP in myParticipants %}
                         {% set _isAccepted = myP.status == constant('App\\Entity\\RaidParticipantStatus::Accepted') %}
+                        {% if _isAccepted or not _isClosed %}
                         <div class="flex items-center justify-between gap-2 text-xs mt-3 border-t border-gray-800/60 pt-3">
                             <div class="flex items-center gap-2 {{ _isAccepted ? 'text-emerald-400' : 'text-yellow-400' }}">
                                 <img src="{{ asset('classes/' ~ myP.character.gameClass.name|lower ~ '.png') }}" alt="{{ myP.character.gameClass.name }}" class="w-4 h-4 rounded-full object-cover shrink-0">
-                                {{ _isAccepted ? 'Vous participez avec' : 'Candidature en attente avec' }}
+                                {{ _isAccepted ? (_isClosed ? 'Vous avez participé avec' : 'Vous participez avec') : 'Candidature en attente avec' }}
                                 <span class="font-semibold {{ _isAccepted ? 'text-emerald-300' : 'text-yellow-300' }}">{{ myP.character.name }}</span>
                                 <span class="text-gray-500">— {{ myP.character.gameClass.name }}</span>
                             </div>
-                            {% if raid.status == constant('App\\Entity\\RaidStatus::Open') and myP.character.id != raid.creator.id %}
+                            {% if not _isClosed and myP.character.id != raid.creator.id %}
                                 <form method="post" action="{{ path('app_raid_cancel', {id: myP.id}) }}">
                                     <input type="hidden" name="_token" value="{{ csrf_token('cancel_' ~ myP.id) }}">
                                     <button type="submit"
@@ -127,6 +137,7 @@
                                 </form>
                             {% endif %}
                         </div>
+                        {% endif %}
                     {% endfor %}
                 {% endif %}
             </div>
@@ -139,7 +150,7 @@
                     </div>
                     <div class="text-xs text-gray-500 mt-0.5">participants</div>
                 </div>
-                {% if raid.pendingParticipants|length > 0 %}
+                {% if not _isClosed and raid.pendingParticipants|length > 0 %}
                     <div class="text-center bg-yellow-900/20 rounded-xl px-5 py-3 border border-yellow-800/30">
                         <div class="text-2xl font-bold text-yellow-400">{{ raid.pendingParticipants|length }}</div>
                         <div class="text-xs text-yellow-600 mt-0.5">intéressés</div>
