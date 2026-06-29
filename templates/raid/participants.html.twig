@@ -23,7 +23,7 @@
         <span class="text-sm text-gray-500">
             {{ raid.acceptedParticipants|length }} / {{ raid.raidTemplate.maxParticipants }}
             {% if raid.isFull() %}<span class="text-red-400 ml-1">· Complet</span>{% endif %}
-            {% if raid.pendingParticipants|length > 0 %}
+            {% if raid.status == constant('App\\Entity\\RaidStatus::Open') and raid.pendingParticipants|length > 0 %}
                 · <span class="text-yellow-400">{{ raid.pendingParticipants|length }} en attente</span>
             {% endif %}
         </span>
@@ -93,7 +93,7 @@
     </div>
 
     {# ── Intéressés (créateur uniquement ou si candidatures en attente) ── #}
-    {% if raid.pendingParticipants|length > 0 %}
+    {% if raid.status == constant('App\\Entity\\RaidStatus::Open') and raid.pendingParticipants|length > 0 %}
         <div class="{{ ui.card_classes('overflow-hidden') }}">
             <div class="{{ ui.card_header_classes('flex items-center gap-3') }}">
                 <h2 class="font-semibold text-white">Intéressés</h2>
