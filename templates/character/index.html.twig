@@ -56,21 +56,20 @@
                                             {{ ui.badge(character.optimizationLevel.label(), character.optimizationLevel.color()) }}
                                         {% endif %}
                                     </div>
-                                    <div class="flex items-center gap-3 mt-1 flex-wrap">
-                                        <span class="flex items-center gap-1">
-                                            <img src="{{ asset('uploads/divers/guildatons.png') }}" alt="Guildatons" class="w-3.5 h-3.5 object-contain">
-                                            <span class="text-xs {{ character.guildatons is not null ? (character.needsGuildatonsUpdate() ? 'text-amber-400' : 'text-emerald-400') : 'text-gray-600' }} tabular-nums">
-                                                {{ character.guildatons ?? 'N/A' }}
-                                            </span>
+                                    <div class="flex items-center gap-1 mt-1">
+                                        <img src="{{ asset('uploads/divers/guildatons.png') }}" alt="Guildatons" class="w-3.5 h-3.5 object-contain">
+                                        <span class="text-xs {{ character.guildatons is not null ? (character.needsGuildatonsUpdate() ? 'text-amber-400' : 'text-emerald-400') : 'text-gray-600' }} tabular-nums">
+                                            {{ character.guildatons ?? 'N/A' }}
                                         </span>
+                                    </div>
+                                    <div class="mt-1">
                                         {% if m and m.status.value != 'pending' %}
-                                            <span class="text-xs text-gray-600">·</span>
                                             <span class="text-xs text-gray-500">Guilde :
                                                 <a href="{{ path('app_guild_show', {slug: m.guild.slug}) }}"
                                                    class="text-indigo-400 hover:text-indigo-300 transition">{{ m.guild.name }}</a>
                                             </span>
-                                        {% elseif not m %}
-                                            <span class="text-xs text-gray-600">· Aucune guilde</span>
+                                        {% else %}
+                                            <span class="text-xs text-gray-600">Aucune guilde</span>
                                         {% endif %}
                                     </div>
                                 </div>
