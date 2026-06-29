@@ -26,6 +26,41 @@
         </span>
     </div>
 
+    {# ── Demandes en attente (meneur) ── #}
+    {% if isLeader and guild.pending|length > 0 %}
+        <div class="{{ ui.card_classes('overflow-hidden mb-6') }}">
+            <div class="{{ ui.card_header_classes('flex items-center gap-3') }}">
+                <h2 class="font-semibold text-white">Demandes en attente</h2>
+                {{ ui.badge(guild.pending|length, 'warning') }}
+            </div>
+            <ul class="divide-y divide-gray-800/60">
+                {% for m in guild.pending %}
+                    <li class="flex items-center gap-4 px-6 py-3.5">
+                        <img src="{{ asset('classes/' ~ m.character.gameClass.name|lower ~ '.png') }}"
+                             alt="{{ m.character.gameClass.name }}"
+                             class="w-10 h-10 rounded-full object-cover shrink-0">
+                        <div class="flex-1 min-w-0">
+                            <span class="font-medium text-white">{{ m.character.name }}</span>
+                            <div class="text-xs text-gray-500 mt-0.5">
+                                {{ m.character.gameClass.name }} · {{ m.character.user.username }}
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <form method="post" action="{{ path('app_guild_approve', {id: m.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('membership_' ~ m.id) }}">
+                                {{ ui.button('Accepter', 'success', 'submit', 'py-1.5 px-3 text-xs') }}
+                            </form>
+                            <form method="post" action="{{ path('app_guild_reject', {id: m.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('membership_' ~ m.id) }}">
+                                {{ ui.button('Refuser', 'danger', 'submit', 'py-1.5 px-3 text-xs') }}
+                            </form>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
     {# ── Membres confirmés ── #}
     <div class="{{ ui.card_classes('overflow-hidden mb-6') }}">
         <div class="{{ ui.card_header_classes() }}">
@@ -61,7 +96,7 @@
                                     {% if m.character.optimizationLevel %}
                                         {{ ui.badge(m.character.optimizationLevel.label(), m.character.optimizationLevel.color()) }}
                                     {% endif %}
-                                    {% if m.character.user.id == app.user.id %}
+                                    {% if app.user and m.character.user.id == app.user.id %}
                                         <span class="text-xs text-indigo-400 font-medium">· vous</span>
                                     {% else %}
                                         <span class="text-xs text-gray-600">· {{ m.character.user.username }}</span>
@@ -73,7 +108,7 @@
                                 {% if canCreateRaids %}
                                     {{ notes.dialog(m, m.character.name, true, isLeader) }}
                                 {% endif %}
-                                {% if m.character.user.id == app.user.id and m.status.value != 'leader' %}
+                                {% if app.user and m.character.user.id == app.user.id and m.status.value != 'leader' %}
                                     <form method="post" action="{{ path('app_guild_leave', {id: m.id}) }}">
                                         <input type="hidden" name="_token" value="{{ csrf_token('leave_' ~ m.id) }}">
                                         {{ ui.button('Quitter', 'ghost', 'submit', 'py-1.5 px-3 text-xs') }}
@@ -110,40 +145,6 @@
         {% endif %}
     </div>
 
-    {# ── Demandes en attente (meneur) ── #}
-    {% if isLeader and guild.pending|length > 0 %}
-        <div class="{{ ui.card_classes('overflow-hidden') }}">
-            <div class="{{ ui.card_header_classes('flex items-center gap-3') }}">
-                <h2 class="font-semibold text-white">Demandes en attente</h2>
-                {{ ui.badge(guild.pending|length, 'warning') }}
-            </div>
-            <ul class="divide-y divide-gray-800/60">
-                {% for m in guild.pending %}
-                    <li class="flex items-center gap-4 px-6 py-3.5">
-                        <img src="{{ asset('classes/' ~ m.character.gameClass.name|lower ~ '.png') }}"
-                             alt="{{ m.character.gameClass.name }}"
-                             class="w-10 h-10 rounded-full object-cover shrink-0">
-                        <div class="flex-1 min-w-0">
-                            <span class="font-medium text-white">{{ m.character.name }}</span>
-                            <div class="text-xs text-gray-500 mt-0.5">
-                                {{ m.character.gameClass.name }} · {{ m.character.user.username }}
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2 shrink-0">
-                            <form method="post" action="{{ path('app_guild_approve', {id: m.id}) }}">
-                                <input type="hidden" name="_token" value="{{ csrf_token('membership_' ~ m.id) }}">
-                                {{ ui.button('Accepter', 'success', 'submit', 'py-1.5 px-3 text-xs') }}
-                            </form>
-                            <form method="post" action="{{ path('app_guild_reject', {id: m.id}) }}">
-                                <input type="hidden" name="_token" value="{{ csrf_token('membership_' ~ m.id) }}">
-                                {{ ui.button('Refuser', 'danger', 'submit', 'py-1.5 px-3 text-xs') }}
-                            </form>
-                        </div>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-    {% endif %}
 
 </div>
 {% endblock %}
