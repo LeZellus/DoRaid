@@ -287,6 +287,7 @@
             </div>
 
             {# ── Intéressés + Candidater ── #}
+            {% if raid.status == constant('App\\Entity\\RaidStatus::Open') %}
             <div class="{{ ui.card_classes('overflow-hidden') }}">
                 <div class="{{ ui.card_header_classes('flex items-center justify-between') }}">
                     <h2 class="font-semibold text-white">Intéressés</h2>
@@ -386,6 +387,7 @@
                     {% endif %}
                 {% endif %}
             </div>
+            {% endif %}{# /raid open #}
 
         </div>{# /col-gauche #}
 
