@@ -1,5 +1,6 @@
 {% extends 'base.html.twig' %}
 {% import 'components/_ui.html.twig' as ui %}
+{% import 'components/_member_notes.html.twig' as notes %}
 
 {% block title %}Membres – {{ guild.name }} – Zeminal{% endblock %}
 
@@ -38,65 +39,70 @@
         {% else %}
             <ul class="divide-y divide-gray-800/60">
                 {% for m in guild.confirmed %}
-                    <li class="flex items-center gap-4 px-6 py-3.5 hover:bg-gray-800/30 transition">
-                        <img src="{{ asset('classes/' ~ m.character.gameClass.name|lower ~ '.png') }}"
-                             alt="{{ m.character.gameClass.name }}"
-                             class="w-10 h-10 rounded-full object-cover shrink-0">
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-center gap-2">
-                                <span class="font-medium text-white truncate">{{ m.character.name }}</span>
-                                {% if m.status.value == 'leader' %}
-                                    <span title="Meneur" class="text-base leading-none">👑</span>
-                                {% elseif m.canCreateRaids() %}
-                                    <span title="Peut créer des raids" class="text-base leading-none">⚔️</span>
-                                {% endif %}
+                    <li class="px-6 py-3.5 hover:bg-gray-800/30 transition">
+                        <div class="flex items-center gap-4">
+                            <img src="{{ asset('classes/' ~ m.character.gameClass.name|lower ~ '.png') }}"
+                                 alt="{{ m.character.gameClass.name }}"
+                                 class="w-10 h-10 rounded-full object-cover shrink-0">
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-medium text-white truncate">{{ m.character.name }}</span>
+                                    {% if m.status.value == 'leader' %}
+                                        <span title="Meneur" class="text-base leading-none">👑</span>
+                                    {% elseif m.canCreateRaids() %}
+                                        <span title="Peut créer des raids" class="text-base leading-none">⚔️</span>
+                                    {% endif %}
+                                </div>
+                                <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                                    <span class="text-xs text-gray-400">{{ m.character.gameClass.name }}</span>
+                                    {% if m.character.level %}
+                                        <span class="text-xs text-gray-500">· Niv. {{ m.character.level }}</span>
+                                    {% endif %}
+                                    {% if m.character.optimizationLevel %}
+                                        {{ ui.badge(m.character.optimizationLevel.label(), m.character.optimizationLevel.color()) }}
+                                    {% endif %}
+                                    {% if m.character.user.id == app.user.id %}
+                                        <span class="text-xs text-indigo-400 font-medium">· vous</span>
+                                    {% else %}
+                                        <span class="text-xs text-gray-600">· {{ m.character.user.username }}</span>
+                                        {{ ui.whisper(m.character.name) }}
+                                    {% endif %}
+                                </div>
                             </div>
-                            <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
-                                <span class="text-xs text-gray-400">{{ m.character.gameClass.name }}</span>
-                                {% if m.character.level %}
-                                    <span class="text-xs text-gray-500">· Niv. {{ m.character.level }}</span>
+                            <div class="flex items-center gap-2 shrink-0">
+                                {% if canCreateRaids %}
+                                    {{ notes.dialog(m, m.character.name, true, isLeader) }}
                                 {% endif %}
-                                {% if m.character.optimizationLevel %}
-                                    {{ ui.badge(m.character.optimizationLevel.label(), m.character.optimizationLevel.color()) }}
-                                {% endif %}
-                                {% if m.character.user.id == app.user.id %}
-                                    <span class="text-xs text-indigo-400 font-medium">· vous</span>
-                                {% else %}
-                                    <span class="text-xs text-gray-600">· {{ m.character.user.username }}</span>
-                                    {{ ui.whisper(m.character.name) }}
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2 shrink-0">
-                            {% if m.character.user.id == app.user.id and m.status.value != 'leader' %}
-                                <form method="post" action="{{ path('app_guild_leave', {id: m.id}) }}">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('leave_' ~ m.id) }}">
-                                    {{ ui.button('Quitter', 'ghost', 'submit', 'py-1.5 px-3 text-xs') }}
-                                </form>
-                            {% endif %}
-                            {% if isLeader and m.character.user.id != app.user.id and m.status.value != 'leader' %}
-                                {% if m.canCreateRaids() %}
-                                    <form method="post" action="{{ path('app_guild_raid_permission', {id: m.id, action: 'revoquer-raids'}) }}">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('raid_creator_' ~ m.id) }}">
-                                        {{ ui.button('Retirer création de raids', 'ghost', 'submit', 'py-1.5 px-3 text-xs') }}
-                                    </form>
-                                {% else %}
-                                    <form method="post" action="{{ path('app_guild_raid_permission', {id: m.id, action: 'autoriser-raids'}) }}">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('raid_creator_' ~ m.id) }}">
-                                        {{ ui.button('Autoriser création de raids', 'secondary', 'submit', 'py-1.5 px-3 text-xs') }}
+                                {% if m.character.user.id == app.user.id and m.status.value != 'leader' %}
+                                    <form method="post" action="{{ path('app_guild_leave', {id: m.id}) }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('leave_' ~ m.id) }}">
+                                        {{ ui.button('Quitter', 'ghost', 'submit', 'py-1.5 px-3 text-xs') }}
                                     </form>
                                 {% endif %}
-                                <form method="post" action="{{ path('app_guild_transfer_leader', {id: m.id}) }}"
-                                      onsubmit="return confirm('Nommer {{ m.character.name }} comme meneur ? Vous perdrez votre rôle de meneur.')">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('transfer_leader_' ~ m.id) }}">
-                                    {{ ui.button('Nommer meneur', 'secondary', 'submit', 'py-1.5 px-3 text-xs') }}
-                                </form>
-                                <form method="post" action="{{ path('app_guild_reject', {id: m.id}) }}"
-                                      onsubmit="return confirm('Exclure {{ m.character.name }} de la guilde ?')">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('membership_' ~ m.id) }}">
-                                    {{ ui.button('Exclure', 'danger', 'submit', 'py-1.5 px-3 text-xs') }}
-                                </form>
-                            {% endif %}
+                                {% if isLeader and m.character.user.id != app.user.id and m.status.value != 'leader' %}
+                                    {% if m.canCreateRaids() %}
+                                        <form method="post" action="{{ path('app_guild_raid_permission', {id: m.id, action: 'revoquer-raids'}) }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('raid_creator_' ~ m.id) }}">
+                                            {{ ui.button('Retirer création de raids', 'ghost', 'submit', 'py-1.5 px-3 text-xs') }}
+                                        </form>
+                                    {% else %}
+                                        <form method="post" action="{{ path('app_guild_raid_permission', {id: m.id, action: 'autoriser-raids'}) }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('raid_creator_' ~ m.id) }}">
+                                            {{ ui.button('Autoriser création de raids', 'secondary', 'submit', 'py-1.5 px-3 text-xs') }}
+                                        </form>
+                                    {% endif %}
+                                    <form method="post" action="{{ path('app_guild_transfer_leader', {id: m.id}) }}"
+                                          onsubmit="return confirm('Nommer {{ m.character.name }} comme meneur ? Vous perdrez votre rôle de meneur.')">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('transfer_leader_' ~ m.id) }}">
+                                        {{ ui.button('Nommer meneur', 'secondary', 'submit', 'py-1.5 px-3 text-xs') }}
+                                    </form>
+                                    <form method="post" action="{{ path('app_guild_reject', {id: m.id}) }}"
+                                          onsubmit="return confirm('Exclure {{ m.character.name }} de la guilde ?')">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('membership_' ~ m.id) }}">
+                                        {{ ui.button('Exclure', 'danger', 'submit', 'py-1.5 px-3 text-xs') }}
+                                    </form>
+                                {% endif %}
+                            </div>
                         </div>
                     </li>
                 {% endfor %}

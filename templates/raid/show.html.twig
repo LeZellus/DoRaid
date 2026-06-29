@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 {% import 'components/_ui.html.twig' as ui %}
 {% import 'components/_raid_participant_menu.html.twig' as pmenu %}
+{% import 'components/_member_notes.html.twig' as notes %}
 
 {% block title %}{{ raid.raidTemplate.name }} – Raid Dofus {{ raid.guild.server.name }} – {{ raid.guild.name }} – Zeminal{% endblock %}
 {% block meta_description %}Raid Dofus {{ raid.raidTemplate.name }} organisé par {{ raid.guild.name }} sur {{ raid.guild.server.name }}{% if raid.scheduledAt %}, prévu le {{ raid.scheduledAt|date('d/m/Y à H:i') }}{% endif %}. {{ raid.acceptedParticipants|length }}/{{ raid.raidTemplate.maxParticipants }} participants.{% endblock %}
@@ -258,6 +259,9 @@
                                         {% endif %}
                                     </div>
                                 </div>
+                                {% if isCreator and p.guildMember %}
+                                    {{ notes.dialog(p.character.membership, p.character.name, true, false) }}
+                                {% endif %}
                                 {% if isCreator and p.character !== raid.creator %}
                                     {{ pmenu.menu(p, raid, myOtherRaids, true) }}
                                 {% elseif app.user and p.character.user.id == app.user.id and raid.status == constant('App\\Entity\\RaidStatus::Open') and p.character.id != raid.creator.id %}

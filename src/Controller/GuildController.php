@@ -142,10 +142,71 @@ class GuildController extends AbstractController
         $currentUser = $this->getUser();
 
         return $this->render('guild/members.html.twig', [
-            'guild'    => $guild,
-            'isOwner'  => $guild->isOwnedBy($currentUser),
-            'isLeader' => $currentUser && $guild->isLeaderOf($currentUser),
+            'guild'          => $guild,
+            'isOwner'        => $guild->isOwnedBy($currentUser),
+            'isLeader'       => $currentUser && $guild->isLeaderOf($currentUser),
+            'canCreateRaids' => $currentUser && !empty($this->charRepo->findCanCreateRaidsInGuild($currentUser, $guild)),
         ]);
+    }
+
+    #[IsGranted('ROLE_USER')]
+    #[Route('/membres/{id}/notes/ajouter', name: 'app_guild_member_note_add', methods: ['POST'])]
+    public function addMemberNote(GuildMembership $membership, Request $request, EntityManagerInterface $em): Response
+    {
+        $guild = $membership->getGuild();
+        $this->requireCsrfToken('member_note_add_' . $membership->getId(), $request);
+
+        if (empty($this->charRepo->findCanCreateRaidsInGuild($this->getUser(), $guild))) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $content = trim($request->request->get('content', ''));
+        if ($content === '') {
+            $this->addFlash('error', 'La note ne peut pas être vide.');
+            return $this->safeRefererRedirect($request, 'app_guild_members', ['slug' => $guild->getSlug()]);
+        }
+
+        $note = (new \App\Entity\MemberNote())
+            ->setMembership($membership)
+            ->setAuthor($this->getUser())
+            ->setContent($content);
+
+        $em->persist($note);
+        $em->flush();
+
+        $this->addFlash('success', 'Note ajoutée.');
+        return $this->safeRefererRedirect($request, 'app_guild_members', ['slug' => $guild->getSlug()]);
+    }
+
+    #[IsGranted('ROLE_USER')]
+    #[Route('/notes/{id}/supprimer', name: 'app_guild_member_note_delete', methods: ['POST'])]
+    public function deleteMemberNote(\App\Entity\MemberNote $note, Request $request, EntityManagerInterface $em): Response
+    {
+        $guild = $note->getMembership()->getGuild();
+        $this->requireCsrfToken('member_note_delete_' . $note->getId(), $request);
+
+        $currentUser = $this->getUser();
+        $isLeader    = $guild->isLeaderOf($currentUser);
+        $isAuthor    = $note->isWrittenBy($currentUser);
+
+        if (!$isLeader && !$isAuthor) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $em->remove($note);
+        $em->flush();
+
+        $this->addFlash('success', 'Note supprimée.');
+        return $this->safeRefererRedirect($request, 'app_guild_members', ['slug' => $guild->getSlug()]);
+    }
+
+    private function safeRefererRedirect(Request $request, string $fallbackRoute, array $fallbackParams = []): Response
+    {
+        $referer = $request->headers->get('referer', '');
+        if ($referer && str_starts_with($referer, $request->getSchemeAndHttpHost() . '/')) {
+            return $this->redirect($referer);
+        }
+        return $this->redirectToRoute($fallbackRoute, $fallbackParams);
     }
 
     #[IsGranted('ROLE_USER')]

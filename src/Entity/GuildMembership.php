@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\GuildMembershipRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: GuildMembershipRepository::class)]
@@ -27,12 +29,17 @@ class GuildMembership
     #[ORM\Column(options: ['default' => false])]
     private bool $canCreateRaids = false;
 
+    #[ORM\OneToMany(mappedBy: 'membership', targetEntity: MemberNote::class, cascade: ['remove'], orphanRemoval: true)]
+    #[ORM\OrderBy(['createdAt' => 'ASC'])]
+    private Collection $notes;
+
     #[ORM\Column]
     private \DateTimeImmutable $requestedAt;
 
     public function __construct()
     {
         $this->requestedAt = new \DateTimeImmutable();
+        $this->notes       = new ArrayCollection();
     }
 
     public function getId(): ?int { return $this->id; }
@@ -57,6 +64,9 @@ class GuildMembership
 
     public function canCreateRaids(): bool { return $this->status === MemberStatus::Leader || $this->canCreateRaids; }
     public function setCanCreateRaids(bool $canCreateRaids): static { $this->canCreateRaids = $canCreateRaids; return $this; }
+
+    /** @return Collection<int, MemberNote> */
+    public function getNotes(): Collection { return $this->notes; }
 
     public function getRequestedAt(): \DateTimeImmutable { return $this->requestedAt; }
 }
