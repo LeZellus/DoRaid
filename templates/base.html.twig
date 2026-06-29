@@ -76,7 +76,7 @@
                         <a href="{{ path('app_home') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition {{ route == 'app_home' ? 'text-white bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800/60' }}">Dashboard</a>
                     {% endif %}
                     <a href="{{ path('app_guild_index') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition {{ route starts with 'app_guild' ? 'text-white bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800/60' }}">Les guildes</a>
-                    <a href="{{ path('app_raid_guide_index') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition {{ route starts with 'app_raid_template_guide' or route == 'app_raid_guide_index' ? 'text-white bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800/60' }}">Stratégies</a>
+                    <a href="{{ path('app_raid_guide_index') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition {{ route starts with 'app_raid_template_guide' or route == 'app_raid_guide_index' ? 'text-white bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800/60' }}">Encyclopédie</a>
                     <span class="relative inline-flex shrink-0">
                         {% if route starts with 'app_raid' and route != 'app_raid_template_guide' and route != 'app_raid_guide_index' %}
                             <a href="{{ path('app_raid_index') }}" class="inline-flex items-center h-9 px-3 rounded-xl text-sm font-semibold transition border border-yellow-400 text-yellow-300">Trouver un raid</a>
@@ -169,7 +169,7 @@
                         <a href="{{ path('app_character_index') }}" data-action="click->navbar#close" class="px-3 py-2.5 rounded-lg text-sm font-medium transition {{ route starts with 'app_character' ? 'text-white bg-gray-800' : 'text-gray-300 hover:text-white hover:bg-gray-800/60' }}">Personnages</a>
                     {% endif %}
                     <a href="{{ path('app_guild_index') }}" data-action="click->navbar#close" class="px-3 py-2.5 rounded-lg text-sm font-medium transition {{ route starts with 'app_guild' ? 'text-white bg-gray-800' : 'text-gray-300 hover:text-white hover:bg-gray-800/60' }}">Les guildes</a>
-                    <a href="{{ path('app_raid_guide_index') }}" data-action="click->navbar#close" class="px-3 py-2.5 rounded-lg text-sm font-medium transition {{ route starts with 'app_raid_template_guide' or route == 'app_raid_guide_index' ? 'text-white bg-gray-800' : 'text-gray-300 hover:text-white hover:bg-gray-800/60' }}">Stratégies</a>
+                    <a href="{{ path('app_raid_guide_index') }}" data-action="click->navbar#close" class="px-3 py-2.5 rounded-lg text-sm font-medium transition {{ route starts with 'app_raid_template_guide' or route == 'app_raid_guide_index' ? 'text-white bg-gray-800' : 'text-gray-300 hover:text-white hover:bg-gray-800/60' }}">Encyclopédie</a>
                     <a href="{{ path('app_raid_index') }}" data-action="click->navbar#close" class="px-3 py-2.5 rounded-lg text-sm font-semibold transition text-yellow-400 hover:text-yellow-300 hover:bg-yellow-400/10">⚔ Trouver un raid</a>
 
                     <a href="https://ko-fi.com/zeminal" target="_blank" rel="noopener"
@@ -247,7 +247,7 @@
                         <ul class="space-y-2">
                             <li><a href="{{ path('app_raid_index') }}" class="text-xs text-gray-500 hover:text-gray-300 transition">Raids Dofus</a></li>
                             <li><a href="{{ path('app_guild_index') }}" class="text-xs text-gray-500 hover:text-gray-300 transition">Les guildes</a></li>
-                            <li><a href="{{ path('app_raid_guide_index') }}" class="text-xs text-gray-500 hover:text-gray-300 transition">Stratégies</a></li>
+                            <li><a href="{{ path('app_raid_guide_index') }}" class="text-xs text-gray-500 hover:text-gray-300 transition">Encyclopédie</a></li>
                             {% if not app.user %}
                                 <li><a href="{{ path('app_register') }}" class="text-xs text-gray-500 hover:text-gray-300 transition">Créer un compte</a></li>
                                 <li><a href="{{ path('app_login') }}" class="text-xs text-gray-500 hover:text-gray-300 transition">Connexion</a></li>
