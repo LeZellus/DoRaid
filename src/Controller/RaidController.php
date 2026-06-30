@@ -133,7 +133,7 @@ class RaidController extends AbstractController
     }
 
     #[Route('/{id}/participants', name: 'app_raid_participants')]
-    public function participants(int $id, RaidRepository $raidRepo, RaidParticipantRepository $participantRepo): Response
+    public function participants(int $id, RaidRepository $raidRepo, RaidParticipantRepository $participantRepo, CharacterRepository $charRepo): Response
     {
         $raid = $raidRepo->findWithParticipants($id);
         if (!$raid) {
@@ -142,8 +142,9 @@ class RaidController extends AbstractController
 
         if ($r = $this->checkRaidAccess($raid)) return $r;
 
-        $currentUser = $this->getUser();
-        $isCreator   = $currentUser && $raid->isCreatedBy($currentUser);
+        $currentUser    = $this->getUser();
+        $isCreator      = $currentUser && $raid->isCreatedBy($currentUser);
+        $canManageNotes = $isCreator || ($currentUser && !empty($charRepo->findCanCreateRaidsInGuild($currentUser, $raid->getGuild())));
 
         $characterIds = array_values(array_filter(
             $raid->getParticipants()->map(fn($p) => $p->getCharacter()->getId())->toArray(),
@@ -153,6 +154,8 @@ class RaidController extends AbstractController
         return $this->render('raid/participants.html.twig', [
             'raid'                => $raid,
             'isCreator'           => $isCreator,
+            'canManageNotes'      => $canManageNotes,
+            'isLeader'            => $currentUser && $raid->getGuild()->isLeaderOf($currentUser),
             'myOtherRaids'        => $isCreator ? $raidRepo->findOpenByGuild($raid->getGuild(), $raid) : [],
             'completedRaidCounts' => $participantRepo->countCompletedByCharacters($characterIds),
         ]);

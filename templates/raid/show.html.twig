@@ -272,8 +272,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                {% if isCreator and p.guildMember %}
-                                    {{ notes.dialog(p.character.membership, p.character.name, true, false) }}
+                                {% if canManageNotes and p.guildMember %}
+                                    {{ notes.dialog(p.character.membership, p.character.name, true, isLeader) }}
                                 {% endif %}
                                 {% if isCreator and p.character !== raid.creator %}
                                     {{ pmenu.menu(p, raid, myOtherRaids, true) }}
@@ -341,6 +341,9 @@
                                         </div>
                                     </div>
                                 </div>
+                                {% if canManageNotes and p.guildMember %}
+                                    {{ notes.dialog(p.character.membership, p.character.name, true, isLeader) }}
+                                {% endif %}
                                 {% if isCreator %}
                                     {{ pmenu.menu(p, raid, myOtherRaids, false) }}
                                 {% elseif app.user and p.character.user.id == app.user.id and raid.status == constant('App\\Entity\\RaidStatus::Open') %}

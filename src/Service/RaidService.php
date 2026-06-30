@@ -328,9 +328,13 @@ class RaidService
             fn($id) => $id !== null
         ));
 
+        $canManageNotes = $isCreator || ($user && !empty($this->charRepo->findCanCreateRaidsInGuild($user, $raid->getGuild())));
+
         return [
             'eligible'            => $eligible,
             'isCreator'           => $isCreator,
+            'canManageNotes'      => $canManageNotes,
+            'isLeader'            => $user && $raid->getGuild()->isLeaderOf($user),
             'acceptedCharacters'  => $acceptedCharacters,
             'pendingApplications' => $pendingApplications,
             'myParticipants'      => $myParticipants,
