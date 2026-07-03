@@ -10,14 +10,14 @@ W, H = 1200, 630
 FONT_DIR = "C:/Windows/Fonts"
 OUT_DIR = os.path.join(os.path.dirname(__file__), "..", "public", "og")
 
-BG = (3, 7, 18)          # gray-950
-INDIGO_600 = (79, 70, 229)
-INDIGO_400 = (129, 140, 248)
-INDIGO_300 = (165, 180, 252)
-YELLOW_400 = (250, 204, 21)
-WHITE = (255, 255, 255)
-GRAY_400 = (156, 163, 175)
-GRAY_500 = (107, 114, 128)
+BG = (35, 37, 32)         # gray-950 (thème Dofus)
+INDIGO_600 = (5, 150, 105)   # accent = émeraude désormais
+INDIGO_400 = (52, 211, 153)
+INDIGO_300 = (110, 231, 183)
+YELLOW_400 = (247, 208, 1)
+WHITE = (240, 240, 230)
+GRAY_400 = (188, 190, 176)
+GRAY_500 = (163, 166, 152)
 
 
 def font(name, size):

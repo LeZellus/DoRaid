@@ -137,7 +137,7 @@ class RaidController extends AbstractController
     {
         $raid = $raidRepo->findWithParticipants($id);
         if (!$raid) {
-            throw $this->createNotFoundException('Raid introuvable.');
+            return $this->raidNotFound();
         }
 
         if ($r = $this->checkRaidAccess($raid)) return $r;
@@ -166,7 +166,7 @@ class RaidController extends AbstractController
     {
         $raid = $raidRepo->findWithParticipants($id);
         if (!$raid) {
-            throw $this->createNotFoundException('Raid introuvable.');
+            return $this->raidNotFound();
         }
 
         if ($r = $this->checkRaidAccess($raid)) return $r;
@@ -177,6 +177,11 @@ class RaidController extends AbstractController
         $data = $this->raidService->buildShowData($raid, $this->getUser());
 
         return $this->render('raid/show.html.twig', ['raid' => $raid] + $data);
+    }
+
+    private function raidNotFound(): Response
+    {
+        return $this->render('raid/not_found.html.twig', [], new Response('', 404));
     }
 
     private function checkRaidAccess(Raid $raid): ?Response

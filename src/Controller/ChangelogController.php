@@ -13,9 +13,19 @@ class ChangelogController extends AbstractController
     {
         $entries = [
             [
+                'version' => '1.5.0',
+                'date'    => '3 juillet 2026',
+                'latest'  => true,
+                'changes' => [
+                    ['type' => 'new',  'text' => 'Nouvelle identité visuelle inspirée de l\'univers Dofus — accent émeraude, boutons, badges et alertes translucides au lieu des aplats pleins'],
+                    ['type' => 'impr', 'text' => 'Boutons et cards harmonisés sur un même composant partagé dans toutes les pages du site'],
+                    ['type' => 'fix',  'text' => 'Curseur "pointeur" manquant sur les boutons'],
+                ],
+            ],
+            [
                 'version' => '1.4.0',
                 'date'    => '29 juin 2026',
-                'latest'  => true,
+                'latest'  => false,
                 'changes' => [
                     ['type' => 'new',  'text' => 'Système de feedback intégré — signalez un bug ou proposez une suggestion depuis le menu avatar ou le footer'],
                     ['type' => 'new',  'text' => 'Page de mises à jour (vous y êtes !)'],

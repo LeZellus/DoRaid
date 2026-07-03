@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Repository\FeedbackRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -11,9 +12,13 @@ use Symfony\Component\HttpFoundation\Response;
 #[AdminDashboard(routePath: '/admin', routeName: 'admin_dashboard')]
 class DashboardController extends AbstractDashboardController
 {
+    public function __construct(private readonly FeedbackRepository $feedbackRepo) {}
+
     public function index(): Response
     {
-        return $this->render('admin/dashboard.html.twig');
+        return $this->render('admin/dashboard.html.twig', [
+            'openFeedbackCount' => $this->feedbackRepo->countOpen(),
+        ]);
     }
 
     public function configureDashboard(): Dashboard

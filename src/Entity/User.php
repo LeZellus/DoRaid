@@ -112,4 +112,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getCreatedAt(): ?\DateTimeImmutable { return $this->createdAt; }
 
     public function eraseCredentials(): void {}
+
+    public function __toString(): string
+    {
+        return $this->username ?? $this->email ?? ('User #' . $this->id);
+    }
 }

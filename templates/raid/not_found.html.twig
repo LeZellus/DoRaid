@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+{% import 'components/_ui.html.twig' as ui %}
+
+{% block title %}Raid introuvable — Zeminal{% endblock %}
+{% block meta_robots %}noindex, follow{% endblock %}
+
+{% block body %}
+<div class="max-w-2xl mx-auto px-6 py-24 text-center">
+    <div class="text-7xl mb-6 select-none">⚔️</div>
+    <p class="text-indigo-400 font-mono text-sm font-semibold uppercase tracking-widest mb-3">Erreur 404</p>
+    <h1 class="text-2xl font-bold text-white mb-4">Ce raid n'existe plus</h1>
+    <p class="text-gray-400 mb-10 leading-relaxed">
+        Il a probablement été supprimé par son créateur une fois terminé, ou le lien que tu as suivi est obsolète.
+    </p>
+    <div class="flex items-center justify-center gap-4 flex-wrap">
+        {{ ui.link_button('← Voir les raids', path('app_raid_index'), 'primary', 'px-6 py-3') }}
+        {{ ui.link_button('Retour à l\'accueil', path('app_home'), 'secondary', 'px-6 py-3') }}
+    </div>
+</div>
+{% endblock %}

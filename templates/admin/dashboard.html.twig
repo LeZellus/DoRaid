@@ -3,6 +3,18 @@
 {% block page_title %}Tableau de bord{% endblock %}
 
 {% block main %}
+
+{% if openFeedbackCount > 0 %}
+    <a href="{{ ea_url().setController('App\\Controller\\Admin\\FeedbackCrudController').setAction('index') }}"
+       class="alert alert-warning d-flex align-items-center justify-content-between text-decoration-none mt-2 mb-0">
+        <span>
+            <strong>{{ openFeedbackCount }}</strong>
+            nouveau{{ openFeedbackCount > 1 ? 'x' : '' }} feedback{{ openFeedbackCount > 1 ? 's' : '' }} à traiter
+        </span>
+        <span>Voir →</span>
+    </a>
+{% endif %}
+
 <div class="row g-4 mt-2">
 
     <div class="col-md-6">
