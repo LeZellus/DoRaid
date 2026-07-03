@@ -6,6 +6,66 @@
 @theme {
     --color-discord: #5865F2;
     --color-discord-dark: #4752C4;
+
+    /*
+      Refonte visuelle "Dofus" — validée sur /style-test avant portage ici.
+      Réutilise les noms de palette Tailwind existants (gray/indigo/blue/
+      amber/orange/yellow/red) avec de nouvelles valeurs, pour que toutes
+      les classes déjà en place dans les templates (bg-gray-900,
+      text-indigo-400...) suivent automatiquement, sans dépendre du dark
+      mode "gris froid" d'origine. emerald/green restent aux valeurs
+      Tailwind par défaut (déjà validées, pas de changement souhaité).
+    */
+    --color-white:   #f0f0e6;
+    --color-gray-950: #232520;
+    --color-gray-900: #3C3E38;
+    --color-gray-800: #55584f;
+    --color-gray-700: #6e7167;
+    --color-gray-600: #8a8d80;
+    --color-gray-500: #a3a698;
+    --color-gray-400: #bcbeb0;
+    --color-gray-300: #d5d6c9;
+
+    /* Accent principal — vert émeraude (indigo est la famille la plus
+       utilisée sur le site : liens, dégradés, icônes, hover...) */
+    --color-indigo-950: #022c22;
+    --color-indigo-900: #064e3b;
+    --color-indigo-800: #065f46;
+    --color-indigo-700: #047857;
+    --color-indigo-600: #059669;
+    --color-indigo-500: #10b981;
+    --color-indigo-400: #34d399;
+    --color-indigo-300: #6ee7b7;
+
+    /* Bleu — réservé au rôle "info" (alertes), plus rare que l'accent */
+    --color-blue-900: #253d6e;
+    --color-blue-700: #4272c4;
+    --color-blue-200: #d6e4fa;
+
+    /* Warning */
+    --color-yellow-950: #2e2600;
+    --color-yellow-900: #3d3200;
+    --color-yellow-800: #5c4a00;
+    --color-yellow-500: #d9b400;
+    --color-yellow-400: #F7D001;
+
+    --color-orange-950: #2e2600;
+    --color-orange-800: #5c4a00;
+    --color-orange-400: #F7D001;
+    --color-orange-300: #fbe066;
+
+    --color-amber-950: #2e2600;
+    --color-amber-900: #3d3200;
+    --color-amber-700: #5c4a00;
+    --color-amber-500: #d9b400;
+    --color-amber-400: #F7D001;
+
+    /* Danger */
+    --color-red-900: #5c0803;
+    --color-red-700: #9c0d05;
+    --color-red-500: #D31207;
+    --color-red-400: #e5453a;
+    --color-red-300: #f3897e;
 }
 
 /* Select stylisé – arrow SVG custom + suppression de l'arrow native */
