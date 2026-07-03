@@ -4,6 +4,7 @@
     participation — RaidParticipant
     compact       — bool, default false  (mode dashboard : image plus petite, moins de détails)
 #}
+{% import 'components/_ui.html.twig' as ui %}
 {% set raid     = participation.raid %}
 {% set accepted = participation.status.value == 'Accepted' %}
 {% set compact  = compact ?? false %}
@@ -65,9 +66,9 @@
                     {{ raid.raidTemplate.name }}
                 </span>
                 {% if accepted %}
-                    <span class="text-xs font-medium bg-emerald-900/50 text-emerald-400 border border-emerald-800/40 rounded-full px-2 py-0.5 shrink-0">Accepté</span>
+                    {{ ui.badge('Accepté', 'success', 'shrink-0') }}
                 {% else %}
-                    <span class="text-xs font-medium bg-yellow-900/40 text-yellow-400 border border-yellow-800/40 rounded-full px-2 py-0.5 shrink-0">En attente</span>
+                    {{ ui.badge('En attente', 'warning', 'shrink-0') }}
                 {% endif %}
                 {% if not raid.public %}
                     <span class="text-xs font-medium bg-gray-800 text-gray-500 border border-gray-700/40 rounded-full px-2 py-0.5 shrink-0">🔒 Privé</span>

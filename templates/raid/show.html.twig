@@ -199,7 +199,7 @@
                             </div>
                             <div class="flex items-center gap-3">
                                 {% if enigme.resolved %}
-                                    <span class="text-xs font-medium bg-green-900/50 text-green-400 border border-green-800/50 rounded-full px-2.5 py-0.5">Résolue</span>
+                                    {{ ui.badge('Résolue', 'success') }}
                                 {% endif %}
                                 {% if enigme.images|length > 0 %}
                                     <span class="text-xs text-gray-500">{{ enigme.images|length }} image{{ enigme.images|length > 1 ? 's' : '' }}</span>

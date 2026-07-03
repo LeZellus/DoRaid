@@ -496,9 +496,7 @@
                                             </div>
                                         </div>
                                         {% if item.isLeader %}
-                                            <span class="text-xs font-medium bg-yellow-900/40 text-yellow-400 border border-yellow-800/40 rounded-full px-2 py-0.5 shrink-0">
-                                                ⭐ Meneur
-                                            </span>
+                                            {{ ui.badge('⭐ Meneur', 'warning', 'shrink-0') }}
                                         {% endif %}
                                     </a>
                                 </li>
@@ -538,9 +536,7 @@
                                                 {{ m.guild.server.name }}
                                             </div>
                                         </div>
-                                        <span class="text-xs font-medium bg-yellow-900/40 text-yellow-500 border border-yellow-800/40 rounded-full px-2 py-0.5 shrink-0">
-                                            En attente
-                                        </span>
+                                        {{ ui.badge('En attente', 'warning', 'shrink-0') }}
                                     </li>
                                 {% endfor %}
                             </ul>
@@ -605,9 +601,7 @@
                                             {{ p.raid.guild.name }}
                                         </div>
                                     </div>
-                                    <span class="text-xs font-medium bg-yellow-900/40 text-yellow-400 border border-yellow-800/40 rounded-full px-2 py-0.5 shrink-0">
-                                        En attente
-                                    </span>
+                                    {{ ui.badge('En attente', 'warning', 'shrink-0') }}
                                 </a>
                             </li>
                         {% endfor %}

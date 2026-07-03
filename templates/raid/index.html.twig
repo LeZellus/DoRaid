@@ -184,10 +184,10 @@
                                 {{ raid.raidTemplate.name }}
                             </span>
                             {% if isFull %}
-                                <span class="text-xs font-medium bg-red-900/50 text-red-400 border border-red-800/40 rounded-full px-2 py-0.5 shrink-0">Complet</span>
+                                {{ ui.badge('Complet', 'danger', 'shrink-0') }}
                             {% endif %}
                             {% if isMyGuild %}
-                                <span class="text-xs font-medium bg-indigo-900/50 text-indigo-300 border border-indigo-700/40 rounded-full px-2 py-0.5 shrink-0">Ma guilde</span>
+                                {{ ui.badge('Ma guilde', 'indigo', 'shrink-0') }}
                             {% endif %}
                             {% if not raid.public %}
                                 <span class="text-xs font-medium bg-gray-800 text-gray-500 border border-gray-700/40 rounded-full px-2 py-0.5 shrink-0">🔒 Privé</span>
