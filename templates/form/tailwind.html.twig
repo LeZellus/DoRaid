@@ -2,15 +2,15 @@
 
 {# ── Inputs (text, email, password, number, url, tel, search, date…) ── #}
 {% block form_widget_simple %}
-    {% set input_class = 'w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder-gray-500' %}
-    {% set attr = attr|merge({class: input_class ~ (attr.class is defined ? ' ' ~ attr.class : '')}) %}
+    {% import 'components/_ui.html.twig' as ui %}
+    {% set attr = attr|merge({class: ui.input_classes() ~ (attr.class is defined ? ' ' ~ attr.class : '')}) %}
     {{ parent() }}
 {% endblock %}
 
 {# ── Textarea ── #}
 {% block textarea_widget %}
-    {% set input_class = 'w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder-gray-500 resize-y' %}
-    {% set attr = attr|merge({class: input_class ~ (attr.class is defined ? ' ' ~ attr.class : '')}) %}
+    {% import 'components/_ui.html.twig' as ui %}
+    {% set attr = attr|merge({class: ui.input_classes('resize-y') ~ (attr.class is defined ? ' ' ~ attr.class : '')}) %}
     {{ parent() }}
 {% endblock %}
 
@@ -24,7 +24,8 @@
 
 {# ── Checkbox ── #}
 {% block checkbox_widget %}
-    {% set attr = attr|merge({class: 'w-4 h-4 rounded border-gray-600 bg-gray-700 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-gray-900' ~ (attr.class is defined ? ' ' ~ attr.class : '')}) %}
+    {% import 'components/_ui.html.twig' as ui %}
+    {% set attr = attr|merge({class: ui.checkbox_classes() ~ (attr.class is defined ? ' ' ~ attr.class : '')}) %}
     {{ parent() }}
 {% endblock %}
 
@@ -36,14 +37,16 @@
 
 {# ── Submit button ── #}
 {% block submit_widget %}
-    {% set attr = attr|merge({class: 'w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl transition cursor-pointer' ~ (attr.class is defined ? ' ' ~ attr.class : '')}) %}
+    {% import 'components/_ui.html.twig' as ui %}
+    {% set attr = attr|merge({class: ui.button_classes('primary', 'w-full py-3 cursor-pointer') ~ (attr.class is defined ? ' ' ~ attr.class : '')}) %}
     {{ parent() }}
 {% endblock %}
 
 {# ── Label ── #}
 {% block form_label %}
+    {% import 'components/_ui.html.twig' as ui %}
     {% if label is not same as(false) %}
-        {% set label_attr = label_attr|merge({class: 'block text-sm font-medium text-gray-300 mb-1' ~ (label_attr.class is defined ? ' ' ~ label_attr.class : '')}) %}
+        {% set label_attr = label_attr|merge({class: ui.label_classes() ~ (label_attr.class is defined ? ' ' ~ label_attr.class : '')}) %}
     {% endif %}
     {{ parent() }}
 {% endblock %}

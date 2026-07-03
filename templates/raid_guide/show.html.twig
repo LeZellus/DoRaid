@@ -1,4 +1,5 @@
 {% extends 'base.html.twig' %}
+{% import 'components/_ui.html.twig' as ui %}
 
 {% block title %}Guide – {{ raidTemplate.name }} – Zeminal{% endblock %}
 {% block meta_description %}Guide complet du raid de guilde {{ raidTemplate.name }} : mécaniques, étages, boss et récompenses.{% endblock %}
@@ -80,7 +81,7 @@ document.addEventListener('keydown', e => {
 
         {# ── Sommaire (desktop, sticky) ── #}
         <aside class="hidden lg:block">
-            <nav class="sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto bg-gray-900 border border-gray-800 rounded-2xl p-3">
+            <nav class="sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto {{ ui.card_classes('p-3') }}">
                 <p class="text-xs uppercase tracking-wide text-gray-500 font-semibold px-3 pt-1 pb-2">Sommaire</p>
                 <ul class="space-y-0.5">
                     {% for section in guide.sections %}
@@ -108,7 +109,7 @@ document.addEventListener('keydown', e => {
         </aside>
 
         {# ── Sommaire (mobile, dépliant) ── #}
-        <details class="lg:hidden mb-6 bg-gray-900 border border-gray-800 rounded-2xl group" data-raid-guide-target="mobileToc">
+        <details class="lg:hidden mb-6 {{ ui.card_classes('group') }}" data-raid-guide-target="mobileToc">
             <summary class="list-none cursor-pointer px-5 py-3.5 flex items-center justify-between gap-3 select-none">
                 <span class="text-sm font-semibold text-white">📑 Sommaire</span>
                 <span class="text-gray-500 group-open:rotate-180 transition-transform shrink-0">▾</span>
@@ -138,7 +139,7 @@ document.addEventListener('keydown', e => {
             {% for section in guide.sections %}
                 <details id="section-{{ loop.index }}"
                          data-raid-guide-target="section"
-                         class="group scroll-mt-20 bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden"
+                         class="group scroll-mt-20 {{ ui.card_classes('overflow-hidden') }}"
                          {% if loop.first %}open{% endif %}>
                     <summary class="list-none cursor-pointer px-6 py-4 border-b border-gray-800 flex items-center justify-between gap-3 select-none hover:bg-gray-800/30 transition">
                         <h2 class="font-semibold text-white text-lg">

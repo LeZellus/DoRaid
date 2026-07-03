@@ -1,4 +1,5 @@
 {% extends 'base.html.twig' %}
+{% import 'components/_ui.html.twig' as ui %}
 
 {% block title %}Mentions légales – Zeminal{% endblock %}
 {% block meta_description %}Mentions légales du site Zeminal, plateforme de gestion de raids Dofus.{% endblock %}
@@ -12,7 +13,7 @@
 
     <div class="space-y-8">
 
-        <section class="bg-gray-900 border border-gray-800 rounded-2xl px-6 py-5">
+        <section class="{{ ui.card_classes('px-6 py-5') }}">
             <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Éditeur du site</h2>
             <dl class="space-y-2 text-sm">
                 <div class="flex gap-3">
@@ -30,7 +31,7 @@
             </dl>
         </section>
 
-        <section class="bg-gray-900 border border-gray-800 rounded-2xl px-6 py-5">
+        <section class="{{ ui.card_classes('px-6 py-5') }}">
             <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Hébergeur</h2>
             <dl class="space-y-2 text-sm">
                 <div class="flex gap-3">
@@ -48,7 +49,7 @@
             </dl>
         </section>
 
-        <section class="bg-gray-900 border border-gray-800 rounded-2xl px-6 py-5">
+        <section class="{{ ui.card_classes('px-6 py-5') }}">
             <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Propriété intellectuelle</h2>
             <p class="text-sm text-gray-400 leading-relaxed">
                 L'ensemble du contenu de ce site (structure, textes, logos, graphismes) est la propriété de Zeminal Corp et est protégé par les lois françaises et internationales relatives à la propriété intellectuelle. Toute reproduction, représentation ou diffusion, en tout ou partie, est interdite sans autorisation préalable.
@@ -58,14 +59,14 @@
             </p>
         </section>
 
-        <section class="bg-gray-900 border border-gray-800 rounded-2xl px-6 py-5">
+        <section class="{{ ui.card_classes('px-6 py-5') }}">
             <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Données personnelles</h2>
             <p class="text-sm text-gray-400 leading-relaxed">
                 Les données collectées lors de l'inscription (adresse email, nom d'utilisateur) sont utilisées uniquement pour le fonctionnement du service. Elles ne sont pas transmises à des tiers. Conformément au Règlement Général sur la Protection des Données (RGPD), vous disposez d'un droit d'accès, de rectification et de suppression de vos données en nous contactant à <a href="mailto:contact@zeminal.tech" class="text-indigo-400 hover:text-indigo-300 transition">contact@zeminal.tech</a>.
             </p>
         </section>
 
-        <section class="bg-gray-900 border border-gray-800 rounded-2xl px-6 py-5">
+        <section class="{{ ui.card_classes('px-6 py-5') }}">
             <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Cookies</h2>
             <p class="text-sm text-gray-400 leading-relaxed">
                 Ce site utilise uniquement des cookies techniques nécessaires au fonctionnement du service (session, authentification). Aucun cookie publicitaire ou de tracking tiers n'est utilisé.

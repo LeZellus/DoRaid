@@ -76,7 +76,7 @@ document.addEventListener('keydown', e => {
 
             {# Paste zone — masquée si raid terminé, non-participant ou invité #}
             {% if canComment and not raidClosed %}
-            <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
+            <div class="{{ ui.card_classes('overflow-hidden') }}">
                 <div class="px-5 py-4 border-b border-gray-800">
                     <h2 class="font-semibold text-white text-sm">Ajouter une image</h2>
                 </div>
@@ -94,7 +94,7 @@ document.addEventListener('keydown', e => {
             {% endif %}
 
             {# Images grid — en dessous #}
-            <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
+            <div class="{{ ui.card_classes('overflow-hidden') }}">
                 <div class="px-5 py-4 border-b border-gray-800">
                     <h2 class="font-semibold text-white text-sm">Images</h2>
                 </div>
@@ -109,7 +109,7 @@ document.addEventListener('keydown', e => {
 
         {# ── Right: comments ── #}
         <div class="lg:col-span-1">
-            <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden flex flex-col"
+            <div class="{{ ui.card_classes('overflow-hidden flex flex-col') }}"
                  style="max-height: 36rem">
                 <div class="px-5 py-4 border-b border-gray-800 shrink-0">
                     <h2 class="font-semibold text-white text-sm">Commentaires</h2>

@@ -95,10 +95,7 @@
         {# ── Actions ── #}
         <div class="flex items-center gap-3 pt-2">
             {{ ui.button('Enregistrer', 'primary', 'submit', 'flex-1') }}
-            <a href="{{ path('app_raid_show', {id: raid.id}) }}"
-               class="flex-1 inline-flex items-center justify-center gap-2 font-semibold rounded-xl transition border border-gray-700 hover:border-gray-500 text-gray-400 hover:text-white py-2.5 px-5 text-sm">
-                Annuler
-            </a>
+            {{ ui.link_button('Annuler', path('app_raid_show', {id: raid.id}), 'secondary', 'flex-1') }}
         </div>
 
     {{ form_end(form) }}
