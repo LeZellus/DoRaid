@@ -22,7 +22,7 @@
     </a>
 
     {# ── Hero ── #}
-    <div class="rounded-2xl border border-emerald-900/30 bg-gradient-to-br from-emerald-950/60 via-gray-900 to-gray-950 overflow-hidden mb-8" data-reveal>
+    <div class="rounded-2xl border border-emerald-900/30 bg-gray-900 overflow-hidden mb-8" data-reveal>
 
         {# Bande supérieure : statut + serveur + actions créateur #}
         <div class="flex items-center justify-between gap-4 px-8 py-3 border-b border-emerald-900/20 bg-emerald-950/20">
@@ -39,7 +39,7 @@
             </div>
             <div class="flex items-center gap-2">
                 <button type="button" id="share-btn"
-                        class="inline-flex items-center justify-center gap-2 font-semibold rounded-xl transition bg-blue-600 hover:bg-blue-500 text-white py-1 px-3 text-xs">
+                        class="{{ ui.button_classes('info', 'py-1 px-3 text-xs') }}">
                     <span id="share-label">Partager le raid</span>
                 </button>
                 {% if isCreator %}
@@ -59,105 +59,95 @@
             </div>
         </div>
 
-        {# Corps : titre + méta + compteurs #}
-        <div class="flex flex-col sm:flex-row sm:items-center gap-6 px-8 py-6">
-
-            {# Image du template #}
+        {# Titre + image #}
+        <div class="flex items-center gap-5 px-8 pt-6">
             {% if raid.raidTemplate.imagePath %}
                 <img src="{{ asset('uploads/raid-templates/' ~ raid.raidTemplate.imagePath) }}"
                      alt="{{ raid.raidTemplate.name }}"
-                     class="w-20 h-20 rounded-2xl object-cover border border-emerald-800/40 shrink-0">
+                     class="w-16 h-16 rounded-2xl object-cover border border-emerald-800/40 shrink-0">
             {% else %}
-                <div class="w-20 h-20 rounded-2xl bg-emerald-900/40 border border-emerald-800/30 flex items-center justify-center text-4xl shrink-0">⚔</div>
+                <div class="w-16 h-16 rounded-2xl bg-emerald-900/40 border border-emerald-800/30 flex items-center justify-center text-3xl shrink-0">⚔</div>
+            {% endif %}
+            <div class="min-w-0">
+                <h1 class="text-3xl font-bold text-white tracking-tight truncate">{{ raid.raidTemplate.name }}</h1>
+                <p class="text-sm text-gray-500 mt-1">
+                    Organisé par <span class="text-gray-300 font-medium">{{ raid.creator.name }}</span> · créé le {{ raid.createdAt|date('d/m/Y') }}
+                </p>
+            </div>
+        </div>
+
+        {# Infos clés — une cellule par info, facile d'en ajouter une nouvelle #}
+        {% set _isClosed = raid.status == constant('App\\Entity\\RaidStatus::Closed') %}
+        <div class="grid grid-cols-2 sm:grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-3 px-8 mt-5">
+
+            {% if raid.scheduledAt %}
+                <div class="rounded-xl border border-emerald-800/30 bg-emerald-950/20 px-4 py-2.5">
+                    <div class="text-[11px] uppercase tracking-wide text-emerald-600">Date prévue</div>
+                    <div class="text-sm font-semibold text-emerald-300 mt-0.5">{{ raid.scheduledAt|date('d/m/Y à H:i') }}</div>
+                </div>
             {% endif %}
 
-            {# Infos principales #}
-            <div class="flex-1 min-w-0">
-                <h1 class="text-3xl font-bold text-white tracking-tight">{{ raid.raidTemplate.name }}</h1>
-
-                <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-3 text-sm text-gray-400">
-                    <span>
-                        Créé par <span class="text-gray-200 font-medium">{{ raid.creator.name }}</span>
-                    </span>
-                    <span class="text-gray-700">·</span>
-                    <span>Créé le <span class="text-gray-300">{{ raid.createdAt|date('d/m/Y') }}</span></span>
-                    {% if raid.scheduledAt %}
-                        <span class="text-gray-700">·</span>
-                        <span class="text-emerald-300 font-medium">Prévu le {{ raid.scheduledAt|date('d/m/Y à H:i') }}</span>
-                    {% endif %}
-                    {% if raid.raidTemplate.formattedDuration %}
-                        <span class="text-gray-700">·</span>
-                        <span class="inline-flex items-center gap-1 text-gray-400">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
-                            </svg>
-                            Durée : {{ raid.raidTemplate.formattedDuration }}
-                        </span>
-                    {% endif %}
-                    {% if raid.status == constant('App\\Entity\\RaidStatus::Closed') %}
-                        <span class="text-gray-700">·</span>
-                        <span class="inline-flex items-center gap-1 text-gray-500">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707a1 1 0 00-1.414-1.414L9 10.172 7.707 8.879a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                            </svg>
-                            Raid terminé
-                        </span>
-                    {% elseif raid.expectedEndTime %}
-                        <span class="text-gray-700">·</span>
-                        <span class="inline-flex items-center gap-1 {{ raid.expectedEndTime < date() ? 'text-red-400' : 'text-emerald-400' }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                            </svg>
-                            Fin {{ raid.expectedEndTime < date() ? 'à' : 'prévue à' }} {{ raid.expectedEndTime|date('H:i') }}
-                        </span>
-                    {% endif %}
+            {% if raid.raidTemplate.formattedDuration %}
+                <div class="rounded-xl border border-gray-700/30 bg-gray-800/40 px-4 py-2.5">
+                    <div class="text-[11px] uppercase tracking-wide text-gray-500">Durée</div>
+                    <div class="text-sm font-medium text-gray-200 mt-0.5">{{ raid.raidTemplate.formattedDuration }}</div>
                 </div>
+            {% endif %}
 
-                {% if raid.description %}
-                    <p class="text-gray-400 text-sm mt-3 leading-relaxed border-t border-gray-800/60 pt-3">{{ raid.description }}</p>
-                {% endif %}
-                {% set _isClosed = raid.status == constant('App\\Entity\\RaidStatus::Closed') %}
-                {% if app.user and myParticipants is not empty %}
-                    {% for myP in myParticipants %}
-                        {% set _isAccepted = myP.status == constant('App\\Entity\\RaidParticipantStatus::Accepted') %}
-                        {% if _isAccepted or not _isClosed %}
-                        <div class="flex items-center justify-between gap-2 text-xs mt-3 border-t border-gray-800/60 pt-3">
-                            <div class="flex items-center gap-2 {{ _isAccepted ? 'text-emerald-400' : 'text-yellow-400' }}">
-                                <img src="{{ asset('classes/' ~ myP.character.gameClass.name|lower ~ '.png') }}" alt="{{ myP.character.gameClass.name }}" class="w-4 h-4 rounded-full object-cover shrink-0">
-                                {{ _isAccepted ? (_isClosed ? 'Vous avez participé avec' : 'Vous participez avec') : 'Candidature en attente avec' }}
-                                <span class="font-semibold {{ _isAccepted ? 'text-emerald-300' : 'text-yellow-300' }}">{{ myP.character.name }}</span>
-                                <span class="text-gray-500">— {{ myP.character.gameClass.name }}</span>
-                            </div>
-                            {% if not _isClosed and myP.character.id != raid.creator.id %}
-                                <form method="post" action="{{ path('app_raid_cancel', {id: myP.id}) }}">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('cancel_' ~ myP.id) }}">
-                                    <button type="submit"
-                                            onclick="return confirm('Se retirer de ce raid ?')"
-                                            class="text-xs text-gray-500 hover:text-red-400 transition shrink-0">Se retirer</button>
-                                </form>
-                            {% endif %}
+            {% if _isClosed %}
+                <div class="rounded-xl border border-gray-700/30 bg-gray-800/40 px-4 py-2.5">
+                    <div class="text-[11px] uppercase tracking-wide text-gray-500">Statut</div>
+                    <div class="text-sm font-medium text-gray-400 mt-0.5">Raid terminé</div>
+                </div>
+            {% elseif raid.expectedEndTime %}
+                <div class="rounded-xl border border-gray-700/30 bg-gray-800/40 px-4 py-2.5">
+                    <div class="text-[11px] uppercase tracking-wide text-gray-500">{{ raid.expectedEndTime < date() ? 'Terminé' : 'Fin prévue' }}</div>
+                    <div class="text-sm font-medium {{ raid.expectedEndTime < date() ? 'text-red-400' : 'text-gray-200' }} mt-0.5">{{ raid.expectedEndTime|date('H:i') }}</div>
+                </div>
+            {% endif %}
+
+            <div class="rounded-xl border border-gray-700/30 bg-gray-800/40 px-4 py-2.5">
+                <div class="text-[11px] uppercase tracking-wide text-gray-500">Participants</div>
+                <div class="text-sm font-semibold mt-0.5 {{ raid.isFull() ? 'text-red-400' : 'text-white' }}">
+                    {{ raid.acceptedParticipants|length }}<span class="text-gray-600 font-normal">/{{ raid.raidTemplate.maxParticipants }}</span>
+                </div>
+            </div>
+
+            <div class="rounded-xl border border-yellow-800/30 bg-yellow-900/20 px-4 py-2.5">
+                <div class="text-[11px] uppercase tracking-wide text-yellow-600">Intéressés</div>
+                <div class="text-sm font-semibold text-yellow-400 mt-0.5">{{ raid.pendingParticipants|length }}</div>
+            </div>
+
+        </div>
+
+        {# Description + statut de participation #}
+        <div class="px-8 pb-6">
+            {% if raid.description %}
+                <p class="text-gray-400 text-sm leading-relaxed mt-5 pt-5 border-t border-gray-800/60">{{ raid.description }}</p>
+            {% endif %}
+            {% if app.user and myParticipants is not empty %}
+                {% for myP in myParticipants %}
+                    {% set _isAccepted = myP.status == constant('App\\Entity\\RaidParticipantStatus::Accepted') %}
+                    {% if _isAccepted or not _isClosed %}
+                    <div class="flex items-center justify-between gap-2 text-xs mt-5 pt-5 border-t border-gray-800/60">
+                        <div class="flex items-center gap-2 text-yellow-400">
+                            <img src="{{ asset('classes/' ~ myP.character.gameClass.name|lower ~ '.png') }}" alt="{{ myP.character.gameClass.name }}" class="w-4 h-4 rounded-full object-cover shrink-0">
+                            {{ _isAccepted ? (_isClosed ? 'Vous avez participé avec' : 'Vous participez avec') : 'Candidature en attente avec' }}
+                            <span class="font-semibold text-yellow-300">{{ myP.character.name }}</span>
+                            <span class="text-gray-500">— {{ myP.character.gameClass.name }}</span>
                         </div>
+                        {% if not _isClosed and myP.character.id != raid.creator.id %}
+                            <form method="post" action="{{ path('app_raid_cancel', {id: myP.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('cancel_' ~ myP.id) }}">
+                                <button type="submit"
+                                        onclick="return confirm('Se retirer de ce raid ?')"
+                                        class="text-xs text-gray-500 hover:text-red-400 transition shrink-0">Se retirer</button>
+                            </form>
                         {% endif %}
-                    {% endfor %}
-                {% endif %}
-            </div>
-
-            {# Compteurs #}
-            <div class="flex items-center gap-4 shrink-0">
-                <div class="text-center bg-gray-800/40 rounded-xl px-5 py-3 border border-gray-700/30">
-                    <div class="text-2xl font-bold {{ raid.isFull() ? 'text-red-400' : 'text-white' }}">
-                        {{ raid.acceptedParticipants|length }}<span class="text-base font-normal text-gray-600">/{{ raid.raidTemplate.maxParticipants }}</span>
                     </div>
-                    <div class="text-xs text-gray-500 mt-0.5">participants</div>
-                </div>
-                {% if not _isClosed and raid.pendingParticipants|length > 0 %}
-                    <div class="text-center bg-yellow-900/20 rounded-xl px-5 py-3 border border-yellow-800/30">
-                        <div class="text-2xl font-bold text-yellow-400">{{ raid.pendingParticipants|length }}</div>
-                        <div class="text-xs text-yellow-600 mt-0.5">intéressés</div>
-                    </div>
-                {% endif %}
-            </div>
-
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
         </div>
     </div>
 

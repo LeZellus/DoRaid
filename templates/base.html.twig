@@ -79,18 +79,14 @@
                     <a href="{{ path('app_raid_guide_index') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition {{ route starts with 'app_raid_template_guide' or route == 'app_raid_guide_index' ? 'text-white bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800/60' }}">Encyclopédie</a>
                     <a href="{{ path('app_changelog') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition {{ route == 'app_changelog' ? 'text-white bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-800/60' }}">Mises à jour</a>
                     <span class="relative inline-flex shrink-0">
-                        {% if route starts with 'app_raid' and route != 'app_raid_template_guide' and route != 'app_raid_guide_index' %}
-                            <a href="{{ path('app_raid_index') }}" class="inline-flex items-center h-9 px-3 rounded-xl text-sm font-semibold transition border border-yellow-400 text-yellow-300">Trouver un raid</a>
-                        {% else %}
-                            <a href="{{ path('app_raid_index') }}" class="inline-flex items-center h-9 px-3 rounded-xl text-sm font-semibold transition border border-yellow-500/80 text-yellow-400 hover:border-yellow-400 hover:text-yellow-300 hover:bg-yellow-400/10 nav-cta-pulse">Trouver un raid</a>
-                        {% endif %}
+                        <a href="{{ path('app_raid_index') }}" class="inline-flex items-center h-9 px-3 rounded-lg text-sm font-semibold transition border border-yellow-500/80 text-yellow-400 hover:border-yellow-400 hover:text-yellow-300 hover:bg-yellow-400/10 nav-cta-pulse">Trouver un raid</a>
                         <span class="absolute -top-2 -right-2 bg-gray-900 px-0.5 rounded-full text-yellow-400 text-xs leading-none select-none pointer-events-none nav-cta-star">✦</span>
                     </span>
                 </div>
 
                 {# Ko-fi — desktop #}
                 <a href="https://ko-fi.com/zeminal" target="_blank" rel="noopener"
-                   class="hidden lg:inline-flex items-center gap-1.5 text-xs font-medium text-amber-400 hover:text-amber-300 border border-amber-500/30 hover:border-amber-400/60 bg-amber-500/5 hover:bg-amber-500/10 rounded-xl h-9 px-3 transition ml-auto shrink-0">
+                   class="hidden lg:inline-flex items-center gap-1.5 text-xs font-medium text-amber-400 hover:text-amber-300 border border-amber-500/30 hover:border-amber-400/60 bg-amber-500/5 hover:bg-amber-500/10 rounded-lg h-9 px-3 transition ml-auto shrink-0">
                     ☕ Faire un don
                 </a>
 
@@ -101,7 +97,7 @@
                         <a href="{{ path('app_notifications') }}"
                            data-controller="notification-poll"
                            data-notification-poll-url-value="{{ path('api_notifications_unread') }}"
-                           class="relative flex items-center justify-center w-9 h-9 rounded-xl border border-gray-700/50 hover:border-gray-600 transition {{ _unread > 0 ? 'text-emerald-300 bg-emerald-900/20 bell-active' : 'text-gray-400 bg-gray-800/60 hover:text-white' }}">
+                           class="relative flex items-center justify-center w-9 h-9 rounded-lg border border-gray-700/50 hover:border-gray-600 transition {{ _unread > 0 ? 'text-emerald-300 bg-emerald-900/20 bell-active' : 'text-gray-400 bg-gray-800/60 hover:text-white' }}">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
                                 <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-2.83-2h5.66A3 3 0 0110 18z"/>
                             </svg>
@@ -115,7 +111,7 @@
                         <div class="relative">
                             <button type="button" data-navbar-target="accountButton" data-action="click->navbar#toggleAccount"
                                     aria-haspopup="true" aria-expanded="false"
-                                    class="w-9 h-9 rounded-xl bg-emerald-600 hover:bg-emerald-500 flex items-center justify-center text-sm font-bold text-white transition cursor-pointer">
+                                    class="w-9 h-9 rounded-lg bg-emerald-600 hover:bg-emerald-500 flex items-center justify-center text-sm font-bold text-white transition cursor-pointer">
                                 {{ app.user.username|slice(0,1)|upper|default('?') }}
                             </button>
 
@@ -227,7 +223,7 @@
 
         {# ── Bouton Ko-fi fixe ── #}
         <a href="https://ko-fi.com/zeminal" target="_blank" rel="noopener"
-           class="kofi-fab fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-gray-900 font-semibold text-sm px-4 py-2.5 rounded-2xl shadow-lg shadow-amber-500/25 transition-colors">
+           class="kofi-fab fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-gray-900 font-semibold text-sm px-4 py-2.5 rounded-xl shadow-lg shadow-amber-500/25 transition-colors">
             <span class="text-base leading-none">☕</span>
             Faire un don
         </a>

@@ -22,7 +22,12 @@ class ChangelogController extends AbstractController
                     ['type' => 'impr', 'text' => 'Sélecteur de personnage pour candidater à un raid simplifié — n\'affiche plus que le nom du personnage'],
                     ['type' => 'impr', 'text' => 'Badges "Guilde", "Externe" et "vous" harmonisés avec le même style que les badges d\'optimisation'],
                     ['type' => 'fix',  'text' => 'Hauteur des boutons et des menus déroulants harmonisée sur tout le site'],
-                    ['type' => 'fix',  'text' => 'Bouton "Commenter" sur la page de raid remis au style standard du site'],
+                    ['type' => 'fix',  'text' => 'Boutons "Commenter" et "Partager" sur la page de raid remis au style standard du site'],
+                    ['type' => 'fix',  'text' => 'Arrondi des boutons de la barre de navigation harmonisé (Trouver un raid, Faire un don, notifications, avatar)'],
+                    ['type' => 'fix',  'text' => 'Animation du bouton "Trouver un raid" corrigée sur la page de recherche de raid'],
+                    ['type' => 'impr', 'text' => 'Bandeau de présentation d\'un raid réorganisé — infos affichées sous forme de blocs clairs (date, durée, statut, participants, intéressés) au lieu d\'une ligne de texte surchargée'],
+                    ['type' => 'impr', 'text' => 'Carte "Mes raids en cours" du dashboard agrandie et aérée pour rester lisible en un coup d\'œil'],
+                    ['type' => 'impr', 'text' => 'Date de création retirée des pages guilde (peu utile au quotidien)'],
                 ],
             ],
             [

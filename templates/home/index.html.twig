@@ -472,7 +472,7 @@
                             {% for item in guildMap %}
                                 <li>
                                     <a href="{{ path('app_guild_show', {slug: item.guild.slug}) }}"
-                                       class="flex items-center gap-4 px-5 py-3.5 hover:bg-gray-800/30 transition group {% if item.isLeader %}border-l-2 border-yellow-500/60{% endif %}">
+                                       class="flex items-center gap-4 px-5 py-3.5 hover:bg-gray-800/30 transition group">
                                         {% if item.guild.imagePath %}
                                             <img src="{{ asset('uploads/guildes/' ~ item.guild.slug ~ '/' ~ item.guild.imagePath) }}"
                                                  alt="{{ item.guild.name }}"
@@ -560,7 +560,7 @@
                         <p class="text-gray-500 text-sm">Vous ne participez à aucun raid actif.</p>
                     </div>
                 {% else %}
-                    <ul class="divide-y divide-gray-800/60 overflow-y-auto" style="max-height: 20rem">
+                    <ul class="py-1 overflow-y-auto" style="max-height: 22rem">
                         {% for p in activeRaids %}
                             {% include 'components/_raid_participation_row.html.twig' with {participation: p, compact: true} only %}
                         {% endfor %}
