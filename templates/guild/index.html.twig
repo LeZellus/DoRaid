@@ -44,9 +44,9 @@
             <div class="relative" data-controller="select">
                 <select id="guild-server-filter" class="hidden">
                     <option value="">Tous les serveurs</option>
-                    {% for serverName, guilds in byServer %}
+                    {% for serverName, count in serverCounts %}
                         <option value="{{ serverName }}" {{ serverName == preselectedServer ? 'selected' : '' }}>
-                            {{ serverName }} ({{ guilds|length }})
+                            {{ serverName }} ({{ count }})
                         </option>
                     {% endfor %}
                 </select>

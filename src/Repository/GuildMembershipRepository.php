@@ -52,6 +52,22 @@ class GuildMembershipRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /** @return int[] IDs of guilds where $user has any confirmed (non-pending) membership */
+    public function findMemberGuildIdsForUser(User $user): array
+    {
+        $rows = $this->createQueryBuilder('m')
+            ->select('IDENTITY(m.guild) AS guild_id')
+            ->join('m.character', 'c')
+            ->where('c.user = :user')
+            ->andWhere('m.status != :pending')
+            ->setParameter('user', $user)
+            ->setParameter('pending', MemberStatus::Pending)
+            ->getQuery()
+            ->getScalarResult();
+
+        return array_map(fn($r) => (int) $r['guild_id'], $rows);
+    }
+
     /** @return int[] IDs of guilds where $user has a Leader membership */
     public function findLeaderGuildIdsForUser(User $user): array
     {

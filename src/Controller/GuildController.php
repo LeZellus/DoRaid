@@ -42,18 +42,36 @@ class GuildController extends AbstractController
     #[Route('', name: 'app_guild_index')]
     public function index(GuildRepository $repo, GuildMembershipRepository $membershipRepo): Response
     {
-        $guilds   = $repo->findAllOrdered();
-        $byServer = [];
+        $guilds = $repo->findAllOrdered();
+
+        // Décompte par serveur en ordre alphabétique, pour le filtre — indépendant
+        // du tri "mes guildes d'abord" appliqué ensuite à la grille.
+        $serverCounts = [];
         foreach ($guilds as $guild) {
-            $byServer[$guild->getServer()->getName()][] = $guild;
+            $serverName = $guild->getServer()->getName();
+            $serverCounts[$serverName] = ($serverCounts[$serverName] ?? 0) + 1;
         }
 
         $leaderGuildIds = $this->getUser()
             ? $membershipRepo->findLeaderGuildIdsForUser($this->getUser())
             : [];
+        $myGuildIds = $this->getUser()
+            ? $membershipRepo->findMemberGuildIdsForUser($this->getUser())
+            : [];
+
+        // Mes guildes (meneur ou membre) en premier, tri stable donc l'ordre serveur/nom d'origine est conservé au sein de chaque groupe.
+        usort($guilds, fn(Guild $a, Guild $b) =>
+            (in_array($a->getId(), $myGuildIds, true) ? 0 : 1) <=> (in_array($b->getId(), $myGuildIds, true) ? 0 : 1)
+        );
+
+        $byServer = [];
+        foreach ($guilds as $guild) {
+            $byServer[$guild->getServer()->getName()][] = $guild;
+        }
 
         return $this->render('guild/index.html.twig', [
             'byServer'       => $byServer,
+            'serverCounts'   => $serverCounts,
             'leaderGuildIds' => $leaderGuildIds,
         ]);
     }
