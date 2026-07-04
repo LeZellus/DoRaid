@@ -177,8 +177,11 @@
 }
 
 /* ── Navbar CTA pulse ── */
+/* Couleur en dur (pas color-mix) : le minifieur Tailwind v4 supprime silencieusement
+   les étapes de keyframe combinant color-mix() + var() dans un box-shadow à taille 0,
+   ce qui cassait l'animation en prod. rgba(217,180,0,*) = --color-yellow-500. */
 @keyframes nav-pulse {
-    0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-yellow-500) 50%, transparent); }
+    0%, 100% { box-shadow: 0 0 0 0 rgba(217, 180, 0, 0.5); }
     60%       { box-shadow: 0 0 0 7px transparent; }
 }
 .nav-cta-pulse { animation: nav-pulse 2s ease-in-out infinite; }
