@@ -60,26 +60,37 @@ class FeedbackCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
+        // Les valeurs sont les cas d'enum eux-mêmes (pas ->value) : Symfony a besoin de
+        // retrouver l'instance FeedbackType/FeedbackStatus dans la liste au moment de
+        // réhydrater le formulaire, sinon il réinjecte la string soumise telle quelle
+        // dans setType()/setStatus() qui attendent l'enum.
         $typeChoices   = [
-            '🐛 Bug'        => FeedbackType::Bug->value,
-            '💡 Suggestion' => FeedbackType::Suggestion->value,
+            '🐛 Bug'        => FeedbackType::Bug,
+            '💡 Suggestion' => FeedbackType::Suggestion,
         ];
         $statusChoices = [
-            'Ouvert'   => FeedbackStatus::Open->value,
-            'En cours' => FeedbackStatus::InProgress->value,
-            'Résolu'   => FeedbackStatus::Done->value,
-            'Rejeté'   => FeedbackStatus::Rejected->value,
+            'Ouvert'   => FeedbackStatus::Open,
+            'En cours' => FeedbackStatus::InProgress,
+            'Résolu'   => FeedbackStatus::Done,
+            'Rejeté'   => FeedbackStatus::Rejected,
         ];
+
+        // Convertit chaque cas d'enum en string pour l'attribut HTML value="...".
+        // Reste polymorphe (mixed) car Symfony peut aussi l'appeler avec une valeur
+        // déjà scalaire selon le contexte.
+        $enumChoiceValue = fn (mixed $value): ?string => $value instanceof \BackedEnum ? $value->value : $value;
 
         yield IdField::new('id', 'ID')->onlyOnIndex();
         yield ChoiceField::new('type', 'Type')
             ->setChoices($typeChoices)
+            ->setFormTypeOption('choice_value', $enumChoiceValue)
             ->renderAsBadges([
                 FeedbackType::Bug->value        => 'danger',
                 FeedbackType::Suggestion->value => 'primary',
             ]);
         yield ChoiceField::new('status', 'Statut')
             ->setChoices($statusChoices)
+            ->setFormTypeOption('choice_value', $enumChoiceValue)
             ->renderAsBadges([
                 FeedbackStatus::Open->value       => 'warning',
                 FeedbackStatus::InProgress->value => 'primary',
