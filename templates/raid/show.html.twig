@@ -155,15 +155,17 @@
     {% if has_raid_guide(raid.raidTemplate.name) %}
         <a href="{{ path('app_raid_template_guide', {id: raid.raidTemplate.id}) }}"
            target="_blank" rel="noopener"
-           class="group relative flex items-center gap-5 overflow-hidden rounded-2xl border border-emerald-700/40 bg-gradient-to-r from-emerald-950/80 via-emerald-950/30 to-gray-900 px-6 py-5 mb-6 transition hover:border-emerald-500/60"
+           class="group relative flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5 overflow-hidden rounded-2xl border border-emerald-700/40 bg-gradient-to-r from-emerald-950/80 via-emerald-950/30 to-gray-900 px-6 py-5 mb-6 transition hover:border-emerald-500/60"
            data-reveal data-reveal-delay="1">
             <div class="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-emerald-600/10 blur-3xl pointer-events-none"></div>
-            <div class="relative w-12 h-12 rounded-xl bg-emerald-600/20 border border-emerald-600/30 flex items-center justify-center text-2xl shrink-0">📖</div>
-            <div class="relative flex-1 min-w-0">
-                <div class="font-semibold text-white group-hover:text-emerald-300 transition">Guide complet du raid disponible</div>
-                <div class="text-sm text-gray-400 mt-0.5">Mécaniques, étages, boss et stratégies pour {{ raid.raidTemplate.name }} — tout y est détaillé.</div>
+            <div class="relative flex items-center gap-4 min-w-0">
+                <div class="w-12 h-12 rounded-xl bg-emerald-600/20 border border-emerald-600/30 flex items-center justify-center text-2xl shrink-0">📖</div>
+                <div class="flex-1 min-w-0">
+                    <div class="font-semibold text-white group-hover:text-emerald-300 transition">Guide complet du raid disponible</div>
+                    <div class="text-sm text-gray-400 mt-0.5">Mécaniques, étages, boss et stratégies pour {{ raid.raidTemplate.name }} — tout y est détaillé.</div>
+                </div>
             </div>
-            <span class="relative inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-300 group-hover:text-emerald-200 shrink-0">
+            <span class="relative inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-300 group-hover:text-emerald-200 shrink-0 sm:ml-auto">
                 Consulter le guide
                 <span class="group-hover:translate-x-1 transition-transform">→</span>
             </span>
@@ -232,12 +234,12 @@
                     <ul class="divide-y divide-gray-800/60 overflow-y-auto" style="max-height:16rem">
                         {% for p in raid.acceptedParticipants %}
 
-                            <li class="flex items-center gap-5 px-6 py-5 hover:bg-gray-800/30 transition">
+                            <li class="flex items-center gap-3 sm:gap-5 px-4 py-3 sm:px-6 sm:py-5 hover:bg-gray-800/30 transition">
                                 <img src="{{ asset('classes/' ~ p.character.gameClass.name|lower ~ '.png') }}"
                                      alt="{{ p.character.gameClass.name }}"
                                      class="w-11 h-11 rounded-full object-cover shrink-0">
                                 <div class="flex-1 min-w-0">
-                                    <div class="flex items-center gap-2">
+                                    <div class="flex items-center gap-2 flex-wrap">
                                         <span class="font-semibold text-white text-sm truncate">{{ p.character.name }}</span>
                                         {% if p.character === raid.creator %}<span title="Créateur" class="text-sm leading-none">⭐</span>{% endif %}
                                         {% if p.guildMember %}{{ ui.badge('Guilde', 'info') }}{% else %}{{ ui.badge('Externe', 'warning') }}{% endif %}
@@ -245,20 +247,16 @@
                                         {% set _done = completedRaidCounts[p.character.id] ?? 0 %}
                                         {% if _done > 0 %}<span class="text-xs text-gray-500" title="{{ _done }} raid{{ _done > 1 ? 's' : '' }} terminé{{ _done > 1 ? 's' : '' }}">✓ {{ _done }}</span>{% endif %}
                                     </div>
-                                    <div class="mt-2 space-y-2 text-xs text-gray-500">
+                                    <div class="mt-1.5 flex items-center gap-x-3 gap-y-1 flex-wrap text-xs text-gray-500">
+                                        {% if p.character.level %}<span class="text-gray-400">Niv. {{ p.character.level }}</span>{% endif %}
+                                        {% if p.character.optimizationLevel %}{{ ui.badge('Opti ' ~ p.character.optimizationLevel.label(), p.character.optimizationLevel.color()) }}{% endif %}
+                                        <span class="flex items-center gap-1">
+                                            <img src="{{ asset('uploads/divers/guildatons.png') }}" alt="Guildatons" class="w-3.5 h-3.5 object-contain">
+                                            <span class="{{ p.character.guildatons is not null ? 'text-gray-400' : 'text-gray-600' }} tabular-nums">{{ p.character.guildatons ?? 'N/A' }}</span>
+                                        </span>
                                         {% if not (app.user and p.character.user.id == app.user.id) %}
-                                            <div class="flex items-center gap-3">
-                                                {{ ui.whisper(p.character.name) }}
-                                            </div>
+                                            {{ ui.whisper(p.character.name) }}
                                         {% endif %}
-                                        <div class="flex items-center gap-3">
-                                            {% if p.character.level %}<span class="text-gray-400">Niv. {{ p.character.level }}</span>{% endif %}
-                                            {% if p.character.optimizationLevel %}{{ ui.badge('Opti ' ~ p.character.optimizationLevel.label(), p.character.optimizationLevel.color()) }}{% endif %}
-                                            <span class="flex items-center gap-1">
-                                                <img src="{{ asset('uploads/divers/guildatons.png') }}" alt="Guildatons" class="w-3.5 h-3.5 object-contain">
-                                                <span class="{{ p.character.guildatons is not null ? 'text-gray-400' : 'text-gray-600' }} tabular-nums">{{ p.character.guildatons ?? 'N/A' }}</span>
-                                            </span>
-                                        </div>
                                     </div>
                                 </div>
                                 {% if canManageNotes and p.guildMember %}
@@ -304,29 +302,25 @@
                     <ul class="divide-y divide-gray-800/60 overflow-y-auto" style="max-height:16rem">
                         {% for p in raid.pendingParticipants %}
 
-                            <li class="flex items-center gap-5 px-6 py-5 hover:bg-gray-800/20 transition">
+                            <li class="flex items-center gap-3 sm:gap-5 px-4 py-3 sm:px-6 sm:py-5 hover:bg-gray-800/20 transition">
                                 <img src="{{ asset('classes/' ~ p.character.gameClass.name|lower ~ '.png') }}"
                                      alt="{{ p.character.gameClass.name }}"
                                      class="w-11 h-11 rounded-full object-cover shrink-0">
                                 <div class="flex-1 min-w-0">
-                                    <div class="flex items-center gap-2">
+                                    <div class="flex items-center gap-2 flex-wrap">
                                         <span class="font-semibold text-white text-sm truncate">{{ p.character.name }}</span>
                                         {% if p.guildMember %}{{ ui.badge('Guilde', 'info') }}{% else %}{{ ui.badge('Externe', 'warning') }}{% endif %}
                                         {% set _done = completedRaidCounts[p.character.id] ?? 0 %}
                                         {% if _done > 0 %}<span class="text-xs text-gray-500" title="{{ _done }} raid{{ _done > 1 ? 's' : '' }} terminé{{ _done > 1 ? 's' : '' }}">✓ {{ _done }}</span>{% endif %}
                                     </div>
-                                    <div class="mt-2 space-y-2 text-xs text-gray-500">
-                                        <div class="flex items-center gap-3">
-                                            {{ ui.whisper(p.character.name) }}
-                                        </div>
-                                        <div class="flex items-center gap-3">
-                                            {% if p.character.level %}<span class="text-gray-400">Niv. {{ p.character.level }}</span>{% endif %}
-                                            {% if p.character.optimizationLevel %}{{ ui.badge('Opti ' ~ p.character.optimizationLevel.label(), p.character.optimizationLevel.color()) }}{% endif %}
-                                            <span class="flex items-center gap-1">
-                                                <img src="{{ asset('uploads/divers/guildatons.png') }}" alt="Guildatons" class="w-3.5 h-3.5 object-contain">
-                                                <span class="{{ p.character.guildatons is not null ? 'text-gray-400' : 'text-gray-600' }} tabular-nums">{{ p.character.guildatons ?? 'N/A' }}</span>
-                                            </span>
-                                        </div>
+                                    <div class="mt-1.5 flex items-center gap-x-3 gap-y-1 flex-wrap text-xs text-gray-500">
+                                        {% if p.character.level %}<span class="text-gray-400">Niv. {{ p.character.level }}</span>{% endif %}
+                                        {% if p.character.optimizationLevel %}{{ ui.badge('Opti ' ~ p.character.optimizationLevel.label(), p.character.optimizationLevel.color()) }}{% endif %}
+                                        <span class="flex items-center gap-1">
+                                            <img src="{{ asset('uploads/divers/guildatons.png') }}" alt="Guildatons" class="w-3.5 h-3.5 object-contain">
+                                            <span class="{{ p.character.guildatons is not null ? 'text-gray-400' : 'text-gray-600' }} tabular-nums">{{ p.character.guildatons ?? 'N/A' }}</span>
+                                        </span>
+                                        {{ ui.whisper(p.character.name) }}
                                     </div>
                                 </div>
                                 {% if canManageNotes and p.guildMember %}
