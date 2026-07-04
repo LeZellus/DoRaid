@@ -14,7 +14,7 @@
         <meta property="og:title" content="{% block og_title %}{{ block('title') }}{% endblock %}">
         <meta property="og:description" content="{% block og_description %}{{ block('meta_description') }}{% endblock %}">
         <meta property="og:url" content="{{ canonical_url }}{{ app.request.pathInfo }}">
-        <meta property="og:image" content="{% block og_image %}{{ canonical_url }}{{ asset('og/default.png') }}{% endblock %}">
+        <meta property="og:image" content="{% block og_image %}{{ canonical_url }}{{ asset('og/default.png') }}{{ og_image_version('og/default.png') }}{% endblock %}">
 
         {# Twitter Card #}
         <meta name="twitter:card" content="summary_large_image">

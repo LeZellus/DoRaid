@@ -3,7 +3,7 @@
 
 {% block title %}Guide – {{ raidTemplate.name }} – Zeminal{% endblock %}
 {% block meta_description %}Guide complet du raid de guilde {{ raidTemplate.name }} : mécaniques, étages, boss et récompenses.{% endblock %}
-{% block og_image %}{% set _ogPath = raid_guide_og_image(raidTemplate.name) %}{% if _ogPath %}{{ canonical_url }}{{ asset(_ogPath) }}{% else %}{{ parent() }}{% endif %}{% endblock %}
+{% block og_image %}{% set _ogPath = raid_guide_og_image(raidTemplate.name) %}{% if _ogPath %}{{ canonical_url }}{{ asset(_ogPath) }}{{ og_image_version(_ogPath) }}{% else %}{{ parent() }}{% endif %}{% endblock %}
 
 {% macro guide_image(image, imageBasePath) %}
     <figure class="text-center">

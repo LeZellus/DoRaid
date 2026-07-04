@@ -36,6 +36,7 @@ class AppExtension extends AbstractExtension
             new TwigFunction('raid_template_og_image', $this->raidTemplateOgImage(...)),
             new TwigFunction('raid_guide_og_image', $this->raidGuideOgImage(...)),
             new TwigFunction('has_raid_guide', $this->hasRaidGuide(...)),
+            new TwigFunction('og_image_version', $this->ogImageVersion(...)),
         ];
     }
 
@@ -69,6 +70,18 @@ class AppExtension extends AbstractExtension
         $relativePath = 'og/guide-' . $slug . '.png';
 
         return is_file($this->projectDir . '/public/' . $relativePath) ? $relativePath : null;
+    }
+
+    /**
+     * Suffixe de version (basé sur la date de modification du fichier) à ajouter à une
+     * URL d'image OG statique, pour forcer Discord/Twitter/Facebook à retélécharger
+     * l'image après une régénération au lieu de servir leur copie mise en cache.
+     */
+    public function ogImageVersion(string $relativePath): string
+    {
+        $absolutePath = $this->projectDir . '/public/' . $relativePath;
+
+        return is_file($absolutePath) ? '?v=' . filemtime($absolutePath) : '';
     }
 
     public function dateFr(\DateTimeInterface|string $date): string
