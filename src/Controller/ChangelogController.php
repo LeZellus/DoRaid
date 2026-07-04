@@ -23,7 +23,6 @@ class ChangelogController extends AbstractController
                     ['type' => 'impr', 'text' => 'Badges "Guilde", "Externe" et "vous" harmonisés avec le même style que les badges d\'optimisation'],
                     ['type' => 'fix',  'text' => 'Hauteur des boutons et des menus déroulants harmonisée sur tout le site'],
                     ['type' => 'fix',  'text' => 'Bouton "Commenter" sur la page de raid remis au style standard du site'],
-                    ['type' => 'fix',  'text' => 'Correction d\'un crash de l\'administration EasyAdmin lors de l\'édition du type ou du statut d\'un feedback'],
                 ],
             ],
             [
@@ -35,9 +34,7 @@ class ChangelogController extends AbstractController
                     ['type' => 'impr', 'text' => 'Boutons et cards harmonisés sur un même composant partagé dans toutes les pages du site'],
                     ['type' => 'new',  'text' => 'Bannières Open Graph régénérées avec les couleurs du nouveau thème'],
                     ['type' => 'new',  'text' => 'Page "Ce raid n\'existe plus" contextualisée à la place de l\'erreur 404 générique'],
-                    ['type' => 'new',  'text' => 'Alerte sur le dashboard admin quand des feedbacks sont en attente'],
                     ['type' => 'fix',  'text' => 'Curseur "pointeur" manquant sur les boutons'],
-                    ['type' => 'fix',  'text' => 'Plantage EasyAdmin corrigé à l\'ouverture du détail d\'un feedback'],
                 ],
             ],
             [
