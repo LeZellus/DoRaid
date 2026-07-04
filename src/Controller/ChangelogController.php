@@ -32,6 +32,8 @@ class ChangelogController extends AbstractController
                     ['type' => 'impr', 'text' => 'Page de recherche de raids simplifiée sur mobile pour rester lisible'],
                     ['type' => 'impr', 'text' => 'Listes de participants et bandeaux des pages de guide réorganisés pour mieux s\'afficher sur mobile'],
                     ['type' => 'fix',  'text' => 'Correction d\'un bug d\'affichage occasionnel des menus déroulants personnalisés au redimensionnement de la fenêtre'],
+                    ['type' => 'impr', 'text' => 'Bannière de partage dédiée pour la page des mises à jour'],
+                    ['type' => 'impr', 'text' => 'Amélioration du référencement (SEO) : pages privées exclues de l\'indexation, description et image de partage complétées'],
                 ],
             ],
             [

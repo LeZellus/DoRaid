@@ -93,6 +93,23 @@ def make_guides_index_banner():
     img.save(os.path.join(OUT_DIR, "guides-index.png"))
 
 
+def make_changelog_banner():
+    img = base_canvas()
+    draw = ImageDraw.Draw(img)
+
+    margin = 90
+    draw_wordmark(draw, margin + 18, margin + 20)
+
+    draw.text((margin, 220), "Mises à jour", font=font("Poppins-Bold.ttf", 60), fill=WHITE)
+
+    draw.text((margin, 320), "Nouveautés, améliorations et corrections de Zeminal",
+               font=font("Poppins-Regular.ttf", 28), fill=GRAY_400)
+
+    draw.text((margin, 540), "zeminal.tech/mises-a-jour", font=font("Poppins-Regular.ttf", 24), fill=GRAY_500)
+
+    img.save(os.path.join(OUT_DIR, "changelog.png"))
+
+
 def make_raid_banner(filename, name, tag, label="RAID DOFUS", label_color=YELLOW_400):
     img = base_canvas()
     draw = ImageDraw.Draw(img)
@@ -129,5 +146,6 @@ if __name__ == "__main__":
     make_guide_banner("guide-sanctuaire-des-jardins-eternels.png", "Sanctuaire des Jardins éternels")
 
     make_guides_index_banner()
+    make_changelog_banner()
 
     print("Bannières générées dans", OUT_DIR)
