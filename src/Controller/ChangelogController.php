@@ -28,6 +28,10 @@ class ChangelogController extends AbstractController
                     ['type' => 'impr', 'text' => 'Bandeau de présentation d\'un raid réorganisé — infos affichées sous forme de blocs clairs (date, durée, statut, participants, intéressés) au lieu d\'une ligne de texte surchargée'],
                     ['type' => 'impr', 'text' => 'Carte "Mes raids en cours" du dashboard agrandie et aérée pour rester lisible en un coup d\'œil'],
                     ['type' => 'impr', 'text' => 'Date de création retirée des pages guilde (peu utile au quotidien)'],
+                    ['type' => 'impr', 'text' => 'Bannières de partage (réseaux sociaux) régénérées avec la nouvelle police et les nouvelles couleurs du site'],
+                    ['type' => 'impr', 'text' => 'Page de recherche de raids simplifiée sur mobile pour rester lisible'],
+                    ['type' => 'impr', 'text' => 'Listes de participants et bandeaux des pages de guide réorganisés pour mieux s\'afficher sur mobile'],
+                    ['type' => 'fix',  'text' => 'Correction d\'un bug d\'affichage occasionnel des menus déroulants personnalisés au redimensionnement de la fenêtre'],
                 ],
             ],
             [
