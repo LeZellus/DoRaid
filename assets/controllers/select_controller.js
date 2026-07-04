@@ -13,7 +13,7 @@ export default class extends Controller {
     this._buildTrigger()
     this._buildList()
     this._outside = e => { if (!this.element.contains(e.target) && !this._list.contains(e.target)) this._close() }
-    this._reposition = e => { if (!this._list.contains(e.target)) this._close() }
+    this._reposition = e => { if (!(e.target instanceof Node) || !this._list.contains(e.target)) this._close() }
     document.addEventListener('click', this._outside)
     window.addEventListener('scroll', this._reposition, true)
     window.addEventListener('resize', this._reposition)
