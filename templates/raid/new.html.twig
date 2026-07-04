@@ -28,7 +28,7 @@
             <button type="button"
                     data-id="{{ template.id }}"
                     onclick="selectTemplate(this)"
-                    class="template-card flex flex-col items-center gap-2 px-5 py-6 rounded-2xl border-2 border-gray-700 bg-gray-900 hover:border-indigo-500 hover:bg-indigo-950/20 transition text-center cursor-pointer">
+                    class="template-card flex flex-col items-center gap-2 px-5 py-6 rounded-2xl border-2 border-gray-700 bg-gray-900 hover:border-emerald-500 hover:bg-emerald-950/20 transition text-center cursor-pointer">
                 {% if template.imagePath %}
                     <img src="{{ asset('uploads/raid-templates/' ~ template.imagePath) }}"
                          alt="{{ template.name }}"
@@ -69,7 +69,7 @@
             </div>
             <label class="relative inline-flex items-center cursor-pointer">
                 {{ form_widget(form.isPublic, {attr: {class: 'sr-only peer', id: 'raid_isPublic'}}) }}
-                <div class="w-11 h-6 bg-gray-700 rounded-full peer peer-checked:bg-indigo-600
+                <div class="w-11 h-6 bg-gray-700 rounded-full peer peer-checked:bg-emerald-600
                             after:content-[''] after:absolute after:top-[2px] after:left-[2px]
                             after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all
                             peer-checked:after:translate-x-5"></div>
@@ -82,7 +82,7 @@
             }) }}
             {{ form_widget(form.scheduledAt, {
                 attr: {
-                    class: 'w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent cursor-pointer',
+                    class: 'w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent cursor-pointer',
                     style: 'color-scheme: dark',
                     id: 'scheduledAt'
                 }
@@ -103,9 +103,9 @@
 <script>
 function selectTemplate(el) {
     document.querySelectorAll('.template-card').forEach(function(c) {
-        c.classList.remove('border-indigo-500', 'bg-indigo-950/20', 'ring-2', 'ring-indigo-500/30');
+        c.classList.remove('border-emerald-500', 'bg-emerald-950/20', 'ring-2', 'ring-emerald-500/30');
     });
-    el.classList.add('border-indigo-500', 'bg-indigo-950/20', 'ring-2', 'ring-indigo-500/30');
+    el.classList.add('border-emerald-500', 'bg-emerald-950/20', 'ring-2', 'ring-emerald-500/30');
     document.getElementById('raid_template_id').value = el.dataset.id;
     document.getElementById('form-details').classList.remove('hidden');
     document.getElementById('form-details').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -116,7 +116,7 @@ function selectTemplate(el) {
     if (selectedId) {
         var card = document.querySelector('.template-card[data-id="' + selectedId + '"]');
         if (card) {
-            card.classList.add('border-indigo-500', 'bg-indigo-950/20', 'ring-2', 'ring-indigo-500/30');
+            card.classList.add('border-emerald-500', 'bg-emerald-950/20', 'ring-2', 'ring-emerald-500/30');
         }
     }
 

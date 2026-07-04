@@ -22,10 +22,10 @@
     </a>
 
     {# ── Hero ── #}
-    <div class="rounded-2xl border border-indigo-900/30 bg-gradient-to-br from-indigo-950/60 via-gray-900 to-gray-950 overflow-hidden mb-8" data-reveal>
+    <div class="rounded-2xl border border-emerald-900/30 bg-gradient-to-br from-emerald-950/60 via-gray-900 to-gray-950 overflow-hidden mb-8" data-reveal>
 
         {# Bande supérieure : statut + serveur + actions créateur #}
-        <div class="flex items-center justify-between gap-4 px-8 py-3 border-b border-indigo-900/20 bg-indigo-950/20">
+        <div class="flex items-center justify-between gap-4 px-8 py-3 border-b border-emerald-900/20 bg-emerald-950/20">
             <div class="flex items-center gap-3">
                 {% if raid.status == constant('App\\Entity\\RaidStatus::Open') %}
                     {{ ui.badge(raid.status.label(), 'success') }}
@@ -66,9 +66,9 @@
             {% if raid.raidTemplate.imagePath %}
                 <img src="{{ asset('uploads/raid-templates/' ~ raid.raidTemplate.imagePath) }}"
                      alt="{{ raid.raidTemplate.name }}"
-                     class="w-20 h-20 rounded-2xl object-cover border border-indigo-800/40 shrink-0">
+                     class="w-20 h-20 rounded-2xl object-cover border border-emerald-800/40 shrink-0">
             {% else %}
-                <div class="w-20 h-20 rounded-2xl bg-indigo-900/40 border border-indigo-800/30 flex items-center justify-center text-4xl shrink-0">⚔</div>
+                <div class="w-20 h-20 rounded-2xl bg-emerald-900/40 border border-emerald-800/30 flex items-center justify-center text-4xl shrink-0">⚔</div>
             {% endif %}
 
             {# Infos principales #}
@@ -83,7 +83,7 @@
                     <span>Créé le <span class="text-gray-300">{{ raid.createdAt|date('d/m/Y') }}</span></span>
                     {% if raid.scheduledAt %}
                         <span class="text-gray-700">·</span>
-                        <span class="text-indigo-300 font-medium">Prévu le {{ raid.scheduledAt|date('d/m/Y à H:i') }}</span>
+                        <span class="text-emerald-300 font-medium">Prévu le {{ raid.scheduledAt|date('d/m/Y à H:i') }}</span>
                     {% endif %}
                     {% if raid.raidTemplate.formattedDuration %}
                         <span class="text-gray-700">·</span>
@@ -165,15 +165,15 @@
     {% if has_raid_guide(raid.raidTemplate.name) %}
         <a href="{{ path('app_raid_template_guide', {id: raid.raidTemplate.id}) }}"
            target="_blank" rel="noopener"
-           class="group relative flex items-center gap-5 overflow-hidden rounded-2xl border border-indigo-700/40 bg-gradient-to-r from-indigo-950/80 via-indigo-950/30 to-gray-900 px-6 py-5 mb-6 transition hover:border-indigo-500/60"
+           class="group relative flex items-center gap-5 overflow-hidden rounded-2xl border border-emerald-700/40 bg-gradient-to-r from-emerald-950/80 via-emerald-950/30 to-gray-900 px-6 py-5 mb-6 transition hover:border-emerald-500/60"
            data-reveal data-reveal-delay="1">
-            <div class="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-indigo-600/10 blur-3xl pointer-events-none"></div>
-            <div class="relative w-12 h-12 rounded-xl bg-indigo-600/20 border border-indigo-600/30 flex items-center justify-center text-2xl shrink-0">📖</div>
+            <div class="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-emerald-600/10 blur-3xl pointer-events-none"></div>
+            <div class="relative w-12 h-12 rounded-xl bg-emerald-600/20 border border-emerald-600/30 flex items-center justify-center text-2xl shrink-0">📖</div>
             <div class="relative flex-1 min-w-0">
-                <div class="font-semibold text-white group-hover:text-indigo-300 transition">Guide complet du raid disponible</div>
+                <div class="font-semibold text-white group-hover:text-emerald-300 transition">Guide complet du raid disponible</div>
                 <div class="text-sm text-gray-400 mt-0.5">Mécaniques, étages, boss et stratégies pour {{ raid.raidTemplate.name }} — tout y est détaillé.</div>
             </div>
-            <span class="relative inline-flex items-center gap-1.5 text-sm font-semibold text-indigo-300 group-hover:text-indigo-200 shrink-0">
+            <span class="relative inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-300 group-hover:text-emerald-200 shrink-0">
                 Consulter le guide
                 <span class="group-hover:translate-x-1 transition-transform">→</span>
             </span>
@@ -192,7 +192,7 @@
                         <a href="{{ path('app_enigme_show', {id: enigme.id}) }}"
                            class="flex items-center justify-between px-6 py-4 hover:bg-gray-800/40 transition group">
                             <div class="flex items-center gap-3">
-                                <span class="w-7 h-7 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center text-xs font-bold text-gray-400 shrink-0 group-hover:border-indigo-600/50 transition">
+                                <span class="w-7 h-7 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center text-xs font-bold text-gray-400 shrink-0 group-hover:border-emerald-600/50 transition">
                                     {{ enigme.orderNumber }}
                                 </span>
                                 <span class="font-medium text-white text-sm">{{ enigme.title }}</span>
@@ -250,18 +250,17 @@
                                     <div class="flex items-center gap-2">
                                         <span class="font-semibold text-white text-sm truncate">{{ p.character.name }}</span>
                                         {% if p.character === raid.creator %}<span title="Créateur" class="text-sm leading-none">⭐</span>{% endif %}
-                                        {% if p.guildMember %}{{ ui.badge('Guilde', 'indigo') }}{% else %}{{ ui.badge('Externe', 'warning') }}{% endif %}
-                                        {% if app.user and p.character.user.id == app.user.id %}<span class="text-xs text-indigo-400 font-medium">vous</span>{% endif %}
+                                        {% if p.guildMember %}{{ ui.badge('Guilde', 'info') }}{% else %}{{ ui.badge('Externe', 'warning') }}{% endif %}
+                                        {% if app.user and p.character.user.id == app.user.id %}{{ ui.badge('vous', 'pink') }}{% endif %}
                                         {% set _done = completedRaidCounts[p.character.id] ?? 0 %}
                                         {% if _done > 0 %}<span class="text-xs text-gray-500" title="{{ _done }} raid{{ _done > 1 ? 's' : '' }} terminé{{ _done > 1 ? 's' : '' }}">✓ {{ _done }}</span>{% endif %}
                                     </div>
                                     <div class="mt-2 space-y-2 text-xs text-gray-500">
-                                        <div class="flex items-center gap-3">
-                                            <span>{{ p.character.user.username }}</span>
-                                            {% if not (app.user and p.character.user.id == app.user.id) %}
+                                        {% if not (app.user and p.character.user.id == app.user.id) %}
+                                            <div class="flex items-center gap-3">
                                                 {{ ui.whisper(p.character.name) }}
-                                            {% endif %}
-                                        </div>
+                                            </div>
+                                        {% endif %}
                                         <div class="flex items-center gap-3">
                                             {% if p.character.level %}<span class="text-gray-400">Niv. {{ p.character.level }}</span>{% endif %}
                                             {% if p.character.optimizationLevel %}{{ ui.badge('Opti ' ~ p.character.optimizationLevel.label(), p.character.optimizationLevel.color()) }}{% endif %}
@@ -290,7 +289,7 @@
                     </ul>
                     <div class="border-t border-gray-800/60 px-6 py-3">
                         <a href="{{ path('app_raid_participants', {id: raid.id}) }}"
-                           class="text-xs text-gray-500 hover:text-indigo-400 transition">
+                           class="text-xs text-gray-500 hover:text-emerald-400 transition">
                             Voir tous les participants →
                         </a>
                     </div>
@@ -322,13 +321,12 @@
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center gap-2">
                                         <span class="font-semibold text-white text-sm truncate">{{ p.character.name }}</span>
-                                        {% if p.guildMember %}{{ ui.badge('Guilde', 'indigo') }}{% else %}{{ ui.badge('Externe', 'warning') }}{% endif %}
+                                        {% if p.guildMember %}{{ ui.badge('Guilde', 'info') }}{% else %}{{ ui.badge('Externe', 'warning') }}{% endif %}
                                         {% set _done = completedRaidCounts[p.character.id] ?? 0 %}
                                         {% if _done > 0 %}<span class="text-xs text-gray-500" title="{{ _done }} raid{{ _done > 1 ? 's' : '' }} terminé{{ _done > 1 ? 's' : '' }}">✓ {{ _done }}</span>{% endif %}
                                     </div>
                                     <div class="mt-2 space-y-2 text-xs text-gray-500">
                                         <div class="flex items-center gap-3">
-                                            <span>{{ p.character.user.username }}</span>
                                             {{ ui.whisper(p.character.name) }}
                                         </div>
                                         <div class="flex items-center gap-3">
@@ -359,7 +357,7 @@
                     </ul>
                     <div class="border-t border-gray-800/60 px-6 py-3">
                         <a href="{{ path('app_raid_participants', {id: raid.id}) }}"
-                           class="text-xs text-gray-500 hover:text-indigo-400 transition">
+                           class="text-xs text-gray-500 hover:text-emerald-400 transition">
                             Voir tous les intéressés →
                         </a>
                     </div>
@@ -382,10 +380,7 @@
                                 <input type="hidden" name="_token" value="{{ csrf_token('apply_raid_' ~ raid.id) }}">
                                 <div class="flex-1 min-w-0 relative" data-controller="select"><select name="character_id" class="hidden">
                                     {% for c in eligible %}
-                                        {% set isMember = c.membership is not null and c.membership.guild.id == raid.guild.id and c.membership.status != constant('App\\Entity\\MemberStatus::Pending') %}
-                                        {% set levelInfo = c.level ? ' · Niv. ' ~ c.level : '' %}
-                                        {% set optiInfo  = c.optimizationLevel ? ' · Opti ' ~ c.optimizationLevel.label() : '' %}
-                                        <option value="{{ c.id }}">{{ c.name }} — {{ c.gameClass.name }}{{ levelInfo }}{{ optiInfo }}{{ isMember ? ' [Guilde]' : ' [Externe]' }}</option>
+                                        <option value="{{ c.id }}">{{ c.name }}</option>
                                     {% endfor %}
                                 </select></div>
                                 {{ ui.button(raid.isFull() ? 'Rejoindre la liste d\'attente' : 'Candidater', 'primary', 'submit', 'py-2 px-4 text-sm shrink-0') }}
@@ -435,7 +430,7 @@
                                                  alt="{{ commentChar.gameClass.name }}"
                                                  class="w-7 h-7 rounded-full object-cover shrink-0">
                                         {% else %}
-                                            <div class="w-7 h-7 rounded-full bg-indigo-900/60 border border-indigo-700/40 flex items-center justify-center text-xs font-bold text-indigo-300 uppercase select-none shrink-0">
+                                            <div class="w-7 h-7 rounded-full bg-emerald-900/60 border border-emerald-700/40 flex items-center justify-center text-xs font-bold text-emerald-300 uppercase select-none shrink-0">
                                                 {{ comment.author.username|slice(0,1) }}
                                             </div>
                                         {% endif %}
@@ -463,14 +458,14 @@
                                         {% if currentUserApplied %}
                                             <button type="button"
                                                 onclick="var f=document.getElementById('rf-{{ comment.id }}');f.classList.toggle('hidden');f.querySelector('textarea').focus();"
-                                                class="mt-1.5 text-xs text-gray-600 hover:text-indigo-400 transition">Répondre</button>
+                                                class="mt-1.5 text-xs text-gray-600 hover:text-emerald-400 transition">Répondre</button>
                                             <div id="rf-{{ comment.id }}" class="hidden mt-2">
                                                 <form method="post" action="{{ path('app_raid_comment_reply', {id: comment.id}) }}" class="space-y-1.5">
                                                     <input type="hidden" name="_token" value="{{ csrf_token('reply_' ~ comment.id) }}">
                                                     <textarea name="content" rows="2" placeholder="@{{ comment.author.username }} "
-                                                        class="w-full bg-gray-800 border border-gray-700 text-white text-xs rounded-lg px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none placeholder-gray-600"></textarea>
+                                                        class="w-full bg-gray-800 border border-gray-700 text-white text-xs rounded-lg px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none placeholder-gray-600"></textarea>
                                                     <div class="flex items-center gap-2">
-                                                        <button type="submit" class="text-xs bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-3 py-1.5 transition">Envoyer</button>
+                                                        <button type="submit" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg px-3 py-1.5 transition">Envoyer</button>
                                                         <button type="button" onclick="document.getElementById('rf-{{ comment.id }}').classList.add('hidden')"
                                                             class="text-xs text-gray-500 hover:text-gray-300 transition">Annuler</button>
                                                     </div>
@@ -489,7 +484,7 @@
                                                                  alt="{{ replyChar.gameClass.name }}"
                                                                  class="w-6 h-6 rounded-full object-cover shrink-0">
                                                         {% else %}
-                                                            <div class="w-6 h-6 rounded-full bg-indigo-900/40 border border-indigo-700/30 flex items-center justify-center text-xs font-bold text-indigo-300/80 shrink-0 uppercase select-none">
+                                                            <div class="w-6 h-6 rounded-full bg-emerald-900/40 border border-emerald-700/30 flex items-center justify-center text-xs font-bold text-emerald-300/80 shrink-0 uppercase select-none">
                                                                 {{ reply.author.username|slice(0,1) }}
                                                             </div>
                                                         {% endif %}
@@ -526,10 +521,8 @@
                         <form method="post" action="{{ path('app_raid_comment_new', {id: raid.id}) }}" class="space-y-2">
                             <input type="hidden" name="_token" value="{{ csrf_token('comment_' ~ raid.id) }}">
                             <textarea name="content" rows="3" placeholder="Partagez une info, discutez des horaires…"
-                                class="w-full bg-gray-800 border border-gray-700 text-white text-xs rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none placeholder-gray-600"></textarea>
-                            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg py-2 transition">
-                                Commenter
-                            </button>
+                                class="w-full bg-gray-800 border border-gray-700 text-white text-xs rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none placeholder-gray-600"></textarea>
+                            {{ ui.button('Commenter', 'primary', 'submit', 'w-full') }}
                         </form>
                     {% elseif app.user %}
                         <p class="text-xs text-red-400 text-center py-2">
@@ -537,7 +530,7 @@
                         </p>
                     {% else %}
                         <a href="{{ path('app_login') }}"
-                           class="block w-full text-center text-sm text-gray-500 hover:text-indigo-400 transition py-2 border border-gray-800 rounded-lg">
+                           class="block w-full text-center text-sm text-gray-500 hover:text-emerald-400 transition py-2 border border-gray-800 rounded-lg">
                             Se connecter pour commenter
                         </a>
                     {% endif %}

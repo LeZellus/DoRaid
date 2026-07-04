@@ -1,7 +1,7 @@
 import { Controller } from '@hotwired/stimulus'
 
 // Classes complètes pour que Tailwind v4 les détecte au scan
-const LINK_ACTIVE   = 'block px-3 py-2 rounded-lg text-sm transition truncate bg-indigo-900/30 text-indigo-300 border-l-2 border-indigo-500'
+const LINK_ACTIVE   = 'block px-3 py-2 rounded-lg text-sm transition truncate bg-emerald-900/30 text-emerald-300 border-l-2 border-emerald-500'
 const LINK_INACTIVE = 'block px-3 py-2 rounded-lg text-sm transition truncate text-gray-400 hover:text-white hover:bg-gray-800/60 border-l-2 border-transparent'
 
 export default class extends Controller {

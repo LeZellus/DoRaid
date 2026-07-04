@@ -55,14 +55,14 @@
                  loading="lazy" decoding="async" width="{{ imgSize }}" height="{{ imgSize }}"
                  class="{{ imgCls }} object-cover shrink-0">
         {% else %}
-            <span class="{{ imgCls }} bg-indigo-900/40 border border-indigo-800/30 flex items-center justify-center text-xl shrink-0">⚔</span>
+            <span class="{{ imgCls }} bg-emerald-900/40 border border-emerald-800/30 flex items-center justify-center text-xl shrink-0">⚔</span>
         {% endif %}
 
         <div class="flex-1 min-w-0">
 
             {# Nom + badges #}
             <div class="flex items-center gap-2 flex-wrap">
-                <span class="font-semibold text-white group-hover:text-indigo-300 transition truncate">
+                <span class="font-semibold text-white group-hover:text-emerald-300 transition truncate">
                     {{ raid.raidTemplate.name }}
                 </span>
                 {% if accepted %}
@@ -90,7 +90,7 @@
                 {% endif %}
                 {% if raid.scheduledAt %}
                     <span class="text-gray-700">·</span>
-                    <span class="{{ compact ? 'text-indigo-400' : 'text-gray-400' }}">{{ raid.scheduledAt|date('d/m à H:i') }}</span>
+                    <span class="{{ compact ? 'text-emerald-400' : 'text-gray-400' }}">{{ raid.scheduledAt|date('d/m à H:i') }}</span>
                 {% endif %}
                 {% if not compact and raid.raidTemplate.formattedDuration %}
                     <span class="text-gray-700">·</span>
@@ -104,7 +104,7 @@
             </div>
 
             {# Personnage #}
-            <div class="flex items-center gap-1.5 text-xs text-indigo-300/80 mt-0.5">
+            <div class="flex items-center gap-1.5 text-xs text-emerald-300/80 mt-0.5">
                 <img src="{{ asset('classes/' ~ participation.character.gameClass.name|lower ~ '.png') }}"
                      alt="{{ participation.character.gameClass.name }}"
                      loading="lazy" decoding="async" width="14" height="14"
@@ -118,7 +118,7 @@
         {# Places #}
         {% set pendingCount = raid.pendingParticipants|length %}
         <div class="text-right shrink-0">
-            <div class="text-sm font-medium {{ raid.isFull() ? 'text-red-400' : 'text-indigo-400' }}">
+            <div class="text-sm font-medium {{ raid.isFull() ? 'text-red-400' : 'text-emerald-400' }}">
                 {{ raid.acceptedParticipants|length }}<span class="text-gray-600 font-normal">/{{ raid.raidTemplate.maxParticipants }}</span>
             </div>
             {% if not compact %}

@@ -1,7 +1,7 @@
 import { Controller } from '@hotwired/stimulus'
 
 // Classes complètes pour que Tailwind v4 les détecte au scan
-const ACTIVE   = 'px-4 py-2.5 text-sm cursor-pointer transition-colors text-indigo-400 bg-indigo-600/10'
+const ACTIVE   = 'px-4 py-2.5 text-sm cursor-pointer transition-colors text-emerald-400 bg-emerald-600/10'
 const INACTIVE = 'px-4 py-2.5 text-sm cursor-pointer transition-colors text-gray-300 hover:text-white hover:bg-gray-700/50'
 
 export default class extends Controller {
@@ -31,7 +31,7 @@ export default class extends Controller {
   _buildTrigger () {
     const btn = this._btn = document.createElement('button')
     btn.type = 'button'
-    btn.className = 'w-full flex items-center justify-between gap-3 bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-sm text-left transition hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer'
+    btn.className = 'w-full flex items-center justify-between gap-3 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-left transition hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer'
     btn.setAttribute('aria-haspopup', 'listbox')
     btn.setAttribute('aria-expanded', 'false')
 

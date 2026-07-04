@@ -101,7 +101,7 @@
                                         <span class="text-xs {{ m.character.guildatons is not null ? 'text-gray-400' : 'text-gray-600' }} tabular-nums">{{ m.character.guildatons ?? 'N/A' }}</span>
                                     </span>
                                     {% if app.user and m.character.user.id == app.user.id %}
-                                        <span class="text-xs text-indigo-400 font-medium">· vous</span>
+                                        <span class="text-xs text-emerald-400 font-medium">· vous</span>
                                     {% else %}
                                         <span class="text-xs text-gray-600">· {{ m.character.user.username }}</span>
                                         {{ ui.whisper(m.character.name) }}

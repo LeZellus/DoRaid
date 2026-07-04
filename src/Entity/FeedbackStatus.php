@@ -23,7 +23,7 @@ enum FeedbackStatus: string
     {
         return match($this) {
             self::Open       => 'yellow',
-            self::InProgress => 'indigo',
+            self::InProgress => 'emerald',
             self::Done       => 'success',
             self::Rejected   => 'danger',
         };

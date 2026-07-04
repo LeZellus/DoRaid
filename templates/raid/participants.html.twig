@@ -51,18 +51,17 @@
                             <div class="flex items-center gap-2">
                                 <span class="font-semibold text-white text-sm truncate">{{ p.character.name }}</span>
                                 {% if p.character === raid.creator %}<span title="Créateur" class="text-sm leading-none">⭐</span>{% endif %}
-                                {% if p.guildMember %}{{ ui.badge('Guilde', 'indigo') }}{% else %}{{ ui.badge('Externe', 'warning') }}{% endif %}
-                                {% if app.user and p.character.user.id == app.user.id %}<span class="text-xs text-indigo-400 font-medium">vous</span>{% endif %}
+                                {% if p.guildMember %}{{ ui.badge('Guilde', 'info') }}{% else %}{{ ui.badge('Externe', 'warning') }}{% endif %}
+                                {% if app.user and p.character.user.id == app.user.id %}{{ ui.badge('vous', 'pink') }}{% endif %}
                                 {% set _done = completedRaidCounts[p.character.id] ?? 0 %}
                                 {% if _done > 0 %}<span class="text-xs text-gray-500" title="{{ _done }} raid{{ _done > 1 ? 's' : '' }} terminé{{ _done > 1 ? 's' : '' }}">✓ {{ _done }}</span>{% endif %}
                             </div>
                             <div class="mt-2 space-y-2 text-xs text-gray-500">
-                                <div class="flex items-center gap-3">
-                                    <span>{{ p.character.user.username }}</span>
-                                    {% if not (app.user and p.character.user.id == app.user.id) %}
+                                {% if not (app.user and p.character.user.id == app.user.id) %}
+                                    <div class="flex items-center gap-3">
                                         {{ ui.whisper(p.character.name) }}
-                                    {% endif %}
-                                </div>
+                                    </div>
+                                {% endif %}
                                 <div class="flex items-center gap-3">
                                         {% if p.character.level %}<span class="text-gray-400">Niv. {{ p.character.level }}</span>{% endif %}
                                         {% if p.character.optimizationLevel %}{{ ui.badge('Opti ' ~ p.character.optimizationLevel.label(), p.character.optimizationLevel.color()) }}{% endif %}
@@ -109,13 +108,12 @@
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2">
                                 <span class="font-semibold text-white text-sm truncate">{{ p.character.name }}</span>
-                                {% if p.guildMember %}{{ ui.badge('Guilde', 'indigo') }}{% else %}{{ ui.badge('Externe', 'warning') }}{% endif %}
+                                {% if p.guildMember %}{{ ui.badge('Guilde', 'info') }}{% else %}{{ ui.badge('Externe', 'warning') }}{% endif %}
                                 {% set _done = completedRaidCounts[p.character.id] ?? 0 %}
                                 {% if _done > 0 %}<span class="text-xs text-gray-500" title="{{ _done }} raid{{ _done > 1 ? 's' : '' }} terminé{{ _done > 1 ? 's' : '' }}">✓ {{ _done }}</span>{% endif %}
                             </div>
                             <div class="mt-2 space-y-2 text-xs text-gray-500">
                                 <div class="flex items-center gap-3">
-                                    <span>{{ p.character.user.username }}</span>
                                     {{ ui.whisper(p.character.name) }}
                                 </div>
                                 <div class="flex items-center gap-3">

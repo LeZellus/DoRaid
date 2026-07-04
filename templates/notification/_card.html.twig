@@ -22,8 +22,8 @@
     {% set accentCls = 'border-l-amber-500' %}
 {% else %}
     {% set icon = '🔔' %}
-    {% set iconCls = 'bg-indigo-950/60 border-indigo-700/50 text-indigo-400' %}
-    {% set accentCls = 'border-l-indigo-500' %}
+    {% set iconCls = 'bg-emerald-950/60 border-emerald-700/50 text-emerald-400' %}
+    {% set accentCls = 'border-l-emerald-500' %}
 {% endif %}
 
 {% if not n.isRead() %}
@@ -31,11 +31,11 @@
         <span class="w-10 h-10 rounded-lg border {{ iconCls }} flex items-center justify-center font-bold text-base shrink-0">{{ icon }}</span>
         {% if n.link %}
             <a href="{{ n.link }}" class="flex-1 min-w-0 group/link">
-                <div class="font-semibold text-white text-sm group-hover/link:text-indigo-300 transition">{{ n.title }}</div>
+                <div class="font-semibold text-white text-sm group-hover/link:text-emerald-300 transition">{{ n.title }}</div>
                 <div class="text-xs text-gray-300 mt-0.5">{{ n.message }}</div>
                 <div class="text-xs text-gray-500 mt-1">{{ n.createdAt|date('d/m/Y à H:i') }}</div>
             </a>
-            <span class="text-gray-500 group-hover/link:text-indigo-400 transition shrink-0 text-sm self-center mr-2">→</span>
+            <span class="text-gray-500 group-hover/link:text-emerald-400 transition shrink-0 text-sm self-center mr-2">→</span>
         {% else %}
             <div class="flex-1 min-w-0">
                 <div class="font-semibold text-white text-sm">{{ n.title }}</div>
@@ -57,11 +57,11 @@
         <span class="w-9 h-9 rounded-lg border {{ iconCls }} flex items-center justify-center font-bold shrink-0">{{ icon }}</span>
         {% if n.link %}
             <a href="{{ n.link }}" class="flex-1 min-w-0 group/link">
-                <div class="font-medium text-gray-300 text-sm group-hover/link:text-indigo-300 transition">{{ n.title }}</div>
+                <div class="font-medium text-gray-300 text-sm group-hover/link:text-emerald-300 transition">{{ n.title }}</div>
                 <div class="text-xs text-gray-500 mt-0.5">{{ n.message }}</div>
                 <div class="text-xs text-gray-600 mt-1">{{ n.createdAt|date('d/m/Y à H:i') }}</div>
             </a>
-            <span class="text-gray-700 group-hover/link:text-indigo-400 transition shrink-0 text-sm self-center mr-2">→</span>
+            <span class="text-gray-700 group-hover/link:text-emerald-400 transition shrink-0 text-sm self-center mr-2">→</span>
         {% else %}
             <div class="flex-1 min-w-0">
                 <div class="font-medium text-gray-300 text-sm">{{ n.title }}</div>

@@ -29,10 +29,10 @@ export default class extends Controller {
         if (count > 0) {
             badge.classList.remove('hidden')
             this.element.classList.remove('text-gray-400', 'hover:text-white', 'hover:bg-gray-800/60')
-            this.element.classList.add('text-indigo-300', 'hover:text-indigo-200', 'hover:bg-indigo-900/20', 'bell-active')
+            this.element.classList.add('text-emerald-300', 'hover:text-emerald-200', 'hover:bg-emerald-900/20', 'bell-active')
         } else {
             badge.classList.add('hidden')
-            this.element.classList.remove('text-indigo-300', 'hover:text-indigo-200', 'hover:bg-indigo-900/20', 'bell-active')
+            this.element.classList.remove('text-emerald-300', 'hover:text-emerald-200', 'hover:bg-emerald-900/20', 'bell-active')
             this.element.classList.add('text-gray-400', 'hover:text-white', 'hover:bg-gray-800/60')
         }
     }

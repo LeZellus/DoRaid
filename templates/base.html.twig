@@ -66,7 +66,7 @@
 
                 {# Logo #}
                 <a href="{{ path('app_home') }}" class="flex items-center gap-2 shrink-0 group">
-                    <span class="text-indigo-400 text-xl group-hover:text-indigo-300 transition">⚔</span>
+                    <span class="text-emerald-400 text-xl group-hover:text-emerald-300 transition">⚔</span>
                     <span class="font-bold text-white text-lg tracking-tight">Zeminal</span>
                 </a>
 
@@ -101,7 +101,7 @@
                         <a href="{{ path('app_notifications') }}"
                            data-controller="notification-poll"
                            data-notification-poll-url-value="{{ path('api_notifications_unread') }}"
-                           class="relative flex items-center justify-center w-9 h-9 rounded-xl border border-gray-700/50 hover:border-gray-600 transition {{ _unread > 0 ? 'text-indigo-300 bg-indigo-900/20 bell-active' : 'text-gray-400 bg-gray-800/60 hover:text-white' }}">
+                           class="relative flex items-center justify-center w-9 h-9 rounded-xl border border-gray-700/50 hover:border-gray-600 transition {{ _unread > 0 ? 'text-emerald-300 bg-emerald-900/20 bell-active' : 'text-gray-400 bg-gray-800/60 hover:text-white' }}">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
                                 <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-2.83-2h5.66A3 3 0 0110 18z"/>
                             </svg>
@@ -115,7 +115,7 @@
                         <div class="relative">
                             <button type="button" data-navbar-target="accountButton" data-action="click->navbar#toggleAccount"
                                     aria-haspopup="true" aria-expanded="false"
-                                    class="w-9 h-9 rounded-xl bg-indigo-600 hover:bg-indigo-500 flex items-center justify-center text-sm font-bold text-white transition cursor-pointer">
+                                    class="w-9 h-9 rounded-xl bg-emerald-600 hover:bg-emerald-500 flex items-center justify-center text-sm font-bold text-white transition cursor-pointer">
                                 {{ app.user.username|slice(0,1)|upper|default('?') }}
                             </button>
 
@@ -146,7 +146,7 @@
                         </div>
                     {% else %}
                         <a href="{{ path('app_login') }}" class="text-sm text-gray-400 hover:text-white transition px-3 py-2 rounded-lg hover:bg-gray-800/60">Connexion</a>
-                        <a href="{{ path('app_register') }}" class="text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg transition">Inscription</a>
+                        <a href="{{ path('app_register') }}" class="text-sm font-semibold bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg transition">Inscription</a>
                     {% endif %}
                 </div>
 
@@ -155,7 +155,7 @@
                         aria-label="Ouvrir le menu" aria-expanded="false"
                         class="lg:hidden ml-auto relative flex items-center justify-center w-9 h-9 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800/60 transition">
                     {% if _unread > 0 %}
-                        <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-indigo-500 ring-2 ring-gray-900"></span>
+                        <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-gray-900"></span>
                     {% endif %}
                     <svg data-navbar-target="openIcon" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
@@ -197,7 +197,7 @@
                         </a>
                         <div class="flex items-center justify-between px-3 py-2.5">
                             <div class="flex items-center gap-2.5">
-                                <div class="w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
+                                <div class="w-6 h-6 rounded-full bg-emerald-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
                                     {{ app.user.username|slice(0,1)|upper|default('?') }}
                                 </div>
                                 <span class="text-sm text-gray-200 font-medium">{{ app.user.username }}</span>
@@ -206,7 +206,7 @@
                         </div>
                     {% else %}
                         <a href="{{ path('app_login') }}" data-action="click->navbar#close" class="px-3 py-2.5 rounded-lg text-sm font-medium transition text-gray-300 hover:text-white hover:bg-gray-800/60">Connexion</a>
-                        <a href="{{ path('app_register') }}" data-action="click->navbar#close" class="px-3 py-2.5 rounded-lg text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white text-center">Inscription</a>
+                        <a href="{{ path('app_register') }}" data-action="click->navbar#close" class="px-3 py-2.5 rounded-lg text-sm font-semibold bg-emerald-600 hover:bg-emerald-500 text-white text-center">Inscription</a>
                     {% endif %}
                 </div>
             </div>
@@ -239,7 +239,7 @@
                     {# Branding #}
                     <div>
                         <a href="{{ path('app_home') }}" class="inline-flex items-center gap-2 group mb-3">
-                            <span class="text-indigo-400 text-lg group-hover:text-indigo-300 transition">⚔</span>
+                            <span class="text-emerald-400 text-lg group-hover:text-emerald-300 transition">⚔</span>
                             <span class="font-bold text-white tracking-tight">Zeminal</span>
                         </a>
                         <p class="text-xs text-gray-500 leading-relaxed max-w-xs">

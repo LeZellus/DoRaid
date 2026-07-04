@@ -21,21 +21,21 @@
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {% for template in templates %}
                 <a href="{{ path('app_raid_template_guide', {id: template.id}) }}"
-                   class="group flex items-center gap-4 {{ ui.card_classes('hover:border-indigo-600/50 px-5 py-4 transition') }}"
+                   class="group flex items-center gap-4 {{ ui.card_classes('hover:border-emerald-600/50 px-5 py-4 transition') }}"
                    data-reveal data-reveal-delay="{{ (loop.index % 4) + 1 }}">
                     {% if template.imagePath %}
                         <img src="{{ asset('uploads/raid-templates/' ~ template.imagePath) }}"
                              alt="{{ template.name }}"
                              loading="lazy" decoding="async" width="48" height="48"
-                             class="w-12 h-12 rounded-xl object-cover border border-indigo-800/40 shrink-0">
+                             class="w-12 h-12 rounded-xl object-cover border border-emerald-800/40 shrink-0">
                     {% else %}
-                        <div class="w-12 h-12 rounded-xl bg-indigo-900/40 border border-indigo-800/30 flex items-center justify-center text-2xl shrink-0">⚔</div>
+                        <div class="w-12 h-12 rounded-xl bg-emerald-900/40 border border-emerald-800/30 flex items-center justify-center text-2xl shrink-0">⚔</div>
                     {% endif %}
                     <div class="flex-1 min-w-0">
-                        <div class="font-semibold text-white group-hover:text-indigo-300 transition truncate">{{ template.name }}</div>
+                        <div class="font-semibold text-white group-hover:text-emerald-300 transition truncate">{{ template.name }}</div>
                         <div class="text-xs text-gray-500 mt-0.5">📖 Voir le guide</div>
                     </div>
-                    <span class="text-indigo-600 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all shrink-0 text-lg font-bold">→</span>
+                    <span class="text-emerald-600 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all shrink-0 text-lg font-bold">→</span>
                 </a>
             {% endfor %}
         </div>

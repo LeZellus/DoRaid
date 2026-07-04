@@ -18,7 +18,7 @@
 {% macro button_classes(variant='primary', extra_class='') %}
     {%- set base = 'inline-flex items-center justify-center gap-2 font-semibold rounded-xl transition cursor-pointer' -%}
     {%- set styles = {
-        primary:   'text-indigo-300 hover:text-white bg-indigo-900/45 hover:bg-indigo-700/60 border border-indigo-700/45 hover:border-indigo-500',
+        primary:   'text-emerald-300 hover:text-white bg-emerald-900/45 hover:bg-emerald-700/60 border border-emerald-700/45 hover:border-emerald-500',
         secondary: 'border border-gray-600 hover:border-gray-400 hover:bg-gray-700/55 text-gray-300 hover:text-white',
         danger:    'text-red-400 hover:text-white bg-red-900/55 hover:bg-red-700/65 border border-red-700/45 hover:border-red-500',
         ghost:     'text-gray-400 hover:text-white hover:bg-gray-800',
@@ -54,7 +54,7 @@
 {#
   input_classes(extra_class) — classes only, reused by input() and the Symfony form theme
 #}
-{% macro input_classes(extra_class='') %}w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder-gray-500 {{ extra_class }}{% endmacro %}
+{% macro input_classes(extra_class='') %}w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent placeholder-gray-500 {{ extra_class }}{% endmacro %}
 
 {#
   input(id, name, type, value, placeholder, extra_class, attrs)
@@ -88,7 +88,7 @@
 {#
   checkbox_classes(extra_class) — classes only, reused by checkbox() and the Symfony form theme
 #}
-{% macro checkbox_classes(extra_class='') %}w-4 h-4 rounded border-gray-600 bg-gray-700 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-gray-900 {{ extra_class }}{% endmacro %}
+{% macro checkbox_classes(extra_class='') %}w-4 h-4 rounded border-gray-600 bg-gray-700 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-gray-900 {{ extra_class }}{% endmacro %}
 
 {#
   checkbox(id, name, label_text, checked, extra_class)
@@ -127,7 +127,7 @@
 
 {#
   badge(text, variant, extra_class)
-  variant: default | success | danger | warning | indigo
+  variant: default | success | danger | warning | emerald | info | pink
   Style translucide + bordure, cohérent avec les pastilles de statut du site
   (Accepté, En attente, Complet, Ma guilde...).
 #}
@@ -137,7 +137,9 @@
         success: 'bg-emerald-900/50 text-emerald-400 border border-emerald-800/40',
         danger:  'bg-red-900/50 text-red-400 border border-red-800/40',
         warning: 'bg-yellow-900/40 text-yellow-400 border border-yellow-800/40',
-        indigo:  'bg-indigo-900/50 text-indigo-300 border border-indigo-700/40',
+        emerald:  'bg-emerald-900/50 text-emerald-300 border border-emerald-700/40',
+        info:    'bg-blue-900/50 text-blue-400 border border-blue-800/40',
+        pink:    'bg-pink-900/50 text-pink-400 border border-pink-800/40',
     } %}
     <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ styles[variant]|default(styles.default) }} {{ extra_class }}">
         {{- text -}}

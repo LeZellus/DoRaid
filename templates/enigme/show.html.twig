@@ -84,7 +84,7 @@ document.addEventListener('keydown', e => {
                     <div data-enigme-target="pasteZone"
                          data-action="click->enigme#focusPasteZone"
                          tabindex="0"
-                         class="flex flex-col items-center justify-center gap-1 border-2 border-dashed border-gray-700 hover:border-indigo-600/50 rounded-xl py-10 px-6
+                         class="flex flex-col items-center justify-center gap-1 border-2 border-dashed border-gray-700 hover:border-emerald-600/50 rounded-xl py-10 px-6
                                 text-center text-sm text-gray-500 select-none transition cursor-pointer outline-none">
                         <span class="block text-2xl mb-1">📋</span>
                         Cliquer ici puis coller une image (Ctrl+V)
@@ -129,10 +129,10 @@ document.addEventListener('keydown', e => {
                                   rows="3"
                                   placeholder="Écrire un commentaire…"
                                   class="w-full bg-gray-800 border border-gray-700 text-white text-sm rounded-lg px-3 py-2.5
-                                         focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
+                                         focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent
                                          resize-none placeholder-gray-600"></textarea>
                         <button type="submit"
-                                class="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg py-2 transition">
+                                class="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium rounded-lg py-2 transition">
                             Envoyer
                         </button>
                     </form>
@@ -142,7 +142,7 @@ document.addEventListener('keydown', e => {
                     </p>
                     {% elseif not app.user %}
                     <a href="{{ path('app_login') }}"
-                       class="block w-full text-center text-sm text-gray-500 hover:text-indigo-400 transition py-2 border border-gray-800 rounded-lg">
+                       class="block w-full text-center text-sm text-gray-500 hover:text-emerald-400 transition py-2 border border-gray-800 rounded-lg">
                         Connectez-vous pour commenter
                     </a>
                     {% endif %}

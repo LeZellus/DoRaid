@@ -13,13 +13,31 @@ class ChangelogController extends AbstractController
     {
         $entries = [
             [
+                'version' => '1.6.0',
+                'date'    => '4 juillet 2026',
+                'latest'  => true,
+                'changes' => [
+                    ['type' => 'impr', 'text' => 'Police du site changée pour Poppins, désormais auto-hébergée (plus d\'appel à Google Fonts — meilleure confidentialité et performance)'],
+                    ['type' => 'impr', 'text' => 'Liste des participants d\'un raid simplifiée — le pseudo du compte n\'est plus affiché, le nom du personnage suffit'],
+                    ['type' => 'impr', 'text' => 'Sélecteur de personnage pour candidater à un raid simplifié — n\'affiche plus que le nom du personnage'],
+                    ['type' => 'impr', 'text' => 'Badges "Guilde", "Externe" et "vous" harmonisés avec le même style que les badges d\'optimisation'],
+                    ['type' => 'fix',  'text' => 'Hauteur des boutons et des menus déroulants harmonisée sur tout le site'],
+                    ['type' => 'fix',  'text' => 'Bouton "Commenter" sur la page de raid remis au style standard du site'],
+                    ['type' => 'fix',  'text' => 'Correction d\'un crash de l\'administration EasyAdmin lors de l\'édition du type ou du statut d\'un feedback'],
+                ],
+            ],
+            [
                 'version' => '1.5.0',
                 'date'    => '3 juillet 2026',
-                'latest'  => true,
+                'latest'  => false,
                 'changes' => [
                     ['type' => 'new',  'text' => 'Nouvelle identité visuelle inspirée de l\'univers Dofus — accent émeraude, boutons, badges et alertes translucides au lieu des aplats pleins'],
                     ['type' => 'impr', 'text' => 'Boutons et cards harmonisés sur un même composant partagé dans toutes les pages du site'],
+                    ['type' => 'new',  'text' => 'Bannières Open Graph régénérées avec les couleurs du nouveau thème'],
+                    ['type' => 'new',  'text' => 'Page "Ce raid n\'existe plus" contextualisée à la place de l\'erreur 404 générique'],
+                    ['type' => 'new',  'text' => 'Alerte sur le dashboard admin quand des feedbacks sont en attente'],
                     ['type' => 'fix',  'text' => 'Curseur "pointeur" manquant sur les boutons'],
+                    ['type' => 'fix',  'text' => 'Plantage EasyAdmin corrigé à l\'ouverture du détail d\'un feedback'],
                 ],
             ],
             [

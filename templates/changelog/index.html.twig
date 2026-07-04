@@ -23,19 +23,19 @@
                     {# Pastille timeline #}
                     <div class="absolute left-0 top-1.5 w-3.5 h-3.5 rounded-full border-2 flex-shrink-0
                                 {{ entry.latest
-                                    ? 'bg-indigo-500 border-indigo-400 ring-4 ring-indigo-500/20'
+                                    ? 'bg-emerald-500 border-emerald-400 ring-4 ring-emerald-500/20'
                                     : 'bg-gray-800 border-gray-600' }}">
                     </div>
 
                     {# Carte #}
-                    <div class="{{ ui.card_classes('overflow-hidden') }} {{ entry.latest ? 'border-indigo-800/40' : '' }}">
+                    <div class="{{ ui.card_classes('overflow-hidden') }} {{ entry.latest ? 'border-emerald-800/40' : '' }}">
 
                         {# Header #}
                         <div class="{{ ui.card_header_classes('flex items-center justify-between') }}">
                             <div class="flex items-center gap-3">
                                 <span class="font-bold text-white text-base">v{{ entry.version }}</span>
                                 {% if entry.latest %}
-                                    <span class="text-xs font-semibold bg-indigo-600/20 text-indigo-300 border border-indigo-700/40 rounded-full px-2.5 py-0.5">
+                                    <span class="text-xs font-semibold bg-emerald-600/20 text-emerald-300 border border-emerald-700/40 rounded-full px-2.5 py-0.5">
                                         Dernière version
                                     </span>
                                 {% endif %}
@@ -57,7 +57,7 @@
                                             Correction
                                         </span>
                                     {% else %}
-                                        <span class="inline-flex justify-center text-[10px] font-bold uppercase tracking-wider bg-indigo-900/30 text-indigo-400 border border-indigo-800/40 rounded px-1.5 py-0.5 leading-none w-full">
+                                        <span class="inline-flex justify-center text-[10px] font-bold uppercase tracking-wider bg-emerald-900/30 text-emerald-400 border border-emerald-800/40 rounded px-1.5 py-0.5 leading-none w-full">
                                             Amélioration
                                         </span>
                                     {% endif %}
@@ -79,7 +79,7 @@
         <div class="mt-12 text-center">
             <p class="text-sm text-gray-500 mb-3">Une idée ou un bug à signaler ?</p>
             <button type="button" onclick="document.getElementById('feedback-dialog').showModal()"
-                    class="inline-flex items-center gap-2 text-sm font-medium text-indigo-400 hover:text-indigo-300 border border-indigo-800/50 hover:border-indigo-700/60 bg-indigo-950/30 hover:bg-indigo-950/50 rounded-xl px-4 py-2.5 transition cursor-pointer">
+                    class="inline-flex items-center gap-2 text-sm font-medium text-emerald-400 hover:text-emerald-300 border border-emerald-800/50 hover:border-emerald-700/60 bg-emerald-950/30 hover:bg-emerald-950/50 rounded-xl px-4 py-2.5 transition cursor-pointer">
                 🐛 Signaler / Suggérer
             </button>
         </div>

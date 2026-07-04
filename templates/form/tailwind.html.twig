@@ -31,7 +31,7 @@
 
 {# ── Radio ── #}
 {% block radio_widget %}
-    {% set attr = attr|merge({class: 'w-4 h-4 border-gray-600 bg-gray-700 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-gray-900' ~ (attr.class is defined ? ' ' ~ attr.class : '')}) %}
+    {% set attr = attr|merge({class: 'w-4 h-4 border-gray-600 bg-gray-700 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-gray-900' ~ (attr.class is defined ? ' ' ~ attr.class : '')}) %}
     {{ parent() }}
 {% endblock %}
 
