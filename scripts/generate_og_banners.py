@@ -7,7 +7,7 @@ import os
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 W, H = 1200, 630
-FONT_DIR = "C:/Windows/Fonts"
+FONT_DIR = os.path.join(os.path.dirname(__file__), "fonts")
 OUT_DIR = os.path.join(os.path.dirname(__file__), "..", "public", "og")
 
 BG = (35, 37, 32)         # gray-950 (thème Dofus)
@@ -24,7 +24,7 @@ def font(name, size):
     return ImageFont.truetype(os.path.join(FONT_DIR, name), size)
 
 
-def fit_font(text, max_width, base_size, font_name="segoeuib.ttf", min_size=36):
+def fit_font(text, max_width, base_size, font_name="Poppins-Bold.ttf", min_size=36):
     size = base_size
     while size > min_size:
         f = font(font_name, size)
@@ -54,7 +54,7 @@ def draw_wordmark(draw, x, y):
     # accent en losange + "Zeminal"
     s = 18
     draw.polygon([(x, y - s), (x + s, y), (x, y + s), (x - s, y)], fill=YELLOW_400)
-    draw.text((x + s + 18, y - 24), "Zeminal", font=font("segoeuib.ttf", 40), fill=WHITE)
+    draw.text((x + s + 18, y - 24), "Zeminal", font=font("Poppins-Bold.ttf", 40), fill=WHITE)
 
 
 def make_default_banner():
@@ -64,13 +64,13 @@ def make_default_banner():
     margin = 90
     draw_wordmark(draw, margin + 18, margin + 20)
 
-    draw.text((margin, 220), "Organisez vos raids Dofus", font=font("segoeuib.ttf", 64), fill=WHITE)
-    draw.text((margin, 300), "en guilde", font=font("segoeuib.ttf", 64), fill=INDIGO_400)
+    draw.text((margin, 220), "Organisez vos raids Dofus", font=font("Poppins-Bold.ttf", 64), fill=WHITE)
+    draw.text((margin, 300), "en guilde", font=font("Poppins-Bold.ttf", 64), fill=INDIGO_400)
 
     draw.text((margin, 400), "Planification de raids · Gestion de personnages · Coordination de guilde",
-               font=font("segoeui.ttf", 28), fill=GRAY_400)
+               font=font("Poppins-Regular.ttf", 28), fill=GRAY_400)
 
-    draw.text((margin, 540), "Gratuit · Tous serveurs", font=font("segoeui.ttf", 24), fill=GRAY_500)
+    draw.text((margin, 540), "Gratuit · Tous serveurs", font=font("Poppins-Regular.ttf", 24), fill=GRAY_500)
 
     img.save(os.path.join(OUT_DIR, "default.png"))
 
@@ -82,13 +82,13 @@ def make_guides_index_banner():
     margin = 90
     draw_wordmark(draw, margin + 18, margin + 20)
 
-    draw.text((margin, 220), "Tous les guides de raid", font=font("segoeuib.ttf", 60), fill=WHITE)
-    draw.text((margin, 296), "Dofus", font=font("segoeuib.ttf", 60), fill=INDIGO_400)
+    draw.text((margin, 220), "Tous les guides de raid", font=font("Poppins-Bold.ttf", 60), fill=WHITE)
+    draw.text((margin, 296), "Dofus", font=font("Poppins-Bold.ttf", 60), fill=INDIGO_400)
 
     draw.text((margin, 400), "Mécaniques, étages, boss et stratégies pour chaque raid de guilde",
-               font=font("segoeui.ttf", 28), fill=GRAY_400)
+               font=font("Poppins-Regular.ttf", 28), fill=GRAY_400)
 
-    draw.text((margin, 540), "zeminal.tech/guides", font=font("segoeui.ttf", 24), fill=GRAY_500)
+    draw.text((margin, 540), "zeminal.tech/guides", font=font("Poppins-Regular.ttf", 24), fill=GRAY_500)
 
     img.save(os.path.join(OUT_DIR, "guides-index.png"))
 
@@ -100,13 +100,13 @@ def make_raid_banner(filename, name, tag, label="RAID DOFUS", label_color=YELLOW
     margin = 90
     draw_wordmark(draw, margin + 18, margin + 20)
 
-    draw.text((margin, 230), label, font=font("segoeuib.ttf", 26), fill=label_color)
+    draw.text((margin, 230), label, font=font("Poppins-Bold.ttf", 26), fill=label_color)
 
     title_font = fit_font(name, W - 2 * margin, 76)
     draw.text((margin, 280), name, font=title_font, fill=WHITE)
 
-    draw.text((margin, 410), tag, font=font("segoeui.ttf", 30), fill=GRAY_400)
-    draw.text((margin, 540), "zeminal.tech", font=font("segoeui.ttf", 24), fill=GRAY_500)
+    draw.text((margin, 410), tag, font=font("Poppins-Regular.ttf", 30), fill=GRAY_400)
+    draw.text((margin, 540), "zeminal.tech", font=font("Poppins-Regular.ttf", 24), fill=GRAY_500)
 
     img.save(os.path.join(OUT_DIR, filename))
 
