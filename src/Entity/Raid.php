@@ -53,11 +53,16 @@ class Raid
     #[ORM\OneToMany(targetEntity: RaidComment::class, mappedBy: 'raid', cascade: ['remove'], orphanRemoval: true)]
     private Collection $comments;
 
+    #[ORM\OneToMany(targetEntity: RaidGroup::class, mappedBy: 'raid', cascade: ['remove'], orphanRemoval: true)]
+    #[ORM\OrderBy(['position' => 'ASC'])]
+    private Collection $groups;
+
     public function __construct()
     {
         $this->participants = new ArrayCollection();
         $this->enigmes      = new ArrayCollection();
         $this->comments     = new ArrayCollection();
+        $this->groups       = new ArrayCollection();
         $this->createdAt    = new \DateTimeImmutable();
     }
 
@@ -109,6 +114,32 @@ class Raid
             fn(RaidParticipant $p) => $p->getStatus() === RaidParticipantStatus::Pending
         );
     }
+
+    /** Tous les participants acceptés, triés par initiative décroissante (non renseignée = en dernier) — groupe final pour le Gigalodon. */
+    public function getParticipantsByInitiative(): array
+    {
+        $participants = $this->getAcceptedParticipants()->toArray();
+        usort($participants, function (RaidParticipant $a, RaidParticipant $b) {
+            $ia = $a->getCharacter()->getInitiative();
+            $ib = $b->getCharacter()->getInitiative();
+            if ($ia === $ib) return 0;
+            if ($ia === null) return 1;
+            if ($ib === null) return -1;
+            return $ib <=> $ia;
+        });
+        return $participants;
+    }
+
+    /** Participants acceptés non affectés à un groupe. */
+    public function getUnassignedParticipants(): array
+    {
+        return array_values(array_filter(
+            $this->getAcceptedParticipants()->toArray(),
+            fn(RaidParticipant $p) => $p->getGroup() === null
+        ));
+    }
+
+    public function getGroups(): Collection { return $this->groups; }
 
     public function getEnigmes(): Collection { return $this->enigmes; }
 

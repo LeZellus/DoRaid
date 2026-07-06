@@ -1,0 +1,4 @@
+{# Compteur affiché dans le bandeau "Groupes", en dehors de la popup — rafraîchi via Turbo Stream à chaque action. #}
+<p id="raid-groups-band-count" class="text-xs text-gray-500 mt-0.5">
+    {% if raid.groups is empty %}Aucun groupe formé pour l'instant{% else %}{{ raid.groups|length }} groupe{{ raid.groups|length > 1 ? 's' : '' }} formé{{ raid.groups|length > 1 ? 's' : '' }}{% endif %}
+</p>

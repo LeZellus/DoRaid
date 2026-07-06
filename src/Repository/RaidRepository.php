@@ -122,7 +122,7 @@ class RaidRepository extends ServiceEntityRepository
     public function findWithParticipants(int $id): ?Raid
     {
         return $this->createQueryBuilder('r')
-            ->addSelect('rt', 'creator', 'g', 's', 'p', 'pc', 'pcgc', 'pcu', 'pcm')
+            ->addSelect('rt', 'creator', 'g', 's', 'p', 'pc', 'pcgc', 'pcu', 'pcm', 'grp', 'gp')
             ->join('r.raidTemplate', 'rt')
             ->join('r.creator', 'creator')
             ->join('r.guild', 'g')
@@ -132,6 +132,8 @@ class RaidRepository extends ServiceEntityRepository
             ->leftJoin('pc.gameClass', 'pcgc')
             ->leftJoin('pc.user', 'pcu')
             ->leftJoin('pc.membership', 'pcm')
+            ->leftJoin('r.groups', 'grp')
+            ->leftJoin('grp.participants', 'gp')
             ->where('r.id = :id')
             ->setParameter('id', $id)
             ->getQuery()

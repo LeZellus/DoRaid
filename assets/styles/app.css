@@ -222,21 +222,35 @@
     to   { opacity: 0; }
 }
 
-.member-notes-dialog {
-    translate: -50% -50%;
+/* Centrage sans transform/translate/scale statique : un descendant en position:fixed
+   (menus ⋮ de menu_controller.js) a besoin qu'aucun ancêtre n'ait de transform/translate/
+   scale non "none", sous peine de lui créer un containing block et de casser son
+   positionnement — même bug déjà documenté pour [data-reveal].is-revealed ailleurs sur
+   la page raid/show. Partagé par toutes les popups <dialog> de l'app. */
+.member-notes-dialog,
+.raid-groups-dialog {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    max-height: min(90vh, calc(100% - 2rem));
 }
-.member-notes-dialog[open] {
-    animation: dialog-show 0.2s ease both;
+.member-notes-dialog[open],
+.raid-groups-dialog[open] {
+    /* Pas de "both" : une fois l'animation finie, scale doit revenir à "none". */
+    animation: dialog-show 0.2s ease;
 }
-.member-notes-dialog.is-closing {
-    animation: dialog-hide 0.2s ease both;
+.member-notes-dialog.is-closing,
+.raid-groups-dialog.is-closing {
+    animation: dialog-hide 0.2s ease;
 }
-.member-notes-dialog::backdrop {
+.member-notes-dialog::backdrop,
+.raid-groups-dialog::backdrop {
     background: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(4px);
     animation: backdrop-show 0.2s ease both;
 }
-.member-notes-dialog.is-closing::backdrop {
+.member-notes-dialog.is-closing::backdrop,
+.raid-groups-dialog.is-closing::backdrop {
     animation: backdrop-hide 0.2s ease both;
 }
 

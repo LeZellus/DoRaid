@@ -25,6 +25,10 @@ class RaidParticipant
     #[ORM\Column(type: 'string', enumType: RaidParticipantStatus::class, length: 10)]
     private RaidParticipantStatus $status = RaidParticipantStatus::Pending;
 
+    #[ORM\ManyToOne(inversedBy: 'participants')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?RaidGroup $group = null;
+
     #[ORM\Column]
     private \DateTimeImmutable $joinedAt;
 
@@ -51,6 +55,9 @@ class RaidParticipant
     // Méthodes utilisées exclusivement par le composant Workflow (attend/retourne des strings)
     public function getWorkflowStatus(): string { return $this->status->value; }
     public function setWorkflowStatus(string $status): static { return $this->setStatus($status); }
+
+    public function getGroup(): ?RaidGroup { return $this->group; }
+    public function setGroup(?RaidGroup $group): static { $this->group = $group; return $this; }
 
     public function getJoinedAt(): \DateTimeImmutable { return $this->joinedAt; }
 

@@ -124,6 +124,7 @@ class RaidService
         } catch (\Symfony\Component\Workflow\Exception\NotEnabledTransitionException) {
             throw new BusinessRuleException('Ce participant n\'est pas accepté.');
         }
+        $participant->setGroup(null);
         $this->notificationService->notifyParticipationMovedToWaitlist($participant);
         $this->em->flush();
     }
@@ -153,6 +154,7 @@ class RaidService
         }
 
         $participant->setRaid($targetRaid);
+        $participant->setGroup(null);
         $this->notificationService->notifyParticipantMoved($participant, $sourceRaid);
         $this->em->flush();
     }

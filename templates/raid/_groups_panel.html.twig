@@ -1,0 +1,102 @@
+{#
+  Contenu de la gestion des groupes d'un raid — utilisé à la fois pour le rendu
+  initial (dans la popup de raid/show.html.twig) et comme cible de remplacement
+  des réponses Turbo Stream de RaidGroupController (id="raid-groups-frame" stable).
+
+  Paramètres :
+    raid        Raid
+    isCreator   bool
+    raidOpen    bool
+    flash       {type: 'success'|'error', message: string}|null
+#}
+{% import 'components/_ui.html.twig' as ui %}
+{% import 'components/_raid_groups.html.twig' as groups %}
+
+<turbo-frame id="raid-groups-frame">
+    {% if flash is defined and flash %}
+        <div class="mb-4">{{ ui.alert(flash.message, flash.type) }}</div>
+    {% endif %}
+
+    {% set hasParticipants = raid.acceptedParticipants is not empty %}
+    {% set hasGroups = raid.groups is not empty %}
+
+    {% if not hasParticipants and not hasGroups %}
+        <p class="text-gray-500 text-sm">Aucun participant confirmé pour l'instant.</p>
+    {% else %}
+        {% if hasParticipants %}
+            {% set unassigned = raid.unassignedParticipants %}
+            {% if unassigned is not empty %}
+                <div class="mb-5">
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Non assignés ({{ unassigned|length }})</p>
+                    <div class="flex flex-wrap gap-2">
+                        {% for p in unassigned %}
+                            <div class="flex items-center gap-1.5 bg-gray-800/60 border border-gray-700 rounded-full pl-1.5 pr-2 py-1">
+                                <img src="{{ asset('classes/' ~ p.character.gameClass.name|lower ~ '.png') }}"
+                                     alt="{{ p.character.gameClass.name }}"
+                                     class="w-5 h-5 rounded-full object-cover shrink-0">
+                                <span class="text-sm text-white">{{ p.character.name }}</span>
+                                {% if isCreator and raidOpen and raid.groups is not empty %}
+                                    <div class="relative shrink-0" data-controller="menu">
+                                        <button type="button" data-action="menu#toggle" title="Assigner à un groupe"
+                                            class="flex items-center gap-1 pl-2.5 pr-1.5 h-6 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-sm transition">
+                                            Assigner
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                            </svg>
+                                        </button>
+                                        <div data-menu-target="panel" class="hidden fixed z-50 w-48 bg-gray-800 border border-gray-700 rounded-xl shadow-2xl overflow-hidden text-left py-1">
+                                            {% for g in raid.groups %}
+                                                {% if not g.isFull() %}
+                                                    <form method="post" action="{{ path('app_raid_participant_assign', {id: p.id}) }}">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('assign_' ~ p.id) }}">
+                                                        <input type="hidden" name="group_id" value="{{ g.id }}">
+                                                        <button type="submit" class="w-full text-left px-3 py-2 text-sm text-gray-300 hover:bg-emerald-600/10 hover:text-emerald-300 transition truncate">
+                                                            {{ g.label ?: 'Groupe ' ~ loop.index }}
+                                                        </button>
+                                                    </form>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        {% else %}
+            <p class="text-gray-500 text-sm mb-5">Aucun participant confirmé pour l'instant.</p>
+        {% endif %}
+
+        {% if not hasGroups %}
+            <p class="text-gray-500 text-sm">Aucun groupe pour l'instant.{% if isCreator and raidOpen %} Cliquez sur « Ajouter un groupe ».{% endif %}</p>
+        {% else %}
+            <div class="grid gap-3 sm:grid-cols-2">
+                {% for group in raid.groups %}
+                    {{ groups.card(group, loop.index, isCreator, raidOpen) }}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if hasParticipants %}
+            {{ ui.divider('Groupe final — ordre d\'initiative (Gigalodon)') }}
+            <ul class="divide-y divide-gray-800/60 rounded-xl border border-gray-700 overflow-hidden">
+                {% for p in raid.participantsByInitiative %}
+                    <li class="flex items-center justify-between gap-3 px-3 py-2 bg-gray-800/30">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <span class="text-xs text-gray-600 w-5 text-right shrink-0 tabular-nums">{{ loop.index }}</span>
+                            <img src="{{ asset('classes/' ~ p.character.gameClass.name|lower ~ '.png') }}"
+                                 alt="{{ p.character.gameClass.name }}"
+                                 class="w-5 h-5 rounded-full object-cover shrink-0">
+                            <span class="text-sm text-gray-200 truncate">{{ p.character.name }}</span>
+                        </div>
+                        <span class="flex items-center gap-1.5 shrink-0">
+                            <img src="{{ asset('uploads/divers/initiative.png') }}" alt="Initiative" class="w-3.5 h-3.5 object-contain">
+                            <span class="text-sm {{ p.character.initiative is not null ? 'text-gray-300' : 'text-gray-600' }} tabular-nums">{{ p.character.initiative ?? 'N/A' }}</span>
+                        </span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endif %}
+</turbo-frame>

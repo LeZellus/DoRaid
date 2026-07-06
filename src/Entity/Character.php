@@ -49,6 +49,9 @@ class Character
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $guildatonsUpdatedAt = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $initiative = null;
+
     #[ORM\OneToOne(mappedBy: 'character')]
     private ?GuildMembership $membership = null;
 
@@ -85,6 +88,9 @@ class Character
         if ($this->guildatonsUpdatedAt === null) return true;
         return (new \DateTimeImmutable())->diff($this->guildatonsUpdatedAt)->days >= 7;
     }
+
+    public function getInitiative(): ?int { return $this->initiative; }
+    public function setInitiative(?int $initiative): static { $this->initiative = $initiative; return $this; }
 
     public function getMembership(): ?GuildMembership { return $this->membership; }
 

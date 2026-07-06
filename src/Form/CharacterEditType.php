@@ -63,6 +63,12 @@ class CharacterEditType extends AbstractType
                 'required' => false,
                 'attr'     => ['placeholder' => 'Ex : 250', 'min' => 0],
                 'constraints' => [new Range(min: 0)],
+            ])
+            ->add('initiative', IntegerType::class, [
+                'label'    => 'Initiative',
+                'required' => false,
+                'attr'     => ['placeholder' => 'Ex : 250', 'min' => 0],
+                'constraints' => [new Range(min: 0)],
             ]);
     }
 

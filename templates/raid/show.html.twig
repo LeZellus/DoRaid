@@ -210,8 +210,45 @@
         </div>
     {% endif %}
 
+    {# ── Groupes (bandeau + popup) ── #}
+    {% set raidOpen = raid.status == constant('App\\Entity\\RaidStatus::Open') %}
+    <div class="{{ ui.card_classes('overflow-hidden mb-6 flex items-center justify-between px-6 py-4') }}" data-reveal data-reveal-delay="3" data-controller="modal" data-modal-reopen-hash-value="groupes">
+        <div>
+            <h2 class="font-semibold text-white">Groupes</h2>
+            {% include 'raid/_groups_band_count.html.twig' with {raid: raid} only %}
+        </div>
+        <button type="button" data-action="modal#open" class="{{ ui.button_classes('secondary', 'text-sm') }}">Voir les groupes</button>
+
+        <dialog data-modal-target="dialog"
+                data-action="click->modal#clickBackdrop"
+                class="raid-groups-dialog bg-gray-900 border border-gray-700/50 rounded-2xl shadow-2xl p-0 text-white w-full max-w-4xl">
+
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-800">
+                <div>
+                    <h3 class="font-semibold text-white">Groupes</h3>
+                    <p class="text-xs text-gray-500 mt-0.5">Répartissez vos participants confirmés par groupe de 8 joueurs maximum</p>
+                </div>
+                <div class="flex items-center gap-3 shrink-0">
+                    {% if isCreator and raidOpen %}
+                        <form method="post" action="{{ path('app_raid_group_new', {id: raid.id}) }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('new_group_' ~ raid.id) }}">
+                            <button type="submit" class="{{ ui.button_classes('secondary', 'text-sm') }}">+ Ajouter un groupe</button>
+                        </form>
+                    {% endif %}
+                    <button type="button" data-action="modal#close"
+                            class="text-gray-500 hover:text-gray-300 transition text-xl leading-none cursor-pointer">✕</button>
+                </div>
+            </div>
+
+            <div class="px-6 py-5 max-h-[70vh] overflow-y-auto">
+                {% include 'raid/_groups_panel.html.twig' with {raid: raid, isCreator: isCreator, raidOpen: raidOpen} only %}
+            </div>
+
+        </dialog>
+    </div>
+
     {# ── Grid : contenu principal (50%) + sidebar commentaires (50%) ── #}
-    <div class="grid gap-6 lg:grid-cols-2 items-start" data-reveal data-reveal-delay="3">
+    <div class="grid gap-6 lg:grid-cols-2 items-start" data-reveal data-reveal-delay="4">
 
         {# ── Colonne gauche ── #}
         <div class="space-y-6">
@@ -253,6 +290,10 @@
                                         <span class="flex items-center gap-1">
                                             <img src="{{ asset('uploads/divers/guildatons.png') }}" alt="Guildatons" class="w-3.5 h-3.5 object-contain">
                                             <span class="{{ p.character.guildatons is not null ? 'text-gray-400' : 'text-gray-600' }} tabular-nums">{{ p.character.guildatons ?? 'N/A' }}</span>
+                                        </span>
+                                        <span class="flex items-center gap-1" title="Initiative">
+                                            <img src="{{ asset('uploads/divers/initiative.png') }}" alt="Initiative" class="w-3.5 h-3.5 object-contain">
+                                            <span class="{{ p.character.initiative is not null ? 'text-gray-400' : 'text-gray-600' }} tabular-nums">{{ p.character.initiative ?? 'N/A' }}</span>
                                         </span>
                                         {% if not (app.user and p.character.user.id == app.user.id) %}
                                             {{ ui.whisper(p.character.name) }}
@@ -319,6 +360,10 @@
                                         <span class="flex items-center gap-1">
                                             <img src="{{ asset('uploads/divers/guildatons.png') }}" alt="Guildatons" class="w-3.5 h-3.5 object-contain">
                                             <span class="{{ p.character.guildatons is not null ? 'text-gray-400' : 'text-gray-600' }} tabular-nums">{{ p.character.guildatons ?? 'N/A' }}</span>
+                                        </span>
+                                        <span class="flex items-center gap-1" title="Initiative">
+                                            <img src="{{ asset('uploads/divers/initiative.png') }}" alt="Initiative" class="w-3.5 h-3.5 object-contain">
+                                            <span class="{{ p.character.initiative is not null ? 'text-gray-400' : 'text-gray-600' }} tabular-nums">{{ p.character.initiative ?? 'N/A' }}</span>
                                         </span>
                                         {{ ui.whisper(p.character.name) }}
                                     </div>

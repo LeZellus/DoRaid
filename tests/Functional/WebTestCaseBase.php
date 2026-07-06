@@ -60,7 +60,7 @@ abstract class WebTestCaseBase extends WebTestCase
         foreach ([
             'notification',
             'enigme_comment', 'enigme_image', 'enigme',
-            'raid_comment', 'raid_participant', 'raid',
+            'raid_comment', 'raid_participant', 'raid_group', 'raid',
             'guild_membership', 'game_character', 'guild',
             'user', 'server', 'game_class', 'raid_template', 'enigme_template',
         ] as $table) {
@@ -176,6 +176,13 @@ abstract class WebTestCaseBase extends WebTestCase
         $p = (new RaidParticipant())->setRaid($raid)->setCharacter($char)->setStatus($status);
         $this->em->persist($p);
         return $p;
+    }
+
+    protected function makeRaidGroup(Raid $raid, ?string $label = null, int $position = 1): \App\Entity\RaidGroup
+    {
+        $g = (new \App\Entity\RaidGroup())->setRaid($raid)->setLabel($label)->setPosition($position);
+        $this->em->persist($g);
+        return $g;
     }
 
     protected function makeRaidComment(Raid $raid, User $author, string $content = 'Commentaire', ?\App\Entity\RaidComment $parent = null): \App\Entity\RaidComment
