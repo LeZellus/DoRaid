@@ -333,6 +333,36 @@ class RaidGroupControllerTest extends WebTestCaseBase
         $this->assertSelectorTextContains('body', $char->getName());
     }
 
+    public function testFinalGroupShowsCauchemarStatus(): void
+    {
+        [$raid, $owner, $server] = $this->createOpenRaidWithCreator();
+
+        $hasUser = $this->makeUser('hascauchemar@test.com');
+        $hasChar = $this->makeCharacter($hasUser, $server);
+        $hasChar->setHasCauchemar(true);
+        $this->makeParticipant($raid, $hasChar, RaidParticipantStatus::Accepted);
+
+        $noUser = $this->makeUser('nocauchemar@test.com');
+        $noChar = $this->makeCharacter($noUser, $server);
+        $noChar->setHasCauchemar(false);
+        $this->makeParticipant($raid, $noChar, RaidParticipantStatus::Accepted);
+
+        $this->flush();
+        $raidId = $raid->getId();
+        $this->em->clear();
+
+        $this->client->loginUser($owner);
+        $crawler = $this->client->request('GET', '/raids/' . $raidId);
+
+        $this->assertResponseIsSuccessful();
+        $hasImg = $crawler->filter('img[alt="Dofus Cauchemar obtenu"]');
+        $noImg  = $crawler->filter('img[alt="Dofus Cauchemar non obtenu"]');
+        $this->assertGreaterThanOrEqual(1, $hasImg->count());
+        $this->assertGreaterThanOrEqual(1, $noImg->count());
+        $this->assertStringNotContainsString('grayscale', $hasImg->first()->attr('class'));
+        $this->assertStringContainsString('grayscale', $noImg->first()->attr('class'));
+    }
+
     public function testGroupsRemainManageableWhenNoAcceptedParticipants(): void
     {
         $server    = $this->makeServer();
@@ -400,6 +430,136 @@ class RaidGroupControllerTest extends WebTestCaseBase
         $this->assertSame($highChar->getName(), $ordered[0]->getCharacter()->getName());
         $this->assertSame($lowChar->getName(), $ordered[1]->getCharacter()->getName());
         $this->assertNull($ordered[2]->getCharacter()->getInitiative());
+    }
+
+    // ─── Modificateurs d'initiative (Gigalodon) ────────────────────────────────
+
+    public function testCreatorCanToggleInitiativeModifier(): void
+    {
+        [$raid, $owner, $server] = $this->createOpenRaidWithCreator();
+        $user = $this->makeUser('brandade@test.com');
+        $char = $this->makeCharacter($user, $server)->setInitiative(300);
+        $participant = $this->makeParticipant($raid, $char, RaidParticipantStatus::Accepted);
+        $this->flush();
+        $raidId        = $raid->getId();
+        $participantId = $participant->getId();
+        $this->em->clear();
+
+        $this->client->loginUser($owner);
+        $crawler = $this->client->request('GET', '/raids/' . $raidId);
+        $token   = $this->tokenFor($crawler, '/participants/' . $participantId . '/moduler-initiative');
+
+        $this->client->request('POST', '/raids/participants/' . $participantId . '/moduler-initiative', [
+            '_token'   => $token,
+            'modifier' => \App\Entity\InitiativeModifier::Exaltante->value,
+        ]);
+
+        $this->assertResponseRedirects('/raids/' . $raidId . '#groupes');
+        $this->em->clear();
+        $participant = $this->em->find(\App\Entity\RaidParticipant::class, $participantId);
+        $this->assertTrue($participant->hasInitiativeModifier(\App\Entity\InitiativeModifier::Exaltante));
+        $this->assertSame(500, $participant->getInitiativeModifierTotal());
+        $this->assertSame(800, $participant->getEffectiveInitiative());
+        // Le personnage lui-même ne doit jamais être modifié — seul le raid l'est.
+        $this->assertSame(300, $participant->getCharacter()->getInitiative());
+    }
+
+    public function testTogglingSameModifierTwiceRemovesIt(): void
+    {
+        [$raid, , $server] = $this->createOpenRaidWithCreator();
+        $user = $this->makeUser('toggle@test.com');
+        $char = $this->makeCharacter($user, $server)->setInitiative(300);
+        $participant = $this->makeParticipant($raid, $char, RaidParticipantStatus::Accepted);
+        $this->flush();
+
+        static::getContainer()->get(\App\Service\RaidGroupService::class)
+            ->toggleInitiativeModifier($participant, \App\Entity\InitiativeModifier::Cauchemar);
+        $this->assertTrue($participant->hasInitiativeModifier(\App\Entity\InitiativeModifier::Cauchemar));
+
+        static::getContainer()->get(\App\Service\RaidGroupService::class)
+            ->toggleInitiativeModifier($participant, \App\Entity\InitiativeModifier::Cauchemar);
+        $this->assertFalse($participant->hasInitiativeModifier(\App\Entity\InitiativeModifier::Cauchemar));
+        $this->assertSame(0, $participant->getInitiativeModifierTotal());
+        $this->assertSame(300, $participant->getEffectiveInitiative());
+    }
+
+    public function testInitiativeModifiersAreCumulative(): void
+    {
+        [$raid, , $server] = $this->createOpenRaidWithCreator();
+        $user = $this->makeUser('cumul@test.com');
+        $char = $this->makeCharacter($user, $server)->setInitiative(100);
+        $participant = $this->makeParticipant($raid, $char, RaidParticipantStatus::Accepted);
+        $this->flush();
+
+        $service = static::getContainer()->get(\App\Service\RaidGroupService::class);
+        $service->toggleInitiativeModifier($participant, \App\Entity\InitiativeModifier::Epuisante);
+        $service->toggleInitiativeModifier($participant, \App\Entity\InitiativeModifier::Cauchemar);
+
+        // -500 + 1000 = +500, cumulés sur les deux éléments actifs.
+        $this->assertSame(500, $participant->getInitiativeModifierTotal());
+        $this->assertSame(600, $participant->getEffectiveInitiative());
+    }
+
+    public function testEffectiveInitiativeWithoutBaseButWithModifier(): void
+    {
+        [$raid, , $server] = $this->createOpenRaidWithCreator();
+        $user = $this->makeUser('nobase@test.com');
+        $char = $this->makeCharacter($user, $server); // initiative de base non renseignée (null)
+        $participant = $this->makeParticipant($raid, $char, RaidParticipantStatus::Accepted);
+        $this->flush();
+
+        $this->assertNull($participant->getEffectiveInitiative());
+
+        static::getContainer()->get(\App\Service\RaidGroupService::class)
+            ->toggleInitiativeModifier($participant, \App\Entity\InitiativeModifier::Energisante);
+
+        $this->assertSame(200, $participant->getEffectiveInitiative());
+    }
+
+    public function testNonCreatorCannotToggleInitiativeModifier(): void
+    {
+        [$raid, , $server] = $this->createOpenRaidWithCreator();
+        $user = $this->makeUser('victim@test.com');
+        $char = $this->makeCharacter($user, $server);
+        $participant = $this->makeParticipant($raid, $char, RaidParticipantStatus::Accepted);
+        $stranger = $this->makeUser('stranger2@test.com');
+        $this->flush();
+        $participantId = $participant->getId();
+
+        $this->client->loginUser($stranger);
+        $this->client->request('POST', '/raids/participants/' . $participantId . '/moduler-initiative', [
+            '_token'   => 'invalid',
+            'modifier' => \App\Entity\InitiativeModifier::Stimulante->value,
+        ]);
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    public function testInitiativeModifierChangesFinalGroupOrder(): void
+    {
+        [$raid, , $server] = $this->createOpenRaidWithCreator();
+
+        $lowUser = $this->makeUser('lowmod@test.com');
+        $lowChar = $this->makeCharacter($lowUser, $server)->setInitiative(100);
+        $lowParticipant = $this->makeParticipant($raid, $lowChar, RaidParticipantStatus::Accepted);
+
+        $highUser = $this->makeUser('highmod@test.com');
+        $highChar = $this->makeCharacter($highUser, $server)->setInitiative(900);
+        $this->makeParticipant($raid, $highChar, RaidParticipantStatus::Accepted);
+
+        $this->flush();
+
+        // Le plus faible en base (100) devient premier grâce au Dofus Cauchemar (+1000 = 1100).
+        static::getContainer()->get(\App\Service\RaidGroupService::class)
+            ->toggleInitiativeModifier($lowParticipant, \App\Entity\InitiativeModifier::Cauchemar);
+
+        $raidId = $raid->getId();
+        $this->em->clear();
+        $raid = $this->em->find(\App\Entity\Raid::class, $raidId);
+        $ordered = $raid->getParticipantsByInitiative();
+
+        $this->assertSame($lowChar->getName(), $ordered[0]->getCharacter()->getName());
+        $this->assertSame(1100, $ordered[0]->getEffectiveInitiative());
     }
 
     // ─── Helpers ────────────────────────────────────────────────────────────────

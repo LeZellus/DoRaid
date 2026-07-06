@@ -367,6 +367,32 @@
     </a>
     {% endif %}
 
+    {# ── Bandeau initiative ── #}
+    {% if initiativeAlert is defined and initiativeAlert is not empty %}
+    <a href="{{ path('app_character_index') }}"
+       class="flex items-center gap-3 bg-violet-900/15 border border-violet-700/30 rounded-xl px-5 py-3.5 mb-6 hover:bg-violet-900/25 transition">
+        <img src="{{ asset('uploads/divers/initiative.png') }}" alt="Initiative" class="w-6 h-6 object-contain shrink-0">
+        <p class="text-sm text-violet-200 flex-1">
+            <span class="font-semibold">Rappel :</span>
+            renseignez l'initiative de <span class="font-semibold">{{ initiativeAlert|map(c => c.name)|join(', ') }}</span>.
+        </p>
+        <span class="text-xs text-violet-500 shrink-0">Mettre à jour →</span>
+    </a>
+    {% endif %}
+
+    {# ── Bandeau Dofus Cauchemar ── #}
+    {% if cauchemarAlert is defined and cauchemarAlert is not empty %}
+    <a href="{{ path('app_character_index') }}"
+       class="flex items-center gap-3 bg-orange-900/15 border border-orange-700/30 rounded-xl px-5 py-3.5 mb-6 hover:bg-orange-900/25 transition">
+        <img src="{{ asset('uploads/divers/cauchemard.png') }}" alt="Dofus Cauchemar" class="w-6 h-6 object-contain shrink-0">
+        <p class="text-sm text-orange-200 flex-1">
+            <span class="font-semibold">Rappel :</span>
+            indiquez si <span class="font-semibold">{{ cauchemarAlert|map(c => c.name)|join(', ') }}</span> possède le Dofus Cauchemar.
+        </p>
+        <span class="text-xs text-orange-500 shrink-0">Mettre à jour →</span>
+    </a>
+    {% endif %}
+
     {# ── Notifications en attente ── #}
     {% if pendingByGuild is not empty or pendingByRaid is not empty %}
     <div class="mb-8 space-y-3">

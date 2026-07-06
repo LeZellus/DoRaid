@@ -51,6 +51,13 @@
     {{ parent() }}
 {% endblock %}
 
+{# ── Help text ── #}
+{% block form_help %}
+    {% if help is not empty %}
+        <p class="text-xs text-gray-500 mt-1">{{ help }}</p>
+    {% endif %}
+{% endblock %}
+
 {# ── Errors ── #}
 {% block form_errors %}
     {% if errors|length > 0 %}
@@ -72,6 +79,7 @@
         <div>
             {{- form_label(form) -}}
             {{- form_widget(form) -}}
+            {{- form_help(form) -}}
             {{- form_errors(form) -}}
         </div>
     {% endif %}

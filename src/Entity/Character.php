@@ -52,6 +52,9 @@ class Character
     #[ORM\Column(nullable: true)]
     private ?int $initiative = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $hasCauchemar = null;
+
     #[ORM\OneToOne(mappedBy: 'character')]
     private ?GuildMembership $membership = null;
 
@@ -91,6 +94,13 @@ class Character
 
     public function getInitiative(): ?int { return $this->initiative; }
     public function setInitiative(?int $initiative): static { $this->initiative = $initiative; return $this; }
+
+    public function needsInitiative(): bool { return $this->initiative === null; }
+
+    public function hasCauchemar(): ?bool { return $this->hasCauchemar; }
+    public function setHasCauchemar(?bool $hasCauchemar): static { $this->hasCauchemar = $hasCauchemar; return $this; }
+
+    public function needsCauchemarStatus(): bool { return $this->hasCauchemar === null; }
 
     public function getMembership(): ?GuildMembership { return $this->membership; }
 

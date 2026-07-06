@@ -2,6 +2,7 @@
 
 namespace App\Twig;
 
+use App\Entity\InitiativeModifier;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Twig\Extension\AbstractExtension;
@@ -37,6 +38,7 @@ class AppExtension extends AbstractExtension
             new TwigFunction('raid_guide_og_image', $this->raidGuideOgImage(...)),
             new TwigFunction('has_raid_guide', $this->hasRaidGuide(...)),
             new TwigFunction('og_image_version', $this->ogImageVersion(...)),
+            new TwigFunction('initiative_modifiers', fn() => InitiativeModifier::cases()),
         ];
     }
 

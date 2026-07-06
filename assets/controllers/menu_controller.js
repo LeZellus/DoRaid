@@ -35,8 +35,12 @@ export default class extends Controller {
   }
 
   open() {
-    this._position()
+    // Le panneau doit être rendu visible AVANT de calculer sa position : caché
+    // (display:none), ses dimensions réelles sont nulles et le calage ci-dessous
+    // serait inopérant. Comme tout se joue en synchrone avant le prochain paint,
+    // il n'y a pas de flash visuel d'un panneau mal placé puis repositionné.
     this.panelTarget.classList.remove('hidden')
+    this._position()
     this._open = true
   }
 
@@ -47,15 +51,32 @@ export default class extends Controller {
 
   _position() {
     const rect = this.element.getBoundingClientRect()
-    this.panelTarget.style.right = `${window.innerWidth - rect.right}px`
+    const margin = 8
+    const panelWidth = this.panelTarget.offsetWidth
+
+    // Ancré par défaut sur le bord droit du déclencheur, mais toujours contraint
+    // dans les limites de l'écran — jamais de débordement horizontal, quelle que
+    // soit la taille de l'écran.
+    let left = rect.right - panelWidth
+    left = Math.min(Math.max(left, margin), window.innerWidth - panelWidth - margin)
+    this.panelTarget.style.left = `${left}px`
+    this.panelTarget.style.right = ''
 
     const spaceBelow = window.innerHeight - rect.bottom
-    if (spaceBelow < 320 && rect.top > spaceBelow) {
+    const spaceAbove = rect.top
+    const openUpward = spaceBelow < 320 && spaceAbove > spaceBelow
+
+    // Hauteur maximale bornée à l'espace réellement disponible (au-dessus ou en
+    // dessous selon le sens d'ouverture) : le panneau défile en interne plutôt que
+    // de déborder de l'écran, quel que soit le nombre d'options qu'il contient.
+    if (openUpward) {
       this.panelTarget.style.bottom = `${window.innerHeight - rect.top + 6}px`
       this.panelTarget.style.top = ''
+      this.panelTarget.style.maxHeight = `${Math.max(spaceAbove - margin - 6, 120)}px`
     } else {
       this.panelTarget.style.top = `${rect.bottom + 6}px`
       this.panelTarget.style.bottom = ''
+      this.panelTarget.style.maxHeight = `${Math.max(spaceBelow - margin - 6, 120)}px`
     }
   }
 }

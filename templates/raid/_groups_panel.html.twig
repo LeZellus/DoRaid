@@ -44,7 +44,7 @@
                                                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
                                             </svg>
                                         </button>
-                                        <div data-menu-target="panel" class="hidden fixed z-50 w-48 bg-gray-800 border border-gray-700 rounded-xl shadow-2xl overflow-hidden text-left py-1">
+                                        <div data-menu-target="panel" class="hidden fixed z-50 w-48 bg-gray-800 border border-gray-700 rounded-xl shadow-2xl overflow-y-auto text-left py-1">
                                             {% for g in raid.groups %}
                                                 {% if not g.isFull() %}
                                                     <form method="post" action="{{ path('app_raid_participant_assign', {id: p.id}) }}">
@@ -82,6 +82,7 @@
             {{ ui.divider('Groupe final — ordre d\'initiative (Gigalodon)') }}
             <ul class="divide-y divide-gray-800/60 rounded-xl border border-gray-700 overflow-hidden">
                 {% for p in raid.participantsByInitiative %}
+                    {% set modTotal = p.initiativeModifierTotal %}
                     <li class="flex items-center justify-between gap-3 px-3 py-2 bg-gray-800/30">
                         <div class="flex items-center gap-2.5 min-w-0">
                             <span class="text-xs text-gray-600 w-5 text-right shrink-0 tabular-nums">{{ loop.index }}</span>
@@ -89,11 +90,53 @@
                                  alt="{{ p.character.gameClass.name }}"
                                  class="w-5 h-5 rounded-full object-cover shrink-0">
                             <span class="text-sm text-gray-200 truncate">{{ p.character.name }}</span>
+                            <img src="{{ asset('uploads/divers/cauchemard.png') }}"
+                                 title="{{ p.character.hasCauchemar() is null ? 'Dofus Cauchemar non renseigné' : (p.character.hasCauchemar() ? 'Dofus Cauchemar obtenu' : 'Dofus Cauchemar non obtenu') }}"
+                                 alt="Dofus Cauchemar {{ p.character.hasCauchemar() ? 'obtenu' : 'non obtenu' }}"
+                                 class="w-4 h-4 object-contain shrink-0 {{ p.character.hasCauchemar() ? '' : 'grayscale' }}">
                         </div>
-                        <span class="flex items-center gap-1.5 shrink-0">
-                            <img src="{{ asset('uploads/divers/initiative.png') }}" alt="Initiative" class="w-3.5 h-3.5 object-contain">
-                            <span class="text-sm {{ p.character.initiative is not null ? 'text-gray-300' : 'text-gray-600' }} tabular-nums">{{ p.character.initiative ?? 'N/A' }}</span>
-                        </span>
+                        <div class="flex items-center gap-2 shrink-0">
+                            {% if p.initiativeModifiers is not empty %}
+                                <span class="flex items-center -space-x-1">
+                                    {% for m in p.initiativeModifiers %}
+                                        <img src="{{ asset(m.icon()) }}" alt="{{ m.label() }}" title="{{ m.label() }}"
+                                             class="w-5 h-5 rounded-full object-contain bg-gray-900 border border-gray-700 shrink-0">
+                                    {% endfor %}
+                                </span>
+                            {% endif %}
+                            <span class="flex items-center gap-1.5">
+                                <img src="{{ asset('uploads/divers/initiative.png') }}" alt="Initiative" class="w-3.5 h-3.5 object-contain">
+                                <span class="text-sm {{ p.effectiveInitiative is not null ? 'text-gray-300' : 'text-gray-600' }} tabular-nums">{{ p.effectiveInitiative ?? 'N/A' }}</span>
+                                {% if modTotal != 0 %}
+                                    <span class="text-xs {{ modTotal > 0 ? 'text-emerald-400' : 'text-red-400' }} tabular-nums">({{ modTotal > 0 ? '+' : '' }}{{ modTotal }})</span>
+                                {% endif %}
+                            </span>
+                            {% if isCreator and raidOpen %}
+                                <div class="relative shrink-0" data-controller="menu">
+                                    <button type="button" data-action="menu#toggle" title="Modificateurs d'initiative (brandades, Dofus Cauchemar)"
+                                        class="w-6 h-6 rounded-full flex items-center justify-center bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white text-xs font-bold transition cursor-pointer">
+                                        ±
+                                    </button>
+                                    <div data-menu-target="panel" class="hidden fixed z-50 w-60 bg-gray-800 border border-gray-700 rounded-xl shadow-2xl overflow-y-auto text-left py-1">
+                                        {% for m in initiative_modifiers() %}
+                                            {% set active = p.hasInitiativeModifier(m) %}
+                                            <form method="post" action="{{ path('app_raid_participant_toggle_initiative', {id: p.id}) }}">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('initiative_modifier_' ~ p.id) }}">
+                                                <input type="hidden" name="modifier" value="{{ m.value }}">
+                                                <button type="submit"
+                                                    class="w-full flex items-center gap-2.5 px-3 py-2 text-sm transition cursor-pointer {{ active ? 'text-emerald-300 bg-emerald-600/10' : 'text-gray-300 hover:bg-gray-700/60' }}">
+                                                    <span class="w-4 h-4 rounded border flex items-center justify-center shrink-0 text-[10px] leading-none {{ active ? 'bg-emerald-500 border-emerald-500 text-gray-900' : 'border-gray-600' }}">
+                                                        {% if active %}✓{% endif %}
+                                                    </span>
+                                                    <img src="{{ asset(m.icon()) }}" alt="" class="w-5 h-5 object-contain shrink-0">
+                                                    {{ m.label() }}
+                                                </button>
+                                            </form>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
                     </li>
                 {% endfor %}
             </ul>

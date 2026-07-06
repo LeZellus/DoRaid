@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\InitiativeModifier;
 use App\Entity\Raid;
 use App\Entity\RaidGroup;
 use App\Entity\RaidParticipant;
@@ -74,6 +75,18 @@ class RaidGroupService
         }
 
         $participant->setGroup($group);
+        $this->em->flush();
+    }
+
+    public function toggleInitiativeModifier(RaidParticipant $participant, InitiativeModifier $modifier): void
+    {
+        $this->assertOpen($participant->getRaid());
+
+        if ($participant->getStatus() !== RaidParticipantStatus::Accepted) {
+            throw new BusinessRuleException('Seuls les participants acceptés peuvent avoir un modificateur d\'initiative.');
+        }
+
+        $participant->toggleInitiativeModifier($modifier);
         $this->em->flush();
     }
 

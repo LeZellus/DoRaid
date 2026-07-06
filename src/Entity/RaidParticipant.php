@@ -29,6 +29,14 @@ class RaidParticipant
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?RaidGroup $group = null;
 
+    /**
+     * Modificateurs d'initiative temporaires (brandades, Dofus Cauchemar) — valeurs de
+     * InitiativeModifier, propres à ce raid. Ne modifient jamais Character::$initiative.
+     * @var string[]
+     */
+    #[ORM\Column(type: 'json')]
+    private array $initiativeModifiers = [];
+
     #[ORM\Column]
     private \DateTimeImmutable $joinedAt;
 
@@ -58,6 +66,45 @@ class RaidParticipant
 
     public function getGroup(): ?RaidGroup { return $this->group; }
     public function setGroup(?RaidGroup $group): static { $this->group = $group; return $this; }
+
+    /** @return InitiativeModifier[] */
+    public function getInitiativeModifiers(): array
+    {
+        return array_map(fn(string $value) => InitiativeModifier::from($value), $this->initiativeModifiers);
+    }
+
+    public function hasInitiativeModifier(InitiativeModifier $modifier): bool
+    {
+        return in_array($modifier->value, $this->initiativeModifiers, true);
+    }
+
+    public function toggleInitiativeModifier(InitiativeModifier $modifier): static
+    {
+        if ($this->hasInitiativeModifier($modifier)) {
+            $this->initiativeModifiers = array_values(array_diff($this->initiativeModifiers, [$modifier->value]));
+        } else {
+            $this->initiativeModifiers[] = $modifier->value;
+        }
+        return $this;
+    }
+
+    public function getInitiativeModifierTotal(): int
+    {
+        return array_sum(array_map(
+            fn(InitiativeModifier $m) => $m->points(),
+            $this->getInitiativeModifiers()
+        ));
+    }
+
+    /** Initiative de base + modificateurs actifs pour ce raid ; null si rien n'est renseigné/actif. */
+    public function getEffectiveInitiative(): ?int
+    {
+        $total = $this->getInitiativeModifierTotal();
+        if ($this->character->getInitiative() === null && $total === 0) {
+            return null;
+        }
+        return ($this->character->getInitiative() ?? 0) + $total;
+    }
 
     public function getJoinedAt(): \DateTimeImmutable { return $this->joinedAt; }
 

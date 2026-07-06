@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\InitiativeModifier;
 use App\Entity\Raid;
 use App\Entity\RaidGroup;
 use App\Entity\RaidParticipant;
@@ -99,6 +100,33 @@ class RaidGroupController extends AbstractController
             $group
                 ? $name . ' a été assigné à ' . ($group->getLabel() ?: 'un groupe') . '.'
                 : $name . ' n\'est plus assigné à un groupe.'
+        );
+    }
+
+    #[Route('/participants/{id}/moduler-initiative', name: 'app_raid_participant_toggle_initiative', methods: ['POST'])]
+    public function toggleInitiativeModifier(RaidParticipant $participant, Request $request): Response
+    {
+        $raid = $participant->getRaid();
+        $this->requireCsrfToken('initiative_modifier_' . $participant->getId(), $request);
+        $this->denyAccessUnlessGranted(RaidVoter::CREATOR, $raid);
+
+        // Résolu en amont, même raison que pour assign() : la closure de message ne doit pas
+        // dépendre d'une variable réassignée par une autre closure.
+        $modifier = InitiativeModifier::tryFrom((string) $request->request->get('modifier'));
+        $name     = $participant->getCharacter()->getName();
+
+        return $this->respondToGroupAction(
+            $raid,
+            $request,
+            function () use ($modifier, $participant) {
+                if ($modifier === null) {
+                    throw new BusinessRuleException('Modificateur d\'initiative inconnu.');
+                }
+                $this->raidGroupService->toggleInitiativeModifier($participant, $modifier);
+            },
+            // Callable (pas une chaîne pré-calculée) : évaluée après l'action, donc reflète
+            // bien l'état activé/retiré résultant du toggle, pas l'état d'avant.
+            fn() => $name . ' : ' . $modifier?->label() . ($modifier && $participant->hasInitiativeModifier($modifier) ? ' activé.' : ' retiré.')
         );
     }
 

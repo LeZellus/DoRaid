@@ -34,6 +34,71 @@ class CharacterControllerTest extends WebTestCaseBase
         $this->assertResponseRedirects('/personnages');
     }
 
+    public function testCreateCharacterWithoutOptionalFieldsSucceeds(): void
+    {
+        // guildatons/initiative/hasCauchemar sont facultatifs : la création doit réussir
+        // sans eux, et le personnage créé les a tous à null.
+        $server    = $this->makeServer();
+        $gameClass = $this->makeGameClass();
+        $user      = $this->makeUser('minimal@test.com');
+        $this->flush();
+        $this->em->clear();
+
+        $this->client->loginUser($user);
+        $crawler = $this->client->request('GET', '/personnages/creer');
+        $token   = $crawler->filter('input[name="character[_token]"]')->attr('value');
+
+        $this->client->request('POST', '/personnages/creer', [
+            'character' => [
+                'name'              => 'Sansbrandade',
+                'gameClass'         => $gameClass->getId(),
+                'server'            => $server->getId(),
+                'level'             => 60,
+                'optimizationLevel' => 'haute',
+                '_token'            => $token,
+            ],
+        ]);
+
+        $this->assertResponseRedirects('/personnages');
+        $char = $this->em->getRepository(\App\Entity\Character::class)->findOneBy(['name' => 'Sansbrandade']);
+        $this->assertNull($char->getGuildatons());
+        $this->assertNull($char->getInitiative());
+        $this->assertNull($char->hasCauchemar());
+    }
+
+    public function testCreateCharacterWithOptionalFieldsFilledSucceeds(): void
+    {
+        $server    = $this->makeServer();
+        $gameClass = $this->makeGameClass();
+        $user      = $this->makeUser('complete@test.com');
+        $this->flush();
+        $this->em->clear();
+
+        $this->client->loginUser($user);
+        $crawler = $this->client->request('GET', '/personnages/creer');
+        $token   = $crawler->filter('input[name="character[_token]"]')->attr('value');
+
+        $this->client->request('POST', '/personnages/creer', [
+            'character' => [
+                'name'              => 'Avecbrandade',
+                'gameClass'         => $gameClass->getId(),
+                'server'            => $server->getId(),
+                'level'             => 60,
+                'optimizationLevel' => 'haute',
+                'guildatons'        => 300,
+                'initiative'        => 450,
+                'hasCauchemar'      => '1',
+                '_token'            => $token,
+            ],
+        ]);
+
+        $this->assertResponseRedirects('/personnages');
+        $char = $this->em->getRepository(\App\Entity\Character::class)->findOneBy(['name' => 'Avecbrandade']);
+        $this->assertSame(300, $char->getGuildatons());
+        $this->assertSame(450, $char->getInitiative());
+        $this->assertTrue($char->hasCauchemar());
+    }
+
     public function testDuplicateCharacterNameOnSameServerShowsFormError(): void
     {
         $server    = $this->makeServer();
@@ -315,6 +380,37 @@ class CharacterControllerTest extends WebTestCaseBase
         $this->em->clear();
         $this->assertNotNull($this->em->find(\App\Entity\GuildMembership::class, $membershipId));
         $this->assertSame(99, $this->em->find(\App\Entity\Character::class, $charId)->getLevel());
+    }
+
+    public function testEditCanSetCauchemarStatus(): void
+    {
+        $server = $this->makeServer();
+        $user   = $this->makeUser('cauchemar@test.com');
+        $char   = $this->makeCharacter($user, $server);
+        $this->flush();
+        $charId = $char->getId();
+        $this->em->clear();
+
+        $this->client->loginUser($user);
+        $crawler = $this->client->request('GET', '/personnages/' . $charId . '/modifier');
+        $token   = $crawler->filter('input[name="character_edit[_token]"]')->attr('value');
+        $char    = $this->em->find(\App\Entity\Character::class, $charId);
+
+        $this->client->request('POST', '/personnages/' . $charId . '/modifier', [
+            'character_edit' => [
+                'name'              => $char->getName(),
+                'gameClass'         => $char->getGameClass()->getId(),
+                'server'            => $char->getServer()->getId(),
+                'level'             => $char->getLevel(),
+                'optimizationLevel' => $char->getOptimizationLevel()->value,
+                'hasCauchemar'      => '1',
+                '_token'            => $token,
+            ],
+        ]);
+
+        $this->assertResponseRedirects('/personnages');
+        $this->em->clear();
+        $this->assertTrue($this->em->find(\App\Entity\Character::class, $charId)->hasCauchemar());
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────

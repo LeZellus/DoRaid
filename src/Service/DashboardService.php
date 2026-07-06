@@ -80,6 +80,8 @@ class DashboardService
 
         $myCharacters = $this->characterRepo->findByUser($user);
         $guildatonsAlert = array_filter($myCharacters, fn($c) => $c->needsGuildatonsUpdate());
+        $initiativeAlert = array_filter($myCharacters, fn($c) => $c->needsInitiative());
+        $cauchemarAlert  = array_filter($myCharacters, fn($c) => $c->needsCauchemarStatus());
 
         return [
             'activeRaids'          => $activeRaids,
@@ -93,6 +95,8 @@ class DashboardService
             'publicRaids'          => $this->raidRepo->findPublicOpen($userGuildIds),
             'myCharacters'         => $myCharacters,
             'guildatonsAlert'      => array_values($guildatonsAlert),
+            'initiativeAlert'      => array_values($initiativeAlert),
+            'cauchemarAlert'       => array_values($cauchemarAlert),
         ];
     }
 }

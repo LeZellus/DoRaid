@@ -8,6 +8,7 @@ use App\Entity\OptimizationLevel;
 use App\Entity\Server;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -61,6 +62,27 @@ class CharacterType extends AbstractType
                 'placeholder'  => '— Choisir —',
                 'choice_label' => fn(OptimizationLevel $o) => $o->label(),
                 'constraints'  => [new NotBlank(message: 'Choisissez un niveau d\'optimisation.')],
+            ])
+            ->add('guildatons', IntegerType::class, [
+                'label'    => 'Guildatons',
+                'required' => false,
+                'attr'     => ['placeholder' => 'Ex : 250', 'min' => 0],
+                'help'     => 'Facultatif, modifiable plus tard',
+                'constraints' => [new Range(min: 0)],
+            ])
+            ->add('initiative', IntegerType::class, [
+                'label'    => 'Initiative',
+                'required' => false,
+                'attr'     => ['placeholder' => 'Ex : 250', 'min' => 0],
+                'help'     => 'Utilisée pour le Gigalodon — facultatif, modifiable plus tard',
+                'constraints' => [new Range(min: 0)],
+            ])
+            ->add('hasCauchemar', ChoiceType::class, [
+                'label'       => 'Dofus Cauchemar',
+                'required'    => false,
+                'placeholder' => '— Non renseigné —',
+                'choices'     => ['Obtenu' => true, 'Non obtenu' => false],
+                'help'        => 'Facultatif, modifiable plus tard',
             ]);
     }
 

@@ -84,6 +84,20 @@
             </div>
         </div>
 
+        {# ── Dofus Cauchemar ── #}
+        <div class="{{ ui.card_classes('overflow-hidden') }}">
+            <div class="{{ ui.card_header_classes('flex items-center gap-3') }}">
+                <img src="{{ asset('uploads/divers/cauchemard.png') }}" alt="Dofus Cauchemar" class="w-5 h-5 object-contain shrink-0">
+                <div>
+                    <h2 class="text-sm font-semibold text-white">Dofus Cauchemar</h2>
+                    <p class="text-xs text-gray-500 mt-0.5">Possédez-vous ce Dofus ? Utilisé pour le Gigalodon</p>
+                </div>
+            </div>
+            <div class="{{ ui.card_body_classes() }}">
+                {{ form_row(form.hasCauchemar) }}
+            </div>
+        </div>
+
         {# ── Actions ── #}
         <div class="flex items-center gap-3 pt-2">
             {{ ui.button('Enregistrer', 'primary', 'submit', 'flex-1') }}

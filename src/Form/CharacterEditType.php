@@ -8,6 +8,7 @@ use App\Entity\OptimizationLevel;
 use App\Entity\Server;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -69,6 +70,12 @@ class CharacterEditType extends AbstractType
                 'required' => false,
                 'attr'     => ['placeholder' => 'Ex : 250', 'min' => 0],
                 'constraints' => [new Range(min: 0)],
+            ])
+            ->add('hasCauchemar', ChoiceType::class, [
+                'label'       => 'Dofus Cauchemar',
+                'required'    => false,
+                'placeholder' => '— Non renseigné —',
+                'choices'     => ['Obtenu' => true, 'Non obtenu' => false],
             ]);
     }
 

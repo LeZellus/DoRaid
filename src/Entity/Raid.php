@@ -115,13 +115,17 @@ class Raid
         );
     }
 
-    /** Tous les participants acceptés, triés par initiative décroissante (non renseignée = en dernier) — groupe final pour le Gigalodon. */
+    /**
+     * Tous les participants acceptés, triés par initiative effective décroissante (base du
+     * personnage + modificateurs temporaires du raid ; non renseignée = en dernier) —
+     * groupe final pour le Gigalodon.
+     */
     public function getParticipantsByInitiative(): array
     {
         $participants = $this->getAcceptedParticipants()->toArray();
         usort($participants, function (RaidParticipant $a, RaidParticipant $b) {
-            $ia = $a->getCharacter()->getInitiative();
-            $ib = $b->getCharacter()->getInitiative();
+            $ia = $a->getEffectiveInitiative();
+            $ib = $b->getEffectiveInitiative();
             if ($ia === $ib) return 0;
             if ($ia === null) return 1;
             if ($ib === null) return -1;
