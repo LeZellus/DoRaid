@@ -466,8 +466,11 @@
                                     {# Colonne droite : contenu du commentaire + réponses #}
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-center gap-1.5 mb-1 flex-wrap">
-                                            <span class="text-xs font-semibold text-white">{{ commentChar ? commentChar.name : comment.author.username }}</span>
-                                            {% if commentChar %}{{ ui.whisper(commentChar.name) }}{% endif %}
+                                            {% if commentChar %}
+                                                {{ ui.whisper_name(commentChar.name) }}
+                                            {% else %}
+                                                <span class="text-xs font-semibold text-white">{{ comment.author.username }}</span>
+                                            {% endif %}
                                             <span class="text-xs text-gray-600">{{ comment.createdAt|date('d/m H:i') }}</span>
                                             {% if app.user and (comment.author.id == app.user.id or isCreator) %}
                                                 <form method="post" action="{{ path('app_raid_comment_delete', {id: comment.id}) }}" class="ml-auto">
@@ -514,8 +517,11 @@
                                                         {% endif %}
                                                         <div class="flex-1 min-w-0">
                                                             <div class="flex items-center gap-1.5 mb-0.5 flex-wrap">
-                                                                <span class="text-xs font-semibold text-gray-200">{{ replyChar ? replyChar.name : reply.author.username }}</span>
-                                                                {% if replyChar %}{{ ui.whisper(replyChar.name) }}{% endif %}
+                                                                {% if replyChar %}
+                                                                    {{ ui.whisper_name(replyChar.name) }}
+                                                                {% else %}
+                                                                    <span class="text-xs font-semibold text-gray-200">{{ reply.author.username }}</span>
+                                                                {% endif %}
                                                                 <span class="text-xs text-gray-600">{{ reply.createdAt|date('d/m H:i') }}</span>
                                                                 {% if app.user and (reply.author.id == app.user.id or isCreator) %}
                                                                     <form method="post" action="{{ path('app_raid_comment_delete', {id: reply.id}) }}" class="ml-auto">

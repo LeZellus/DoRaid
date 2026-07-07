@@ -188,20 +188,20 @@
 {% endmacro %}
 
 {#
-  whisper_name(name, isSelf, extra_class)
-  Pseudo affiché comme titre (font-semibold text-white text-sm truncate) qui, sauf pour
-  son propre personnage, copie "/w Name" au clic — fusionne l'affichage du pseudo et
-  l'action de contact en jeu en un seul élément.
+  whisper_name(name, isSelf, selfClass)
+  Pseudo qui fait aussi office de bouton "/w Name" (pastille bleue, copie au clic) — sauf
+  pour son propre personnage, affiché en texte simple (pas de whisper à soi-même) avec
+  selfClass comme classes.
 #}
-{% macro whisper_name(name, isSelf=false, extra_class='') %}
+{% macro whisper_name(name, isSelf=false, selfClass='font-semibold text-white text-sm truncate') %}
 {% if isSelf %}
-    <span class="font-semibold text-white text-sm truncate {{ extra_class }}">{{ name }}</span>
+    <span class="{{ selfClass }}">{{ name }}</span>
 {% else %}
     <button type="button"
             onclick="(function(btn,cmd){navigator.clipboard.writeText(cmd).then(function(){var t=btn.textContent;btn.textContent='Copié !';setTimeout(function(){btn.textContent=t},1500)})})(this,'/w {{ name }}')"
-            title="Copier « /w {{ name }} » pour contacter en jeu"
-            class="font-semibold text-white text-sm truncate hover:text-emerald-300 transition cursor-pointer text-left {{ extra_class }}">
-        {{ name }}
+            title="Copier pour contacter en jeu"
+            class="font-mono text-xs text-blue-400 hover:text-blue-300 bg-blue-950/30 hover:bg-blue-950/50 border border-blue-800/30 rounded px-1.5 py-0.5 transition select-none cursor-pointer">
+        /w {{ name }}
     </button>
 {% endif %}
 {% endmacro %}
