@@ -33,7 +33,7 @@
                             <div class="flex items-center gap-1.5 bg-gray-800/60 border border-gray-700 rounded-full pl-1.5 pr-2 py-1">
                                 <img src="{{ asset('classes/' ~ p.character.gameClass.name|lower ~ '.png') }}"
                                      alt="{{ p.character.gameClass.name }}"
-                                     class="w-5 h-5 rounded-full object-cover shrink-0">
+                                     class="w-5 h-5 rounded-full object-contain p-0.5 shrink-0">
                                 <span class="text-sm text-white">{{ p.character.name }}</span>
                                 {% if isCreator and raidOpen and raid.groups is not empty %}
                                     <div class="relative shrink-0" data-controller="menu">
@@ -88,7 +88,7 @@
                             <span class="text-xs text-gray-600 w-5 text-right shrink-0 tabular-nums">{{ loop.index }}</span>
                             <img src="{{ asset('classes/' ~ p.character.gameClass.name|lower ~ '.png') }}"
                                  alt="{{ p.character.gameClass.name }}"
-                                 class="w-5 h-5 rounded-full object-cover shrink-0">
+                                 class="w-5 h-5 rounded-full object-contain p-0.5 shrink-0">
                             <span class="text-sm text-gray-200 truncate">{{ p.character.name }}</span>
                             <img src="{{ asset('uploads/divers/cauchemard.png') }}"
                                  title="{{ p.character.hasCauchemar() is null ? 'Dofus Cauchemar non renseigné' : (p.character.hasCauchemar() ? 'Dofus Cauchemar obtenu' : 'Dofus Cauchemar non obtenu') }}"
@@ -164,7 +164,7 @@
                                 class="flex items-center gap-1.5 bg-gray-800/60 border border-emerald-700/50 rounded-full pl-1.5 pr-2.5 py-1 text-sm text-white transition cursor-pointer">
                             <img src="{{ asset('classes/' ~ p.character.gameClass.name|lower ~ '.png') }}"
                                  alt="{{ p.character.gameClass.name }}"
-                                 class="w-5 h-5 rounded-full object-cover shrink-0">
+                                 class="w-5 h-5 rounded-full object-contain p-0.5 shrink-0">
                             {{ p.character.name }}
                         </button>
                     {% endfor %}

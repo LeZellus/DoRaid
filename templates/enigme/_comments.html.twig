@@ -6,7 +6,7 @@
             <li class="flex gap-2.5">
                 <img src="{{ asset('classes/' ~ comment.author.gameClass.name|lower ~ '.png') }}"
                      alt="{{ comment.author.gameClass.name }}"
-                     class="w-7 h-7 rounded-lg object-cover shrink-0 mt-0.5">
+                     class="w-7 h-7 rounded-lg object-contain p-1 shrink-0 mt-0.5">
                 <div class="flex-1 min-w-0">
                     <div class="flex items-baseline gap-1.5">
                         <span class="text-xs font-medium text-gray-300">{{ comment.author.name }}</span>

@@ -130,7 +130,7 @@
                         <li class="flex items-center gap-3 px-5 py-3 hover:bg-gray-800/30 transition">
                             <img src="{{ asset('classes/' ~ m.character.gameClass.name|lower ~ '.png') }}"
                                  alt="{{ m.character.gameClass.name }}"
-                                 class="w-8 h-8 rounded-lg object-cover shrink-0">
+                                 class="w-8 h-8 rounded-lg object-contain p-1 shrink-0">
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm font-medium text-white truncate">{{ m.character.name }}</p>
                                 <p class="text-xs text-gray-500 truncate">{{ m.character.gameClass.name }}</p>

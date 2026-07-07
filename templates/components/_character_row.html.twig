@@ -1,0 +1,54 @@
+{#
+  Bloc info personnage partagé par les listes de participants de raid et la liste des
+  membres de guilde : ligne pseudo (whisper) + badges (raids réalisés, guildatons,
+  niveau, optimisation, guilde/externe). L'avatar (icône de classe) et les actions
+  (accepter/exclure, menu...) restent à la charge de l'appelant, car ils diffèrent
+  trop d'une page à l'autre pour être mutualisés proprement.
+
+  row(character, opts) — opts :
+    isSelf            bool        pseudo non cliquable (pas de whisper à soi-même)
+    isCreator         bool        pseudo en jaune (créateur du raid)
+    doneCount         int|null    badge cyan "✓ N" si > 0 ; omis = pas de compteur
+    guildatons        bool        affiche le badge guildatons (icône intégrée)
+    guildatonsInline  bool        true = sur la ligne du pseudo, false = ligne dédiée
+    level             int|null
+    optimizationLevel enum|null|(clé absente)   badge vert fixe "Opti X" (ou "Opti N/A" si null) ; masqué si la clé n'est pas passée
+    isGuildMember     bool        affiche Guilde/Externe ; omis = badge masqué
+    extra             string      contenu HTML additionnel après le pseudo (ex: ⭐, 👑)
+#}
+{% macro row(character, opts = {}) %}
+    {% import 'components/_ui.html.twig' as ui %}
+    {% set badgeClass = '!rounded !font-normal font-mono' %}
+    <div class="flex items-center gap-2 flex-wrap">
+        {{ ui.whisper_name(character.name, opts.isSelf ?? false, opts.isCreator ?? false) }}
+        {% if opts.extra is defined %}{{ opts.extra }}{% endif %}
+        {% if (opts.doneCount ?? 0) > 0 %}{{ ui.badge('✓ ' ~ opts.doneCount, 'cyan', badgeClass) }}{% endif %}
+        {% if (opts.guildatons ?? false) and (opts.guildatonsInline ?? false) %}
+            {{ _self.guildatons_badge(character) }}
+        {% endif %}
+    </div>
+    {% if (opts.level ?? false) or opts.optimizationLevel is defined or opts.isGuildMember is defined %}
+        <div class="mt-1.5 flex items-center gap-x-3 gap-y-1 flex-wrap text-xs text-gray-500">
+            {% if opts.level ?? false %}{{ ui.badge('Niv. ' ~ opts.level, 'warning', badgeClass) }}{% endif %}
+            {% if opts.optimizationLevel is defined %}{{ ui.badge('Opti ' ~ (opts.optimizationLevel ? opts.optimizationLevel.label() : 'N/A'), 'success', badgeClass) }}{% endif %}
+            {% if opts.isGuildMember is defined %}
+                {% if opts.isGuildMember %}{{ ui.badge('Guilde', 'info', badgeClass) }}{% else %}{{ ui.badge('Externe', 'warning', badgeClass) }}{% endif %}
+            {% endif %}
+        </div>
+    {% endif %}
+    {% if (opts.guildatons ?? false) and not (opts.guildatonsInline ?? false) %}
+        <div class="mt-1.5 flex items-center gap-1 text-xs text-gray-500">
+            {{ _self.guildatons_badge(character) }}
+        </div>
+    {% endif %}
+{% endmacro %}
+
+{% macro guildatons_badge(character) %}
+    {% import 'components/_ui.html.twig' as ui %}
+    {{ ui.badge(
+        character.guildatons ?? 'N/A',
+        'warning',
+        '!rounded !font-normal font-mono',
+        'uploads/divers/guildatons.png'
+    ) }}
+{% endmacro %}

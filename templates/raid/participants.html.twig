@@ -2,6 +2,7 @@
 {% import 'components/_ui.html.twig' as ui %}
 {% import 'components/_raid_participant_menu.html.twig' as pmenu %}
 {% import 'components/_member_notes.html.twig' as notes %}
+{% import 'components/_character_row.html.twig' as cr %}
 
 {% block title %}Participants – {{ raid.raidTemplate.name }} – Zeminal{% endblock %}
 {% block meta_robots %}noindex, follow{% endblock %}
@@ -46,26 +47,18 @@
                     <li class="flex items-center gap-5 px-6 py-5 hover:bg-gray-800/30 transition">
                         <img src="{{ asset('classes/' ~ p.character.gameClass.name|lower ~ '.png') }}"
                              alt="{{ p.character.gameClass.name }}"
-                             class="w-11 h-11 rounded-full object-cover shrink-0">
+                             class="w-11 h-11 rounded-full object-contain p-1.5 shrink-0">
                         <div class="flex-1 min-w-0">
-                            <div class="flex items-center gap-2">
-                                {{ ui.whisper_name(p.character.name, app.user and p.character.user.id == app.user.id) }}
-                                {% if p.character === raid.creator %}<span title="Créateur" class="text-sm leading-none">⭐</span>{% endif %}
-                                {% if p.guildMember %}{{ ui.badge('Guilde', 'info') }}{% else %}{{ ui.badge('Externe', 'warning') }}{% endif %}
-                                {% if app.user and p.character.user.id == app.user.id %}{{ ui.badge('vous', 'pink') }}{% endif %}
-                                {% set _done = completedRaidCounts[p.character.id] ?? 0 %}
-                                {% if _done > 0 %}<span class="text-xs text-gray-500" title="{{ _done }} raid{{ _done > 1 ? 's' : '' }} terminé{{ _done > 1 ? 's' : '' }}">✓ {{ _done }}</span>{% endif %}
-                            </div>
-                            <div class="mt-2 space-y-2 text-xs text-gray-500">
-                                <div class="flex items-center gap-3">
-                                        {% if p.character.level %}<span class="text-gray-400">Niv. {{ p.character.level }}</span>{% endif %}
-                                        {% if p.character.optimizationLevel %}{{ ui.badge('Opti ' ~ p.character.optimizationLevel.label(), p.character.optimizationLevel.color()) }}{% endif %}
-                                        <span class="flex items-center gap-1">
-                                            <img src="{{ asset('uploads/divers/guildatons.png') }}" alt="Guildatons" class="w-3.5 h-3.5 object-contain">
-                                            <span class="{{ p.character.guildatons is not null ? 'text-gray-400' : 'text-gray-600' }} tabular-nums">{{ p.character.guildatons ?? 'N/A' }}</span>
-                                        </span>
-                                    </div>
-                            </div>
+                            {{ cr.row(p.character, {
+                                isSelf: app.user and p.character.user.id == app.user.id,
+                                isCreator: p.character === raid.creator,
+                                doneCount: completedRaidCounts[p.character.id] ?? 0,
+                                guildatons: true,
+                                guildatonsInline: true,
+                                level: p.character.level,
+                                optimizationLevel: p.character.optimizationLevel,
+                                isGuildMember: p.guildMember,
+                            }) }}
                         </div>
                         {% if canManageNotes and p.guildMember %}
                             {{ notes.dialog(p.character.membership, p.character.name, true, isLeader) }}
@@ -99,24 +92,16 @@
                     <li class="flex items-center gap-5 px-6 py-5 hover:bg-gray-800/20 transition">
                         <img src="{{ asset('classes/' ~ p.character.gameClass.name|lower ~ '.png') }}"
                              alt="{{ p.character.gameClass.name }}"
-                             class="w-11 h-11 rounded-full object-cover shrink-0">
+                             class="w-11 h-11 rounded-full object-contain p-1.5 shrink-0">
                         <div class="flex-1 min-w-0">
-                            <div class="flex items-center gap-2">
-                                {{ ui.whisper_name(p.character.name) }}
-                                {% if p.guildMember %}{{ ui.badge('Guilde', 'info') }}{% else %}{{ ui.badge('Externe', 'warning') }}{% endif %}
-                                {% set _done = completedRaidCounts[p.character.id] ?? 0 %}
-                                {% if _done > 0 %}<span class="text-xs text-gray-500" title="{{ _done }} raid{{ _done > 1 ? 's' : '' }} terminé{{ _done > 1 ? 's' : '' }}">✓ {{ _done }}</span>{% endif %}
-                            </div>
-                            <div class="mt-2 space-y-2 text-xs text-gray-500">
-                                <div class="flex items-center gap-3">
-                                        {% if p.character.level %}<span class="text-gray-400">Niv. {{ p.character.level }}</span>{% endif %}
-                                        {% if p.character.optimizationLevel %}{{ ui.badge('Opti ' ~ p.character.optimizationLevel.label(), p.character.optimizationLevel.color()) }}{% endif %}
-                                        <span class="flex items-center gap-1">
-                                            <img src="{{ asset('uploads/divers/guildatons.png') }}" alt="Guildatons" class="w-3.5 h-3.5 object-contain">
-                                            <span class="{{ p.character.guildatons is not null ? 'text-gray-400' : 'text-gray-600' }} tabular-nums">{{ p.character.guildatons ?? 'N/A' }}</span>
-                                        </span>
-                                    </div>
-                            </div>
+                            {{ cr.row(p.character, {
+                                doneCount: completedRaidCounts[p.character.id] ?? 0,
+                                guildatons: true,
+                                guildatonsInline: false,
+                                level: p.character.level,
+                                optimizationLevel: p.character.optimizationLevel,
+                                isGuildMember: p.guildMember,
+                            }) }}
                         </div>
                         {% if canManageNotes and p.guildMember %}
                             {{ notes.dialog(p.character.membership, p.character.name, true, isLeader) }}

@@ -1,5 +1,6 @@
 {% extends 'base.html.twig' %}
 {% import 'components/_ui.html.twig' as ui %}
+{% import 'components/_character_row.html.twig' as cr %}
 
 {% block title %}Zeminal – Organisez vos raids Dofus en guilde{% endblock %}
 {% block meta_description %}Zeminal est la plateforme de gestion de raids pour les guildes Dofus. Planifiez vos donjons et raids, gérez vos personnages et trouvez des groupes sur tous les serveurs.{% endblock %}
@@ -457,18 +458,26 @@
             <li class="flex items-center gap-4 px-5 py-3 hover:bg-gray-800/30 transition">
                 <img src="{{ asset('classes/' ~ c.gameClass.name|lower ~ '.png') }}"
                      alt="{{ c.gameClass.name }}"
-                     class="w-9 h-9 rounded-full object-cover shrink-0">
+                     class="w-9 h-9 rounded-full object-contain p-1 shrink-0">
                 <div class="flex-1 min-w-0">
-                    <div class="text-sm font-medium text-white truncate">{{ c.name }}</div>
-                    <div class="text-xs text-gray-500 mt-0.5">{{ c.gameClass.name }}{% if c.level %} · Niv. {{ c.level }}{% endif %} · {{ c.server.name }}</div>
-                </div>
-                <div class="flex items-center gap-1.5 shrink-0">
-                    <img src="{{ asset('uploads/divers/guildatons.png') }}" alt="Guildatons" class="w-4 h-4 object-contain">
-                    {% if c.guildatons is not null %}
-                        <span class="text-sm font-semibold {{ c.needsGuildatonsUpdate() ? 'text-amber-400' : 'text-emerald-400' }} tabular-nums">{{ c.guildatons }}</span>
-                    {% else %}
-                        <span class="text-xs text-gray-600 italic">—</span>
-                    {% endif %}
+                    {% set m = c.membership %}
+                    {% set guildExtra %}
+                        {% if m and m.status.value != 'pending' %}
+                            {{ ui.badge(m.guild.name, 'info', '!rounded !font-normal font-mono', null, path('app_guild_show', {slug: m.guild.slug})) }}
+                        {% else %}
+                            {{ ui.badge('N/A', 'info', '!rounded !font-normal font-mono') }}
+                        {% endif %}
+                    {% endset %}
+                    {{ cr.row(c, {
+                        isSelf: true,
+                        level: c.level,
+                        guildatons: true,
+                        guildatonsInline: true,
+                        extra: guildExtra,
+                    }) }}
+                    <div class="mt-1.5">
+                        {{ ui.badge(c.server.name, 'slate', '!rounded !font-normal font-mono') }}
+                    </div>
                 </div>
             </li>
             {% endfor %}
@@ -556,7 +565,7 @@
                                                 <img src="{{ asset('classes/' ~ m.character.gameClass.name|lower ~ '.png') }}"
                                                      alt="{{ m.character.gameClass.name }}"
                                                      loading="lazy" decoding="async" width="16" height="16"
-                                                     class="w-4 h-4 rounded-full object-cover shrink-0">
+                                                     class="w-4 h-4 rounded-full object-contain p-0.5 shrink-0">
                                                 {{ m.character.name }}
                                                 <span class="mx-0.5 text-gray-700">·</span>
                                                 {{ m.guild.server.name }}
@@ -621,7 +630,7 @@
                                             <img src="{{ asset('classes/' ~ p.character.gameClass.name|lower ~ '.png') }}"
                                                  alt="{{ p.character.gameClass.name }}"
                                                  loading="lazy" decoding="async" width="16" height="16"
-                                                 class="w-4 h-4 rounded-full object-cover shrink-0">
+                                                 class="w-4 h-4 rounded-full object-contain p-0.5 shrink-0">
                                             {{ p.character.name }}
                                             <span class="mx-0.5 text-gray-700">·</span>
                                             {{ p.raid.guild.name }}
@@ -659,7 +668,7 @@
                                     <div class="flex items-center gap-1.5 text-xs text-gray-600 mt-0.5">
                                         <img src="{{ asset('classes/' ~ p.character.gameClass.name|lower ~ '.png') }}"
                                              alt="{{ p.character.gameClass.name }}"
-                                             class="w-4 h-4 rounded-full object-cover shrink-0">
+                                             class="w-4 h-4 rounded-full object-contain p-0.5 shrink-0">
                                         {{ p.character.name }}
                                         <span class="mx-0.5 text-gray-700">·</span>
                                         {{ p.raid.guild.name }}

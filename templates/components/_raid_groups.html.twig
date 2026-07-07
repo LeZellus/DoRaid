@@ -52,7 +52,7 @@
                     <div class="flex items-center gap-2 min-w-0">
                         <img src="{{ asset('classes/' ~ p.character.gameClass.name|lower ~ '.png') }}"
                              alt="{{ p.character.gameClass.name }}"
-                             class="w-5 h-5 rounded-full object-cover shrink-0">
+                             class="w-5 h-5 rounded-full object-contain p-0.5 shrink-0">
                         <span class="text-sm text-gray-200 truncate">{{ p.character.name }}</span>
                     </div>
                     {% if editable %}

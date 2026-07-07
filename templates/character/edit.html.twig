@@ -20,7 +20,7 @@
         <div class="flex items-center gap-5">
             <img src="{{ asset('classes/' ~ character.gameClass.name|lower ~ '.png') }}"
                  alt="{{ character.gameClass.name }}"
-                 class="w-16 h-16 rounded-2xl object-cover border border-emerald-800/30 shrink-0">
+                 class="w-16 h-16 rounded-2xl object-contain p-1 border border-emerald-800/30 shrink-0">
             <div>
                 <p class="text-xs font-semibold text-emerald-400 uppercase tracking-widest mb-1">Modifier le personnage</p>
                 <h1 class="text-2xl font-bold text-white leading-tight">{{ character.name }}</h1>

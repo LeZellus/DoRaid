@@ -1,6 +1,8 @@
 {% extends 'base.html.twig' %}
 {% import 'components/_ui.html.twig' as ui %}
 {% import 'components/_member_notes.html.twig' as notes %}
+{% import 'components/_character_row.html.twig' as cr %}
+{% import 'components/_guild_member_menu.html.twig' as gm %}
 
 {% block title %}Membres – {{ guild.name }} – Zeminal{% endblock %}
 
@@ -38,22 +40,15 @@
                     <li class="flex items-center gap-4 px-6 py-3.5">
                         <img src="{{ asset('classes/' ~ m.character.gameClass.name|lower ~ '.png') }}"
                              alt="{{ m.character.gameClass.name }}"
-                             class="w-10 h-10 rounded-full object-cover shrink-0">
+                             class="w-10 h-10 rounded-full object-contain p-1 shrink-0">
                         <div class="flex-1 min-w-0">
                             <span class="font-medium text-white">{{ m.character.name }}</span>
                             <div class="text-xs text-gray-500 mt-0.5">
-                                {{ m.character.gameClass.name }} · {{ m.character.user.username }}
+                                {{ m.character.user.username }}
                             </div>
                         </div>
                         <div class="flex items-center gap-2 shrink-0">
-                            <form method="post" action="{{ path('app_guild_approve', {id: m.id}) }}">
-                                <input type="hidden" name="_token" value="{{ csrf_token('membership_' ~ m.id) }}">
-                                {{ ui.button('Accepter', 'success', 'submit', 'py-1.5 px-3 text-xs') }}
-                            </form>
-                            <form method="post" action="{{ path('app_guild_reject', {id: m.id}) }}">
-                                <input type="hidden" name="_token" value="{{ csrf_token('membership_' ~ m.id) }}">
-                                {{ ui.button('Refuser', 'danger', 'submit', 'py-1.5 px-3 text-xs') }}
-                            </form>
+                            {{ gm.pendingMenu(m) }}
                         </div>
                     </li>
                 {% endfor %}
@@ -78,35 +73,20 @@
                         <div class="flex items-center gap-4">
                             <img src="{{ asset('classes/' ~ m.character.gameClass.name|lower ~ '.png') }}"
                                  alt="{{ m.character.gameClass.name }}"
-                                 class="w-10 h-10 rounded-full object-cover shrink-0">
+                                 class="w-10 h-10 rounded-full object-contain p-1 shrink-0">
                             <div class="flex-1 min-w-0">
-                                <div class="flex items-center gap-2">
-                                    <span class="font-medium text-white truncate">{{ m.character.name }}</span>
-                                    {% if m.status.value == 'leader' %}
-                                        <span title="Meneur" class="text-base leading-none">👑</span>
-                                    {% elseif m.canCreateRaids() %}
-                                        <span title="Peut créer des raids" class="text-base leading-none">⚔️</span>
-                                    {% endif %}
-                                </div>
-                                <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
-                                    <span class="text-xs text-gray-400">{{ m.character.gameClass.name }}</span>
-                                    {% if m.character.level %}
-                                        <span class="text-xs text-gray-500">· Niv. {{ m.character.level }}</span>
-                                    {% endif %}
-                                    {% if m.character.optimizationLevel %}
-                                        {{ ui.badge(m.character.optimizationLevel.label(), m.character.optimizationLevel.color()) }}
-                                    {% endif %}
-                                    <span class="flex items-center gap-1">
-                                        <img src="{{ asset('uploads/divers/guildatons.png') }}" alt="Guildatons" class="w-3.5 h-3.5 object-contain">
-                                        <span class="text-xs {{ m.character.guildatons is not null ? 'text-gray-400' : 'text-gray-600' }} tabular-nums">{{ m.character.guildatons ?? 'N/A' }}</span>
-                                    </span>
-                                    {% if app.user and m.character.user.id == app.user.id %}
-                                        <span class="text-xs text-emerald-400 font-medium">· vous</span>
-                                    {% else %}
-                                        <span class="text-xs text-gray-600">· {{ m.character.user.username }}</span>
-                                        {{ ui.whisper(m.character.name) }}
-                                    {% endif %}
-                                </div>
+                                {% set memberExtra %}
+                                    {% if m.status.value == 'leader' %}<span title="Meneur" class="text-base leading-none">👑</span>
+                                    {% elseif m.canCreateRaids() %}<span title="Peut créer des raids" class="text-base leading-none">⚔️</span>{% endif %}
+                                {% endset %}
+                                {{ cr.row(m.character, {
+                                    isSelf: app.user and m.character.user.id == app.user.id,
+                                    guildatons: true,
+                                    guildatonsInline: true,
+                                    level: m.character.level,
+                                    optimizationLevel: m.character.optimizationLevel,
+                                    extra: memberExtra,
+                                }) }}
                             </div>
                             <div class="flex items-center gap-2 shrink-0">
                                 {% if canCreateRaids %}
@@ -119,27 +99,7 @@
                                     </form>
                                 {% endif %}
                                 {% if isLeader and m.character.user.id != app.user.id and m.status.value != 'leader' %}
-                                    {% if m.canCreateRaids() %}
-                                        <form method="post" action="{{ path('app_guild_raid_permission', {id: m.id, action: 'revoquer-raids'}) }}">
-                                            <input type="hidden" name="_token" value="{{ csrf_token('raid_creator_' ~ m.id) }}">
-                                            {{ ui.button('Retirer création de raids', 'ghost', 'submit', 'py-1.5 px-3 text-xs') }}
-                                        </form>
-                                    {% else %}
-                                        <form method="post" action="{{ path('app_guild_raid_permission', {id: m.id, action: 'autoriser-raids'}) }}">
-                                            <input type="hidden" name="_token" value="{{ csrf_token('raid_creator_' ~ m.id) }}">
-                                            {{ ui.button('Autoriser création de raids', 'secondary', 'submit', 'py-1.5 px-3 text-xs') }}
-                                        </form>
-                                    {% endif %}
-                                    <form method="post" action="{{ path('app_guild_transfer_leader', {id: m.id}) }}"
-                                          onsubmit="return confirm('Nommer {{ m.character.name }} comme meneur ? Vous perdrez votre rôle de meneur.')">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('transfer_leader_' ~ m.id) }}">
-                                        {{ ui.button('Nommer meneur', 'secondary', 'submit', 'py-1.5 px-3 text-xs') }}
-                                    </form>
-                                    <form method="post" action="{{ path('app_guild_reject', {id: m.id}) }}"
-                                          onsubmit="return confirm('Exclure {{ m.character.name }} de la guilde ?')">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('membership_' ~ m.id) }}">
-                                        {{ ui.button('Exclure', 'danger', 'submit', 'py-1.5 px-3 text-xs') }}
-                                    </form>
+                                    {{ gm.manageMenu(m) }}
                                 {% endif %}
                             </div>
                         </div>

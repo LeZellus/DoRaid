@@ -1,5 +1,6 @@
 {% extends 'base.html.twig' %}
 {% import 'components/_ui.html.twig' as ui %}
+{% import 'components/_character_row.html.twig' as cr %}
 
 {% block title %}Mes personnages – Zeminal{% endblock %}
 {% block meta_robots %}noindex, follow{% endblock %}
@@ -35,57 +36,41 @@
 
                                 <img src="{{ asset('classes/' ~ character.gameClass.name|lower ~ '.png') }}"
                                      alt="{{ character.gameClass.name }}"
-                                     class="w-10 h-10 rounded-full object-cover shrink-0">
+                                     class="w-10 h-10 rounded-full object-contain p-1 shrink-0">
 
                                 <div class="flex-1 min-w-0">
-                                    <div class="flex items-center gap-2">
-                                        <span class="font-medium text-white truncate">{{ character.name }}</span>
+                                    {% set memberExtra %}
                                         {% if m %}
-                                            {% if m.status.value == 'leader' %}
-                                                <span class="text-xs text-yellow-400">👑</span>
-                                            {% elseif m.status.value == 'pending' %}
-                                                {{ ui.badge('En attente', 'warning') }}
-                                            {% endif %}
+                                            {% if m.status.value == 'leader' %}<span class="text-xs text-yellow-400">👑</span>
+                                            {% elseif m.status.value == 'pending' %}{{ ui.badge('En attente', 'warning') }}{% endif %}
                                         {% endif %}
-                                    </div>
-                                    <div class="flex items-center gap-1.5 mt-1 flex-wrap">
-                                        <span class="text-xs text-gray-400">{{ character.gameClass.name }}</span>
-                                        {% if character.level %}
-                                            <span class="text-xs text-gray-500">· Niv. {{ character.level }}</span>
-                                        {% endif %}
-                                        {% if character.optimizationLevel %}
-                                            {{ ui.badge(character.optimizationLevel.label(), character.optimizationLevel.color()) }}
-                                        {% endif %}
-                                    </div>
-                                    <div class="flex items-center gap-3 mt-1 flex-wrap">
-                                        <span class="flex items-center gap-1">
-                                            <img src="{{ asset('uploads/divers/guildatons.png') }}" alt="Guildatons" class="w-3.5 h-3.5 object-contain">
-                                            <span class="text-xs {{ character.guildatons is not null ? (character.needsGuildatonsUpdate() ? 'text-amber-400' : 'text-emerald-400') : 'text-gray-600' }} tabular-nums">
-                                                {{ character.guildatons ?? 'N/A' }}
-                                            </span>
-                                        </span>
-                                        <span class="flex items-center gap-1" title="{{ character.needsInitiative() ? 'Initiative non renseignée' : 'Initiative' }}">
-                                            <img src="{{ asset('uploads/divers/initiative.png') }}" alt="Initiative" class="w-3.5 h-3.5 object-contain {{ character.needsInitiative() ? 'grayscale opacity-60' : '' }}">
-                                            <span class="text-xs {{ character.needsInitiative() ? 'text-amber-400' : 'text-gray-400' }} tabular-nums">
-                                                {{ character.initiative ?? 'Non renseignée' }}
-                                            </span>
-                                        </span>
-                                        <span class="flex items-center gap-1" title="{{ character.needsCauchemarStatus() ? 'Dofus Cauchemar non renseigné' : (character.hasCauchemar() ? 'Dofus Cauchemar obtenu' : 'Dofus Cauchemar non obtenu') }}">
-                                            <img src="{{ asset('uploads/divers/cauchemard.png') }}" alt="Dofus Cauchemar" class="w-3.5 h-3.5 object-contain {{ character.hasCauchemar() ? '' : 'grayscale opacity-60' }}">
-                                            <span class="text-xs {{ character.needsCauchemarStatus() ? 'text-amber-400' : 'text-gray-400' }}">
-                                                {{ character.needsCauchemarStatus() ? 'Non renseigné' : (character.hasCauchemar() ? 'Obtenu' : 'Non obtenu') }}
-                                            </span>
-                                        </span>
-                                    </div>
-                                    <div class="mt-1">
                                         {% if m and m.status.value != 'pending' %}
-                                            <span class="text-xs text-gray-500">Guilde :
-                                                <a href="{{ path('app_guild_show', {slug: m.guild.slug}) }}"
-                                                   class="text-emerald-400 hover:text-emerald-300 transition">{{ m.guild.name }}</a>
-                                            </span>
+                                            {{ ui.badge(m.guild.name, 'info', '!rounded !font-normal font-mono', null, path('app_guild_show', {slug: m.guild.slug})) }}
                                         {% else %}
-                                            <span class="text-xs text-gray-600">Aucune guilde</span>
+                                            {{ ui.badge('N/A', 'info', '!rounded !font-normal font-mono') }}
                                         {% endif %}
+                                    {% endset %}
+                                    {{ cr.row(character, {
+                                        isSelf: true,
+                                        level: character.level,
+                                        optimizationLevel: character.optimizationLevel,
+                                        guildatons: true,
+                                        guildatonsInline: true,
+                                        extra: memberExtra,
+                                    }) }}
+                                    <div class="mt-1.5 flex items-center gap-x-3 gap-y-1 flex-wrap text-xs text-gray-500">
+                                        {{ ui.badge(
+                                            character.initiative ?? 'N/A',
+                                            'purple',
+                                            '!rounded !font-normal font-mono',
+                                            'uploads/divers/initiative.png'
+                                        ) }}
+                                        {{ ui.badge(
+                                            character.needsCauchemarStatus() ? 'N/A' : (character.hasCauchemar() ? 'Obtenu' : 'Non obtenu'),
+                                            'danger',
+                                            '!rounded !font-normal font-mono',
+                                            'uploads/divers/cauchemard.png'
+                                        ) }}
                                     </div>
                                 </div>
 

@@ -70,7 +70,7 @@
                     <img src="{{ asset('classes/' ~ participation.character.gameClass.name|lower ~ '.png') }}"
                          alt="{{ participation.character.gameClass.name }}"
                          loading="lazy" decoding="async" width="18" height="18"
-                         class="w-[18px] h-[18px] rounded-full object-cover shrink-0">
+                         class="w-[18px] h-[18px] rounded-full object-contain p-0.5 shrink-0">
                     <span class="text-emerald-300/90 font-medium">{{ participation.character.name }}</span>
                     {% if raid.scheduledAt %}
                         <span class="text-gray-700">·</span>
@@ -152,7 +152,7 @@
                     <img src="{{ asset('classes/' ~ participation.character.gameClass.name|lower ~ '.png') }}"
                          alt="{{ participation.character.gameClass.name }}"
                          loading="lazy" decoding="async" width="14" height="14"
-                         class="w-3.5 h-3.5 rounded-full object-cover shrink-0">
+                         class="w-3.5 h-3.5 rounded-full object-contain p-0.5 shrink-0">
                     <span class="font-medium">{{ participation.character.name }}</span>
                     <span class="text-gray-600">— {{ participation.character.gameClass.name }}</span>
                 </div>

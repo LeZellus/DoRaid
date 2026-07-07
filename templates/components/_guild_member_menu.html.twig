@@ -1,0 +1,93 @@
+{#
+  Menu d'actions (⋮) pour une ligne membre de guilde — même pattern que
+  components/_raid_participant_menu.html.twig.
+  À importer : {% import 'components/_guild_member_menu.html.twig' as gm %}
+
+  pendingMenu(m)  — demande en attente : Accepter / Refuser (meneur uniquement)
+  manageMenu(m)   — membre confirmé : autoriser/retirer création de raids,
+                    nommer meneur, exclure (meneur gérant un autre membre)
+#}
+{% macro pendingMenu(m) %}
+    <div class="relative shrink-0" data-controller="menu">
+        <button type="button" data-action="menu#toggle" title="Actions"
+            class="w-8 h-8 rounded-full flex items-center justify-center bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-400 hover:text-white transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 3a1.5 1.5 0 110 3 1.5 1.5 0 010-3ZM10 8.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3ZM10 14a1.5 1.5 0 110 3 1.5 1.5 0 010-3Z"/>
+            </svg>
+        </button>
+        <div data-menu-target="panel" class="hidden fixed z-50 w-56 bg-gray-800 border border-gray-700 rounded-xl shadow-2xl overflow-y-auto text-left">
+            <form method="post" action="{{ path('app_guild_approve', {id: m.id}) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('membership_' ~ m.id) }}">
+                <button type="submit" class="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-emerald-400 hover:bg-emerald-600/10 transition cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    Accepter
+                </button>
+            </form>
+            <form method="post" action="{{ path('app_guild_reject', {id: m.id}) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('membership_' ~ m.id) }}">
+                <button type="submit" class="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-red-400 hover:bg-red-600/10 transition cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                    Refuser
+                </button>
+            </form>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro manageMenu(m) %}
+    <div class="relative shrink-0" data-controller="menu">
+        <button type="button" data-action="menu#toggle" title="Actions"
+            class="w-8 h-8 rounded-full flex items-center justify-center bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-400 hover:text-white transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 3a1.5 1.5 0 110 3 1.5 1.5 0 010-3ZM10 8.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3ZM10 14a1.5 1.5 0 110 3 1.5 1.5 0 010-3Z"/>
+            </svg>
+        </button>
+        <div data-menu-target="panel" class="hidden fixed z-50 w-64 bg-gray-800 border border-gray-700 rounded-xl shadow-2xl overflow-y-auto text-left">
+            {% if m.canCreateRaids() %}
+                <form method="post" action="{{ path('app_guild_raid_permission', {id: m.id, action: 'revoquer-raids'}) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('raid_creator_' ~ m.id) }}">
+                    <button type="submit" class="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-yellow-400 hover:bg-yellow-600/10 transition cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                        Retirer création de raids
+                    </button>
+                </form>
+            {% else %}
+                <form method="post" action="{{ path('app_guild_raid_permission', {id: m.id, action: 'autoriser-raids'}) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('raid_creator_' ~ m.id) }}">
+                    <button type="submit" class="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-emerald-400 hover:bg-emerald-600/10 transition cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        Autoriser création de raids
+                    </button>
+                </form>
+            {% endif %}
+            <form method="post" action="{{ path('app_guild_transfer_leader', {id: m.id}) }}"
+                  onsubmit="return confirm('Nommer {{ m.character.name }} comme meneur ? Vous perdrez votre rôle de meneur.')">
+                <input type="hidden" name="_token" value="{{ csrf_token('transfer_leader_' ~ m.id) }}">
+                <button type="submit" class="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-violet-400 hover:bg-violet-600/10 transition cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L10 18.354l-4.123 2.555c-.997.608-2.232-.289-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.748-2.305l5.404-.433L10.788 3.21z"/>
+                    </svg>
+                    Nommer meneur
+                </button>
+            </form>
+            <form method="post" action="{{ path('app_guild_reject', {id: m.id}) }}"
+                  onsubmit="return confirm('Exclure {{ m.character.name }} de la guilde ?')">
+                <input type="hidden" name="_token" value="{{ csrf_token('membership_' ~ m.id) }}">
+                <button type="submit" class="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-red-400 hover:bg-red-600/10 transition cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                    Exclure
+                </button>
+            </form>
+        </div>
+    </div>
+{% endmacro %}
