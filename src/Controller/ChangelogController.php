@@ -13,9 +13,24 @@ class ChangelogController extends AbstractController
     {
         $entries = [
             [
+                'version' => '1.8.0',
+                'date'    => '7 juillet 2026',
+                'latest'  => true,
+                'changes' => [
+                    ['type' => 'new',  'text' => 'Composition optimale (simulation) par rôle de classe pour préparer un Gigalodon, directement dans "Voir les groupes"'],
+                    ['type' => 'new',  'text' => 'Initiative et statut Dofus Cauchemar affichés sur "Mes personnages"'],
+                    ['type' => 'impr', 'text' => 'Bandeau "Groupes" mis en avant sur la page raid, avec une barre de progression des assignations'],
+                    ['type' => 'impr', 'text' => 'Le pseudo est directement cliquable pour copier "/w Pseudo" dans les listes de participants et les commentaires — fini le bouton séparé en double'],
+                    ['type' => 'impr', 'text' => 'Badges harmonisés sur tout le site (niveau, optimisation, guildatons, initiative, Dofus Cauchemar, guilde) avec des couleurs fixes et cohérentes, "N/A" si non renseigné'],
+                    ['type' => 'impr', 'text' => 'Icônes de classe qui ne sont plus rognées dans les cercles (illustrations affichées en entier)'],
+                    ['type' => 'impr', 'text' => 'Page "Membres de la guilde" : actions du meneur regroupées dans un menu ⋮ comme sur les pages de raid, informations redondantes retirées'],
+                    ['type' => 'fix',  'text' => 'Initiative retirée des listes de participants (peu utile à cet endroit) — reste affichée dans le "Groupe final" où elle sert réellement'],
+                ],
+            ],
+            [
                 'version' => '1.7.0',
                 'date'    => '6 juillet 2026',
-                'latest'  => true,
+                'latest'  => false,
                 'changes' => [
                     ['type' => 'new',  'text' => 'Formation de groupes au sein d\'un raid (1 à 8 joueurs par groupe), gérable par le créateur depuis une popup dédiée sur la page du raid'],
                     ['type' => 'new',  'text' => '"Groupe final" listant tous les participants confirmés triés par ordre d\'initiative, pour préparer le Gigalodon'],
