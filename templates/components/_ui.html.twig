@@ -188,6 +188,25 @@
 {% endmacro %}
 
 {#
+  whisper_name(name, isSelf, extra_class)
+  Pseudo affiché comme titre (font-semibold text-white text-sm truncate) qui, sauf pour
+  son propre personnage, copie "/w Name" au clic — fusionne l'affichage du pseudo et
+  l'action de contact en jeu en un seul élément.
+#}
+{% macro whisper_name(name, isSelf=false, extra_class='') %}
+{% if isSelf %}
+    <span class="font-semibold text-white text-sm truncate {{ extra_class }}">{{ name }}</span>
+{% else %}
+    <button type="button"
+            onclick="(function(btn,cmd){navigator.clipboard.writeText(cmd).then(function(){var t=btn.textContent;btn.textContent='Copié !';setTimeout(function(){btn.textContent=t},1500)})})(this,'/w {{ name }}')"
+            title="Copier « /w {{ name }} » pour contacter en jeu"
+            class="font-semibold text-white text-sm truncate hover:text-emerald-300 transition cursor-pointer text-left {{ extra_class }}">
+        {{ name }}
+    </button>
+{% endif %}
+{% endmacro %}
+
+{#
   card_classes — returns the CSS classes for a card container
   Use directly: <div class="{{ ui.card_classes() }}">...</div>
 

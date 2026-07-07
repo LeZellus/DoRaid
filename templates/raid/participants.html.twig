@@ -49,7 +49,7 @@
                              class="w-11 h-11 rounded-full object-cover shrink-0">
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2">
-                                <span class="font-semibold text-white text-sm truncate">{{ p.character.name }}</span>
+                                {{ ui.whisper_name(p.character.name, app.user and p.character.user.id == app.user.id) }}
                                 {% if p.character === raid.creator %}<span title="Créateur" class="text-sm leading-none">⭐</span>{% endif %}
                                 {% if p.guildMember %}{{ ui.badge('Guilde', 'info') }}{% else %}{{ ui.badge('Externe', 'warning') }}{% endif %}
                                 {% if app.user and p.character.user.id == app.user.id %}{{ ui.badge('vous', 'pink') }}{% endif %}
@@ -57,11 +57,6 @@
                                 {% if _done > 0 %}<span class="text-xs text-gray-500" title="{{ _done }} raid{{ _done > 1 ? 's' : '' }} terminé{{ _done > 1 ? 's' : '' }}">✓ {{ _done }}</span>{% endif %}
                             </div>
                             <div class="mt-2 space-y-2 text-xs text-gray-500">
-                                {% if not (app.user and p.character.user.id == app.user.id) %}
-                                    <div class="flex items-center gap-3">
-                                        {{ ui.whisper(p.character.name) }}
-                                    </div>
-                                {% endif %}
                                 <div class="flex items-center gap-3">
                                         {% if p.character.level %}<span class="text-gray-400">Niv. {{ p.character.level }}</span>{% endif %}
                                         {% if p.character.optimizationLevel %}{{ ui.badge('Opti ' ~ p.character.optimizationLevel.label(), p.character.optimizationLevel.color()) }}{% endif %}
@@ -107,15 +102,12 @@
                              class="w-11 h-11 rounded-full object-cover shrink-0">
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2">
-                                <span class="font-semibold text-white text-sm truncate">{{ p.character.name }}</span>
+                                {{ ui.whisper_name(p.character.name) }}
                                 {% if p.guildMember %}{{ ui.badge('Guilde', 'info') }}{% else %}{{ ui.badge('Externe', 'warning') }}{% endif %}
                                 {% set _done = completedRaidCounts[p.character.id] ?? 0 %}
                                 {% if _done > 0 %}<span class="text-xs text-gray-500" title="{{ _done }} raid{{ _done > 1 ? 's' : '' }} terminé{{ _done > 1 ? 's' : '' }}">✓ {{ _done }}</span>{% endif %}
                             </div>
                             <div class="mt-2 space-y-2 text-xs text-gray-500">
-                                <div class="flex items-center gap-3">
-                                    {{ ui.whisper(p.character.name) }}
-                                </div>
                                 <div class="flex items-center gap-3">
                                         {% if p.character.level %}<span class="text-gray-400">Niv. {{ p.character.level }}</span>{% endif %}
                                         {% if p.character.optimizationLevel %}{{ ui.badge('Opti ' ~ p.character.optimizationLevel.label(), p.character.optimizationLevel.color()) }}{% endif %}
