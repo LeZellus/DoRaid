@@ -57,10 +57,24 @@
                                             {{ ui.badge(character.optimizationLevel.label(), character.optimizationLevel.color()) }}
                                         {% endif %}
                                     </div>
-                                    <div class="flex items-center gap-1 mt-1">
-                                        <img src="{{ asset('uploads/divers/guildatons.png') }}" alt="Guildatons" class="w-3.5 h-3.5 object-contain">
-                                        <span class="text-xs {{ character.guildatons is not null ? (character.needsGuildatonsUpdate() ? 'text-amber-400' : 'text-emerald-400') : 'text-gray-600' }} tabular-nums">
-                                            {{ character.guildatons ?? 'N/A' }}
+                                    <div class="flex items-center gap-3 mt-1 flex-wrap">
+                                        <span class="flex items-center gap-1">
+                                            <img src="{{ asset('uploads/divers/guildatons.png') }}" alt="Guildatons" class="w-3.5 h-3.5 object-contain">
+                                            <span class="text-xs {{ character.guildatons is not null ? (character.needsGuildatonsUpdate() ? 'text-amber-400' : 'text-emerald-400') : 'text-gray-600' }} tabular-nums">
+                                                {{ character.guildatons ?? 'N/A' }}
+                                            </span>
+                                        </span>
+                                        <span class="flex items-center gap-1" title="{{ character.needsInitiative() ? 'Initiative non renseignée' : 'Initiative' }}">
+                                            <img src="{{ asset('uploads/divers/initiative.png') }}" alt="Initiative" class="w-3.5 h-3.5 object-contain {{ character.needsInitiative() ? 'grayscale opacity-60' : '' }}">
+                                            <span class="text-xs {{ character.needsInitiative() ? 'text-amber-400' : 'text-gray-400' }} tabular-nums">
+                                                {{ character.initiative ?? 'Non renseignée' }}
+                                            </span>
+                                        </span>
+                                        <span class="flex items-center gap-1" title="{{ character.needsCauchemarStatus() ? 'Dofus Cauchemar non renseigné' : (character.hasCauchemar() ? 'Dofus Cauchemar obtenu' : 'Dofus Cauchemar non obtenu') }}">
+                                            <img src="{{ asset('uploads/divers/cauchemard.png') }}" alt="Dofus Cauchemar" class="w-3.5 h-3.5 object-contain {{ character.hasCauchemar() ? '' : 'grayscale opacity-60' }}">
+                                            <span class="text-xs {{ character.needsCauchemarStatus() ? 'text-amber-400' : 'text-gray-400' }}">
+                                                {{ character.needsCauchemarStatus() ? 'Non renseigné' : (character.hasCauchemar() ? 'Obtenu' : 'Non obtenu') }}
+                                            </span>
                                         </span>
                                     </div>
                                     <div class="mt-1">
