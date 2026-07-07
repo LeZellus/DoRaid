@@ -298,10 +298,6 @@
                                             <img src="{{ asset('uploads/divers/guildatons.png') }}" alt="Guildatons" class="w-3.5 h-3.5 object-contain">
                                             <span class="{{ p.character.guildatons is not null ? 'text-gray-400' : 'text-gray-600' }} tabular-nums">{{ p.character.guildatons ?? 'N/A' }}</span>
                                         </span>
-                                        <span class="flex items-center gap-1" title="Initiative">
-                                            <img src="{{ asset('uploads/divers/initiative.png') }}" alt="Initiative" class="w-3.5 h-3.5 object-contain">
-                                            <span class="{{ p.character.initiative is not null ? 'text-gray-400' : 'text-gray-600' }} tabular-nums">{{ p.character.initiative ?? 'N/A' }}</span>
-                                        </span>
                                         {% if not (app.user and p.character.user.id == app.user.id) %}
                                             {{ ui.whisper(p.character.name) }}
                                         {% endif %}
@@ -367,10 +363,6 @@
                                         <span class="flex items-center gap-1">
                                             <img src="{{ asset('uploads/divers/guildatons.png') }}" alt="Guildatons" class="w-3.5 h-3.5 object-contain">
                                             <span class="{{ p.character.guildatons is not null ? 'text-gray-400' : 'text-gray-600' }} tabular-nums">{{ p.character.guildatons ?? 'N/A' }}</span>
-                                        </span>
-                                        <span class="flex items-center gap-1" title="Initiative">
-                                            <img src="{{ asset('uploads/divers/initiative.png') }}" alt="Initiative" class="w-3.5 h-3.5 object-contain">
-                                            <span class="{{ p.character.initiative is not null ? 'text-gray-400' : 'text-gray-600' }} tabular-nums">{{ p.character.initiative ?? 'N/A' }}</span>
                                         </span>
                                         {{ ui.whisper(p.character.name) }}
                                     </div>
