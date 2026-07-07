@@ -114,6 +114,8 @@ class RaidService
         }
         $this->notificationService->notifyParticipationAccepted($participant);
         $this->em->flush();
+
+        $this->discord->notifyParticipationAccepted($participant);
     }
 
     /** Remet un participant accepté dans la liste des intéressés (ex. désistement géré par le créateur). */

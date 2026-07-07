@@ -93,6 +93,44 @@ class DiscordNotifier
         }
     }
 
+    public function notifyParticipationAccepted(RaidParticipant $participant): void
+    {
+        $webhookUrl = $participant->getRaid()->getGuild()->getDiscordWebhookUrl();
+        if (!$webhookUrl) {
+            return;
+        }
+
+        $raid       = $participant->getRaid();
+        $char       = $participant->getCharacter();
+        $discordId  = $char->getUser()->getDiscordId();
+        $raidUrl    = $this->router->generate('app_raid_show', ['id' => $raid->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+
+        $payload = [
+            'embeds' => [[
+                'title'       => '✅ Participation acceptée',
+                'url'         => $raidUrl,
+                'color'       => 0x22C55E,
+                'description' => implode("\n", [
+                    sprintf("**%s** a été accepté(e) dans le raid **%s** !", $char->getName(), $raid->getRaidTemplate()->getName()),
+                    '',
+                    sprintf("[⚔️ Voir le raid](%s)", $raidUrl),
+                ]),
+                'footer'    => ['text' => 'Zeminal'],
+                'timestamp' => (new \DateTimeImmutable())->format(\DateTimeInterface::ATOM),
+            ]],
+        ];
+
+        if ($discordId) {
+            $payload['content'] = sprintf('<@%s>', $discordId);
+            $payload['allowed_mentions'] = ['users' => [$discordId]];
+        }
+
+        try {
+            $this->httpClient->request('POST', $webhookUrl, ['json' => $payload]);
+        } catch (\Throwable) {
+        }
+    }
+
     public function notifyMembershipRequested(GuildMembership $membership): void
     {
         $webhookUrl = $membership->getGuild()->getDiscordWebhookUrl();
