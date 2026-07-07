@@ -140,6 +140,38 @@
                     </li>
                 {% endfor %}
             </ul>
+
+            {% set simParticipants = [] %}
+            {% for p in raid.acceptedParticipants %}
+                {% set simParticipants = simParticipants|merge([{
+                    id: p.id,
+                    name: p.character.name,
+                    class: p.character.gameClass.name|upper,
+                    icon: asset('classes/' ~ p.character.gameClass.name|lower ~ '.png'),
+                }]) %}
+            {% endfor %}
+
+            <div data-controller="team-composition"
+                 data-team-composition-participants-value="{{ simParticipants|json_encode|e('html_attr') }}">
+                {{ ui.divider('Composition optimale (simulation)') }}
+                <p class="text-xs text-gray-600 mb-3 -mt-2">
+                    Team optimale en fonction des participants actuels — cliquez sur un participant pour l'inclure/exclure de la simulation, sans impact sur le raid réel.
+                </p>
+
+                <div class="flex flex-wrap gap-2 mb-3">
+                    {% for p in raid.acceptedParticipants %}
+                        <button type="button" data-action="team-composition#toggle" data-team-composition-target="chip" data-id="{{ p.id }}"
+                                class="flex items-center gap-1.5 bg-gray-800/60 border border-emerald-700/50 rounded-full pl-1.5 pr-2.5 py-1 text-sm text-white transition cursor-pointer">
+                            <img src="{{ asset('classes/' ~ p.character.gameClass.name|lower ~ '.png') }}"
+                                 alt="{{ p.character.gameClass.name }}"
+                                 class="w-5 h-5 rounded-full object-cover shrink-0">
+                            {{ p.character.name }}
+                        </button>
+                    {% endfor %}
+                </div>
+
+                <ul data-team-composition-target="result" class="divide-y divide-gray-800/60 rounded-xl border border-gray-700 overflow-hidden"></ul>
+            </div>
         {% endif %}
     {% endif %}
 </turbo-frame>
