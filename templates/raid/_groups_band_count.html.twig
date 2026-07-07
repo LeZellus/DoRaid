@@ -1,4 +1,23 @@
-{# Compteur affiché dans le bandeau "Groupes", en dehors de la popup — rafraîchi via Turbo Stream à chaque action. #}
-<p id="raid-groups-band-count" class="text-xs text-gray-500 mt-0.5">
-    {% if raid.groups is empty %}Aucun groupe formé pour l'instant{% else %}{{ raid.groups|length }} groupe{{ raid.groups|length > 1 ? 's' : '' }} formé{{ raid.groups|length > 1 ? 's' : '' }}{% endif %}
-</p>
+{# Compteur + barre de progression affichés dans le bandeau "Groupes", en dehors de la popup — rafraîchi via Turbo Stream à chaque action. #}
+<div id="raid-groups-band-count">
+    <p class="text-xs text-gray-400 mt-0.5">
+        {% if raid.groups is empty %}Aucun groupe formé pour l'instant{% else %}{{ raid.groups|length }} groupe{{ raid.groups|length > 1 ? 's' : '' }} formé{{ raid.groups|length > 1 ? 's' : '' }}{% endif %}
+    </p>
+
+    {% set total = raid.acceptedParticipants|length %}
+    {% set assignedCount = 0 %}
+    {% for group in raid.groups %}
+        {% set assignedCount = assignedCount + group.participants|length %}
+    {% endfor %}
+
+    {% if total > 0 %}
+        <div class="mt-2 max-w-xs">
+            <div class="flex items-center justify-between text-[11px] text-gray-500 mb-1">
+                <span>{{ assignedCount }}/{{ total }} assignés</span>
+            </div>
+            <div class="h-1.5 w-full rounded-full bg-gray-800 overflow-hidden">
+                <div class="h-full bg-blue-500 rounded-full transition-all" style="width: {{ (assignedCount / total * 100)|round }}%"></div>
+            </div>
+        </div>
+    {% endif %}
+</div>
