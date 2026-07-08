@@ -332,12 +332,17 @@ class RaidService
             fn($id) => $id !== null
         ));
 
-        $canManageNotes = $isCreator || ($user && !empty($this->charRepo->findCanCreateRaidsInGuild($user, $raid->getGuild())));
+        $canManageRaids      = $user && !empty($this->charRepo->findCanCreateRaidsInGuild($user, $raid->getGuild()));
+        $canManageNotes      = $isCreator || $canManageRaids;
+        // Un membre habilité à gérer les raids ne peut moduler l'initiative que s'il participe
+        // lui-même à ce raid (cf. RaidVoter::INITIATIVE_MANAGE).
+        $canManageInitiative = $isCreator || ($canManageRaids && !empty($acceptedCharacters));
 
         return [
             'eligible'            => $eligible,
             'isCreator'           => $isCreator,
             'canManageNotes'      => $canManageNotes,
+            'canManageInitiative' => $canManageInitiative,
             'isLeader'            => $user && $raid->getGuild()->isLeaderOf($user),
             'acceptedCharacters'  => $acceptedCharacters,
             'pendingApplications' => $pendingApplications,

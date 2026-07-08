@@ -249,7 +249,7 @@
             </div>
 
             <div class="px-6 py-5 max-h-[70vh] overflow-y-auto">
-                {% include 'raid/_groups_panel.html.twig' with {raid: raid, isCreator: isCreator, raidOpen: raidOpen} only %}
+                {% include 'raid/_groups_panel.html.twig' with {raid: raid, isCreator: isCreator, canManageInitiative: canManageInitiative, raidOpen: raidOpen} only %}
             </div>
 
         </dialog>

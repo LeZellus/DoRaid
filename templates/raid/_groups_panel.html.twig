@@ -4,10 +4,11 @@
   des réponses Turbo Stream de RaidGroupController (id="raid-groups-frame" stable).
 
   Paramètres :
-    raid        Raid
-    isCreator   bool
-    raidOpen    bool
-    flash       {type: 'success'|'error', message: string}|null
+    raid                 Raid
+    isCreator            bool
+    canManageInitiative  bool  — créateur du raid, ou habilité "gérer les raids" et participant
+    raidOpen             bool
+    flash                {type: 'success'|'error', message: string}|null
 #}
 {% import 'components/_ui.html.twig' as ui %}
 {% import 'components/_raid_groups.html.twig' as groups %}
@@ -111,7 +112,7 @@
                                     <span class="text-xs {{ modTotal > 0 ? 'text-emerald-400' : 'text-red-400' }} tabular-nums">({{ modTotal > 0 ? '+' : '' }}{{ modTotal }})</span>
                                 {% endif %}
                             </span>
-                            {% if isCreator and raidOpen %}
+                            {% if canManageInitiative and raidOpen %}
                                 <div class="relative shrink-0" data-controller="menu">
                                     <button type="button" data-action="menu#toggle" title="Modificateurs d'initiative (brandades, Dofus Cauchemar)"
                                         class="w-6 h-6 rounded-full flex items-center justify-center bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white text-xs font-bold transition cursor-pointer">

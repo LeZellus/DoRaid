@@ -108,7 +108,7 @@ class RaidGroupController extends AbstractController
     {
         $raid = $participant->getRaid();
         $this->requireCsrfToken('initiative_modifier_' . $participant->getId(), $request);
-        $this->denyAccessUnlessGranted(RaidVoter::CREATOR, $raid);
+        $this->denyAccessUnlessGranted(RaidVoter::INITIATIVE_MANAGE, $raid);
 
         // Résolu en amont, même raison que pour assign() : la closure de message ne doit pas
         // dépendre d'une variable réassignée par une autre closure.
@@ -149,10 +149,11 @@ class RaidGroupController extends AbstractController
         if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
             $isOpen = $raid->getStatus() === RaidStatus::Open;
             $panel  = $this->renderView('raid/_groups_panel.html.twig', [
-                'raid'      => $raid,
-                'isCreator' => $this->isGranted(RaidVoter::CREATOR, $raid),
-                'raidOpen'  => $isOpen,
-                'flash'     => ['type' => $type, 'message' => $message],
+                'raid'                => $raid,
+                'isCreator'           => $this->isGranted(RaidVoter::CREATOR, $raid),
+                'canManageInitiative' => $this->isGranted(RaidVoter::INITIATIVE_MANAGE, $raid),
+                'raidOpen'            => $isOpen,
+                'flash'               => ['type' => $type, 'message' => $message],
             ]);
             $count = $this->renderView('raid/_groups_band_count.html.twig', ['raid' => $raid]);
 
