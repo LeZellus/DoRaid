@@ -73,7 +73,7 @@ class DiscordAuthenticator extends OAuth2Authenticator
 
                 return $user;
             }),
-            [new RememberMeBadge()]
+            [(new RememberMeBadge())->enable()]
         );
     }
 
