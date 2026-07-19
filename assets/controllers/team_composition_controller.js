@@ -3,6 +3,8 @@ import { buildInitiativeOrder } from '../dofus/initiative-order.js'
 
 const ROLE_BADGE = {
   ERODEUR: 'bg-red-900/50 text-red-400 border border-red-800/40',
+  PORTAIL: 'bg-purple-900/50 text-purple-300 border border-purple-700/40',
+  VULN: 'bg-amber-900/50 text-amber-400 border border-amber-800/40',
   BOOSTER: 'bg-emerald-900/50 text-emerald-300 border border-emerald-700/40',
   SUPPORT: 'bg-blue-900/50 text-blue-400 border border-blue-800/40',
   DPS: 'bg-gray-700 text-gray-300',
