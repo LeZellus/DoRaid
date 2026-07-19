@@ -25,11 +25,13 @@
     <form method="get" class="{{ ui.card_classes('p-4 mb-6 flex items-end gap-4') }}" data-reveal data-reveal-delay="1">
         <div class="min-w-[14rem]">
             {{ ui.label('raid_template', 'Type de raid') }}
-            <select id="raid_template" name="raid_template" onchange="this.form.submit()" class="{{ ui.input_classes() }}">
-                {% for template in templates %}
-                    <option value="{{ template.id }}" {{ selectedTemplate and selectedTemplate.id == template.id ? 'selected' : '' }}>{{ template.name }}</option>
-                {% endfor %}
-            </select>
+            <div class="relative" data-controller="select">
+                <select id="raid_template" name="raid_template" onchange="this.form.submit()" class="hidden">
+                    {% for template in templates %}
+                        <option value="{{ template.id }}" {{ selectedTemplate and selectedTemplate.id == template.id ? 'selected' : '' }}>{{ template.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
         <noscript><button type="submit" class="{{ ui.button_classes('secondary') }}">Changer</button></noscript>
     </form>
