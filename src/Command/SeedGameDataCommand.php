@@ -45,7 +45,7 @@ class SeedGameDataCommand extends Command
             ],
         ],
         [
-            'name' => 'Gigalodon',
+            'name' => 'Gouffre du Gigalodon',
             'min'  => 12,
             'max'  => 16,
             'enigmes' => [

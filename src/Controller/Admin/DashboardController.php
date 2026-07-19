@@ -37,6 +37,12 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkTo(RaidTemplateCrudController::class, 'Types de raid', 'fa fa-dragon')->setAction('index');
         yield MenuItem::linkTo(EnigmeTemplateCrudController::class, 'Énigmes des templates', 'fa fa-puzzle-piece')->setAction('index');
 
+        yield MenuItem::section('Répartiteur de loot');
+        yield MenuItem::linkTo(GemCrudController::class, 'Gemmes', 'fa fa-gem')->setAction('index');
+        yield MenuItem::linkTo(MobCrudController::class, 'Mobs', 'fa fa-spider')->setAction('index');
+        yield MenuItem::linkTo(SalleCrudController::class, 'Salles', 'fa fa-door-open')->setAction('index');
+        yield MenuItem::linkTo(SalleCompositionCrudController::class, 'Compositions de salle', 'fa fa-layer-group')->setAction('index');
+
         yield MenuItem::section('Modération');
         yield MenuItem::linkTo(UserCrudController::class, 'Membres', 'fa fa-users')->setAction('index');
         yield MenuItem::linkTo(GuildCrudController::class, 'Guildes', 'fa fa-shield')->setAction('index');

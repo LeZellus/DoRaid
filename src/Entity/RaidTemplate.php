@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\RaidTemplateRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -34,6 +36,19 @@ class RaidTemplate
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $imagePath = null;
 
+    #[ORM\OneToMany(targetEntity: Mob::class, mappedBy: 'raidTemplate', cascade: ['remove'])]
+    private Collection $mobs;
+
+    #[ORM\OneToMany(targetEntity: Salle::class, mappedBy: 'raidTemplate', cascade: ['remove'])]
+    #[ORM\OrderBy(['orderNumber' => 'ASC'])]
+    private Collection $salles;
+
+    public function __construct()
+    {
+        $this->mobs   = new ArrayCollection();
+        $this->salles = new ArrayCollection();
+    }
+
     public function getId(): ?int { return $this->id; }
 
     public function getName(): string { return $this->name; }
@@ -59,6 +74,10 @@ class RaidTemplate
 
     public function getImagePath(): ?string { return $this->imagePath; }
     public function setImagePath(?string $imagePath): static { $this->imagePath = $imagePath; return $this; }
+
+    public function getMobs(): Collection { return $this->mobs; }
+
+    public function getSalles(): Collection { return $this->salles; }
 
     public function __toString(): string { return $this->name; }
 }

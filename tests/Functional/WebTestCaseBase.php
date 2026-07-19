@@ -63,6 +63,7 @@ abstract class WebTestCaseBase extends WebTestCase
             'raid_comment', 'raid_participant', 'raid_group', 'raid',
             'guild_membership', 'game_character', 'guild',
             'user', 'server', 'game_class', 'raid_template', 'enigme_template',
+            'salle_composition_mob', 'salle_composition', 'salle', 'mob_drop_rate', 'mob', 'gem',
         ] as $table) {
             $conn->executeStatement("DELETE FROM \"{$table}\"");
         }
@@ -227,6 +228,53 @@ abstract class WebTestCaseBase extends WebTestCase
         $img = (new EnigmeImage())->setEnigme($enigme)->setAddedBy($addedBy)->setFilePath($filePath);
         $this->em->persist($img);
         return $img;
+    }
+
+    protected function makeGem(string $name = 'Quartz', int $value = 2): \App\Entity\Gem
+    {
+        $gem = (new \App\Entity\Gem())->setName($name . '-' . uniqid('', true))->setValue($value);
+        $this->em->persist($gem);
+        return $gem;
+    }
+
+    protected function makeMob(RaidTemplate $raidTemplate, string $name = 'Mob'): \App\Entity\Mob
+    {
+        $mob = (new \App\Entity\Mob())->setRaidTemplate($raidTemplate)->setName($name . '-' . uniqid('', true));
+        $this->em->persist($mob);
+        return $mob;
+    }
+
+    protected function makeMobDropRate(\App\Entity\Mob $mob, \App\Entity\Gem $gem, float $probability): \App\Entity\MobDropRate
+    {
+        $rate = (new \App\Entity\MobDropRate())->setMob($mob)->setGem($gem)->setProbability($probability);
+        $this->em->persist($rate);
+        return $rate;
+    }
+
+    protected function makeSalle(RaidTemplate $raidTemplate, int $levelMin = 1, int $levelMax = 10, int $orderNumber = 1): \App\Entity\Salle
+    {
+        $salle = (new \App\Entity\Salle())
+            ->setRaidTemplate($raidTemplate)
+            ->setName('Salle-' . uniqid('', true))
+            ->setLevelMin($levelMin)
+            ->setLevelMax($levelMax)
+            ->setOrderNumber($orderNumber);
+        $this->em->persist($salle);
+        return $salle;
+    }
+
+    protected function makeSalleComposition(\App\Entity\Salle $salle, int $orderNumber = 1): \App\Entity\SalleComposition
+    {
+        $composition = (new \App\Entity\SalleComposition())->setSalle($salle)->setOrderNumber($orderNumber);
+        $this->em->persist($composition);
+        return $composition;
+    }
+
+    protected function makeSalleCompositionMob(\App\Entity\SalleComposition $composition, \App\Entity\Mob $mob, int $quantity = 1): \App\Entity\SalleCompositionMob
+    {
+        $scm = (new \App\Entity\SalleCompositionMob())->setComposition($composition)->setMob($mob)->setQuantity($quantity);
+        $this->em->persist($scm);
+        return $scm;
     }
 
     /** Flush sans clear : les entités restent managées, les IDs sont disponibles. */

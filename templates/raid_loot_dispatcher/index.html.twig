@@ -1,0 +1,111 @@
+{% extends 'base.html.twig' %}
+{% import 'components/_ui.html.twig' as ui %}
+
+{% block title %}Répartiteur de loot – Zeminal{% endblock %}
+{% block meta_description %}Simulez le score de loot espéré par salle et trouvez la meilleure répartition de vos groupes pour un raid Dofus.{% endblock %}
+
+{% block body %}
+<div class="max-w-6xl mx-auto px-6 py-12" data-controller="reveal">
+
+    <div class="flex items-start justify-between gap-4 flex-wrap mb-3">
+        <h1 class="text-3xl font-bold text-white" data-reveal>Répartiteur de loot</h1>
+        {% if hasData %}
+            <button type="button" onclick="location.reload()"
+                    class="text-xs text-gray-500 hover:text-gray-300 transition inline-flex items-center gap-1.5 py-2" data-reveal>
+                ↺ Réinitialiser les valeurs
+            </button>
+        {% endif %}
+    </div>
+    <p class="text-gray-500 text-sm mb-8 max-w-2xl" data-reveal data-reveal-delay="1">
+        Un outil d'aide, indépendant de vos raids en cours : ajustez les probabilités de drop ou les
+        compositions de mobs pour simuler, et trouvez la meilleure répartition pour vos groupes — tout se
+        recalcule instantanément.
+    </p>
+
+    <form method="get" class="{{ ui.card_classes('p-4 mb-6 flex items-end gap-4') }}" data-reveal data-reveal-delay="1">
+        <div class="min-w-[14rem]">
+            {{ ui.label('raid_template', 'Type de raid') }}
+            <select id="raid_template" name="raid_template" onchange="this.form.submit()" class="{{ ui.input_classes() }}">
+                {% for template in templates %}
+                    <option value="{{ template.id }}" {{ selectedTemplate and selectedTemplate.id == template.id ? 'selected' : '' }}>{{ template.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <noscript><button type="submit" class="{{ ui.button_classes('secondary') }}">Changer</button></noscript>
+    </form>
+
+    {% if selectedTemplate is null %}
+        <div class="bg-gray-900/60 border border-gray-800/50 rounded-2xl py-16 text-center" data-reveal data-reveal-delay="2">
+            <p class="text-gray-500 text-sm">Aucun type de raid disponible.</p>
+        </div>
+    {% elseif not hasData %}
+        <div class="bg-gray-900/60 border border-gray-800/50 rounded-2xl py-16 text-center" data-reveal data-reveal-delay="2">
+            <p class="text-gray-500 text-sm">Aucune donnée de loot configurée pour « {{ selectedTemplate.name }} ».</p>
+        </div>
+    {% else %}
+        <div class="grid gap-6 lg:grid-cols-[1fr_20rem] items-start"
+             data-controller="raid-loot-dispatcher"
+             data-raid-loot-dispatcher-gems-value="{{ gemsJson|json_encode|e('html_attr') }}"
+             data-raid-loot-dispatcher-mobs-value="{{ mobsJson|json_encode|e('html_attr') }}"
+             data-raid-loot-dispatcher-salles-value="{{ sallesJson|json_encode|e('html_attr') }}"
+             data-reveal data-reveal-delay="2">
+
+            {# ── Panneau optimiseur : en premier sur mobile (pas besoin de scroller), en colonne latérale sur desktop ── #}
+            <div class="order-first lg:order-last lg:sticky lg:top-20">
+                <div class="{{ ui.card_classes('p-5') }}">
+                    <h2 class="font-semibold text-white mb-1">Optimiseur</h2>
+                    <p class="text-xs text-gray-500 mb-4">Trouve la meilleure salle pour chaque groupe. Se met à jour automatiquement après le premier calcul.</p>
+
+                    {{ ui.label('total_players', 'Nombre de joueurs total') }}
+                    <input type="number" id="total_players" min="1" value="12" class="{{ ui.input_classes() }}"
+                           data-raid-loot-dispatcher-target="totalPlayers" data-action="input->raid-loot-dispatcher#renderGroupSizes">
+
+                    <div class="mt-3">
+                        {{ ui.label('nb_groups', 'Nombre de groupes') }}
+                        <input type="number" id="nb_groups" min="1" max="8" value="4" class="{{ ui.input_classes() }}"
+                               data-raid-loot-dispatcher-target="nbGroups" data-action="input->raid-loot-dispatcher#renderGroupSizes">
+                    </div>
+
+                    <div class="mt-3">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-gray-500 uppercase tracking-wide">Taille de chaque groupe</span>
+                            <span class="text-xs font-mono" data-raid-loot-dispatcher-target="groupSizesSum"></span>
+                        </div>
+                        <div class="grid gap-2" style="grid-template-columns:repeat(auto-fit,minmax(3.5rem,1fr))" data-raid-loot-dispatcher-target="groupSizes"></div>
+                    </div>
+
+                    <button type="button" data-action="raid-loot-dispatcher#optimize" class="{{ ui.button_classes('primary', 'w-full mt-4') }}">Optimiser la répartition</button>
+
+                    <div class="mt-4" data-raid-loot-dispatcher-target="resultBox">
+                        <p class="text-gray-500 text-sm text-center py-5">Lance le calcul pour voir la meilleure répartition.</p>
+                    </div>
+                </div>
+            </div>
+
+            {# ── Colonne principale : probabilités + salles ── #}
+            <div class="min-w-0">
+                <div class="rounded-2xl border border-emerald-700/40 bg-emerald-950/10 p-4 mb-5 flex items-center justify-between gap-3" data-raid-loot-dispatcher-target="bestComboBox"></div>
+
+                <div class="{{ ui.card_classes('p-5 mb-5') }}">
+                    <h2 class="font-semibold text-white mb-1">Points par mob</h2>
+                    <p class="text-xs text-gray-500 mb-3">Espérance de points calculée depuis les probabilités de drop par gemme. Modifiable pour simuler.</p>
+                    <details class="group">
+                        <summary class="flex items-center gap-1.5 cursor-pointer text-xs text-gray-400 hover:text-white transition select-none w-fit">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 transition-transform group-open:rotate-90" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Afficher / éditer les probabilités de drop
+                        </summary>
+                        <div class="mt-3 grid gap-3 sm:grid-cols-2" data-raid-loot-dispatcher-target="mobTable"></div>
+                    </details>
+                </div>
+
+                <h2 class="font-semibold text-white text-lg mb-3">Salles</h2>
+                <p class="text-xs text-gray-500 -mt-2 mb-3">La composition la plus avantageuse de chaque salle est mise en avant.</p>
+                <div data-raid-loot-dispatcher-target="sallesContainer"></div>
+            </div>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}
