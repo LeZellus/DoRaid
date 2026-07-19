@@ -30,10 +30,13 @@ export default class extends Controller {
   static targets = [
     'mobTable', 'sallesContainer', 'bestComboBox',
     'totalPlayers', 'nbGroups', 'groupSizes', 'groupSizesSum', 'resultBox',
+    'lightbox', 'lightboxImg',
   ]
   static values = { gems: Array, mobs: Array, salles: Array }
 
   connect() {
+    this.onLightboxKeydown = e => { if (e.key === 'Escape') this.closeLightbox() }
+    document.addEventListener('keydown', this.onLightboxKeydown)
     // Copies de travail locales : les *Value de Stimulus reparsent le JSON du DOM à
     // chaque accès, une mutation directe ne persisterait donc pas d'un rendu à l'autre.
     this.gems = this.gemsValue
@@ -49,6 +52,22 @@ export default class extends Controller {
     this.renderMobTable()
     this.renderSalles()
     this.renderGroupSizes()
+  }
+
+  disconnect() {
+    document.removeEventListener('keydown', this.onLightboxKeydown)
+  }
+
+  openLightbox(event) {
+    this.lightboxImgTarget.src = event.currentTarget.dataset.url
+    this.lightboxTarget.classList.remove('hidden')
+    this.lightboxTarget.classList.add('flex')
+  }
+
+  closeLightbox() {
+    this.lightboxTarget.classList.add('hidden')
+    this.lightboxTarget.classList.remove('flex')
+    this.lightboxImgTarget.src = ''
   }
 
   fmt(n) {
@@ -133,6 +152,17 @@ export default class extends Controller {
       head.className = 'flex items-center justify-between px-5 py-3 border-b border-gray-800 bg-gray-800/40'
       head.innerHTML = `<h3 class="font-semibold text-white">${salle.name}</h3><span class="text-xs font-mono text-gray-500">niveau ${salle.range}</span>`
       card.appendChild(head)
+
+      if (salle.images && salle.images.length > 0) {
+        const imagesRow = document.createElement('div')
+        imagesRow.className = 'flex gap-2 px-5 py-3 border-b border-gray-800 overflow-x-auto'
+        imagesRow.innerHTML = salle.images.map(url => `
+          <button type="button" data-action="click->raid-loot-dispatcher#openLightbox" data-url="${url}" class="shrink-0">
+            <img src="${url}" alt="${salle.name}" class="w-16 h-16 object-cover rounded-lg border border-gray-700 hover:border-emerald-500 transition">
+          </button>
+        `).join('')
+        card.appendChild(imagesRow)
+      }
 
       const tiers = document.createElement('div')
       tiers.className = 'grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-gray-800'

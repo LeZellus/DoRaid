@@ -39,9 +39,14 @@ class Salle
     #[ORM\OrderBy(['orderNumber' => 'ASC'])]
     private Collection $compositions;
 
+    #[ORM\OneToMany(targetEntity: SalleImage::class, mappedBy: 'salle', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OrderBy(['id' => 'ASC'])]
+    private Collection $images;
+
     public function __construct()
     {
         $this->compositions = new ArrayCollection();
+        $this->images = new ArrayCollection();
     }
 
     public function getId(): ?int { return $this->id; }
@@ -62,6 +67,8 @@ class Salle
     public function setOrderNumber(int $orderNumber): static { $this->orderNumber = $orderNumber; return $this; }
 
     public function getCompositions(): Collection { return $this->compositions; }
+
+    public function getImages(): Collection { return $this->images; }
 
     public function getLevelRange(): string { return '[' . $this->levelMin . ',' . $this->levelMax . ']'; }
 

@@ -1,0 +1,46 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block page_title %}Images — {{ salle }}{% endblock %}
+
+{% block main %}
+
+{% for message in app.flashes('success') %}
+    <div class="alert alert-success">{{ message }}</div>
+{% endfor %}
+
+<p class="text-muted">
+    Images de <strong>{{ salle }}</strong> ({{ salle.raidTemplate.name }}). Visibles uniquement dans le back-office.
+</p>
+
+{% if salle.images is empty %}
+    <p class="text-muted fst-italic">Aucune image pour l'instant.</p>
+{% else %}
+    <div class="row g-3 mb-4">
+        {% for image in salle.images %}
+            <div class="col-md-3 col-sm-4 col-6">
+                <div class="card">
+                    <img src="{{ asset('uploads/salles/' ~ salle.id ~ '/' ~ image.filePath) }}" class="card-img-top" alt="Image {{ loop.index }}">
+                    <div class="card-body p-2">
+                        <form method="post">
+                            <input type="hidden" name="_token" value="{{ csrf_token('salle_images_' ~ salle.id) }}">
+                            <input type="hidden" name="delete_image" value="{{ image.id }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger w-100" onclick="return confirm('Supprimer cette image ?')">Supprimer</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data">
+    <input type="hidden" name="_token" value="{{ csrf_token('salle_images_' ~ salle.id) }}">
+    <div class="mb-3">
+        <label class="form-label" for="images">Ajouter des images</label>
+        <input type="file" class="form-control" id="images" name="images[]" accept="image/*" multiple>
+    </div>
+    <button type="submit" class="btn btn-primary">Envoyer</button>
+    <a href="{{ ea_url().setController('App\\Controller\\Admin\\SalleCrudController').setAction('index') }}" class="btn btn-link">Retour aux salles</a>
+</form>
+
+{% endblock %}

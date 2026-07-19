@@ -10,6 +10,7 @@ use App\Repository\MobRepository;
 use App\Repository\RaidTemplateRepository;
 use App\Repository\SalleRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Asset\Packages;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -32,6 +33,7 @@ class RaidLootDispatcherController extends AbstractController
         private readonly MobRepository $mobRepo,
         private readonly SalleRepository $salleRepo,
         private readonly RaidTemplateRepository $templateRepo,
+        private readonly Packages $assetPackages,
     ) {}
 
     #[Route('/outils/repartiteur-loot', name: 'app_loot_dispatcher')]
@@ -74,8 +76,12 @@ class RaidLootDispatcherController extends AbstractController
     private function serializeSalle(Salle $salle): array
     {
         return [
-            'name'  => $salle->getName(),
-            'range' => $salle->getLevelRange(),
+            'name'   => $salle->getName(),
+            'range'  => $salle->getLevelRange(),
+            'images' => array_map(
+                fn($image) => $this->assetPackages->getUrl('uploads/salles/' . $salle->getId() . '/' . $image->getFilePath()),
+                $salle->getImages()->toArray()
+            ),
             'compositions' => array_map(function ($composition) {
                 $counts = [];
                 foreach ($composition->getMobQuantities() as $mobQuantity) {
