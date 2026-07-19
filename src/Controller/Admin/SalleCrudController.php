@@ -107,7 +107,9 @@ class SalleCrudController extends AbstractCrudController
                 if (!$file instanceof UploadedFile || !$file->isValid()) {
                     continue;
                 }
-                $filename = $fileUpload->upload($file, $uploadDir, uniqid('img_', true));
+                // Images affichées en plein écran dans la popup du répartiteur de loot :
+                // une résolution plus large que le défaut (300px, pensé pour des vignettes) est nécessaire.
+                $filename = $fileUpload->upload($file, $uploadDir, uniqid('img_', true), maxPx: 1920);
                 $em->persist((new SalleImage())->setSalle($salle)->setFilePath($filename));
             }
             $em->flush();

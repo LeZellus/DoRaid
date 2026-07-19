@@ -9,7 +9,7 @@ class FileUploadService
     private const MAX_PX   = 300;
     private const WEBP_IMG = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 
-    public function upload(UploadedFile $file, string $directory, string $basename = ''): string
+    public function upload(UploadedFile $file, string $directory, string $basename = '', int $maxPx = self::MAX_PX): string
     {
         if (!is_dir($directory)) {
             mkdir($directory, 0775, true);
@@ -19,7 +19,7 @@ class FileUploadService
 
         if (in_array($ext, self::WEBP_IMG, true) && function_exists('imagewebp')) {
             $filename = ($basename !== '' ? $basename : uniqid('', true)) . '.webp';
-            $this->resizeToWebP($file->getPathname(), $directory . '/' . $filename);
+            $this->resizeToWebP($file->getPathname(), $directory . '/' . $filename, $maxPx);
             return $filename;
         }
 
@@ -29,16 +29,16 @@ class FileUploadService
         return $filename;
     }
 
-    public function replace(string $directory, ?string $existing, UploadedFile $newFile, string $basename = ''): string
+    public function replace(string $directory, ?string $existing, UploadedFile $newFile, string $basename = '', int $maxPx = self::MAX_PX): string
     {
         if ($existing && file_exists($directory . '/' . $existing)) {
             unlink($directory . '/' . $existing);
         }
 
-        return $this->upload($newFile, $directory, $basename);
+        return $this->upload($newFile, $directory, $basename, $maxPx);
     }
 
-    private function resizeToWebP(string $src, string $dest): void
+    private function resizeToWebP(string $src, string $dest, int $maxPx): void
     {
         $info = @getimagesize($src);
         if (!$info) {
@@ -61,7 +61,7 @@ class FileUploadService
             return;
         }
 
-        [$newW, $newH] = $this->scaleDimensions($w, $h, self::MAX_PX);
+        [$newW, $newH] = $this->scaleDimensions($w, $h, $maxPx);
 
         $gdDst = imagecreatetruecolor($newW, $newH);
 
