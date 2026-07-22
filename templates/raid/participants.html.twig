@@ -2,6 +2,7 @@
 {% import 'components/_ui.html.twig' as ui %}
 {% import 'components/_raid_participant_menu.html.twig' as pmenu %}
 {% import 'components/_member_notes.html.twig' as notes %}
+{% import 'components/_member_punishment.html.twig' as punishment %}
 {% import 'components/_character_row.html.twig' as cr %}
 
 {% block title %}Participants – {{ raid.raidTemplate.name }} – Zeminal{% endblock %}
@@ -63,6 +64,9 @@
                         {% if canManageNotes and p.guildMember %}
                             {{ notes.dialog(p.character.membership, p.character.name, true, isLeader) }}
                         {% endif %}
+                        {% if p.guildMember %}
+                            {{ punishment.dialog(p.character.membership, p.character.name, canManageNotes, app.user and p.character.user.id == app.user.id) }}
+                        {% endif %}
                         {% if isCreator and p.character !== raid.creator %}
                             {{ pmenu.menu(p, raid, myOtherRaids, true) }}
                         {% elseif app.user and p.character.user.id == app.user.id and raid.status == constant('App\\Entity\\RaidStatus::Open') and p.character.id != raid.creator.id %}
@@ -105,6 +109,9 @@
                         </div>
                         {% if canManageNotes and p.guildMember %}
                             {{ notes.dialog(p.character.membership, p.character.name, true, isLeader) }}
+                        {% endif %}
+                        {% if p.guildMember %}
+                            {{ punishment.dialog(p.character.membership, p.character.name, canManageNotes, app.user and p.character.user.id == app.user.id) }}
                         {% endif %}
                         {% if isCreator %}
                             {{ pmenu.menu(p, raid, myOtherRaids, false) }}

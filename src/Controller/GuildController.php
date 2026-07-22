@@ -218,6 +218,67 @@ class GuildController extends AbstractController
         return $this->safeRefererRedirect($request, 'app_guild_members', ['slug' => $guild->getSlug()]);
     }
 
+    /** Valeur null = punition à durée illimitée. */
+    private const PUNISHMENT_DURATIONS = [
+        '1w'  => '+1 week',
+        '2w'  => '+2 weeks',
+        '1m'  => '+1 month',
+        'inf' => null,
+    ];
+
+    #[IsGranted('ROLE_USER')]
+    #[Route('/membres/{id}/punitions/ajouter', name: 'app_guild_member_punishment_add', methods: ['POST'])]
+    public function addMemberPunishment(GuildMembership $membership, Request $request, EntityManagerInterface $em): Response
+    {
+        $guild = $membership->getGuild();
+        $this->requireCsrfToken('member_punishment_add_' . $membership->getId(), $request);
+
+        if (empty($this->charRepo->findCanCreateRaidsInGuild($this->getUser(), $guild))) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $reason   = trim($request->request->get('reason', ''));
+        $duration = $request->request->get('duration', '');
+
+        if ($reason === '' || !array_key_exists($duration, self::PUNISHMENT_DURATIONS)) {
+            $this->addFlash('error', 'Motif ou durée invalide.');
+            return $this->safeRefererRedirect($request, 'app_guild_members', ['slug' => $guild->getSlug()]);
+        }
+
+        $modifier  = self::PUNISHMENT_DURATIONS[$duration];
+        $expiresAt = $modifier === null ? null : (new \DateTimeImmutable())->modify($modifier);
+
+        $punishment = (new \App\Entity\MemberPunishment())
+            ->setMembership($membership)
+            ->setAuthor($this->getUser())
+            ->setReason($reason)
+            ->setExpiresAt($expiresAt);
+
+        $em->persist($punishment);
+        $em->flush();
+
+        $this->addFlash('success', 'Punition ajoutée.');
+        return $this->safeRefererRedirect($request, 'app_guild_members', ['slug' => $guild->getSlug()]);
+    }
+
+    #[IsGranted('ROLE_USER')]
+    #[Route('/punitions/{id}/supprimer', name: 'app_guild_member_punishment_delete', methods: ['POST'])]
+    public function deleteMemberPunishment(\App\Entity\MemberPunishment $punishment, Request $request, EntityManagerInterface $em): Response
+    {
+        $guild = $punishment->getMembership()->getGuild();
+        $this->requireCsrfToken('member_punishment_delete_' . $punishment->getId(), $request);
+
+        if (empty($this->charRepo->findCanCreateRaidsInGuild($this->getUser(), $guild))) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $em->remove($punishment);
+        $em->flush();
+
+        $this->addFlash('success', 'Punition levée.');
+        return $this->safeRefererRedirect($request, 'app_guild_members', ['slug' => $guild->getSlug()]);
+    }
+
     private function safeRefererRedirect(Request $request, string $fallbackRoute, array $fallbackParams = []): Response
     {
         $referer = $request->headers->get('referer', '');

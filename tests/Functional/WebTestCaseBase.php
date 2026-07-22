@@ -61,7 +61,7 @@ abstract class WebTestCaseBase extends WebTestCase
             'notification',
             'enigme_comment', 'enigme_image', 'enigme',
             'raid_comment', 'raid_participant', 'raid_group', 'raid',
-            'guild_membership', 'game_character', 'guild',
+            'member_note', 'member_punishment', 'guild_membership', 'game_character', 'guild',
             'user', 'server', 'game_class', 'raid_template', 'enigme_template',
             'salle_composition_mob', 'salle_composition', 'salle', 'mob_drop_rate', 'mob', 'gem',
         ] as $table) {

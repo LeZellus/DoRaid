@@ -108,11 +108,26 @@ class Raid
         );
     }
 
+    /**
+     * Candidatures en attente, non-punis d'abord (à ancienneté égale, premier arrivé
+     * premier servi) — un membre puni reste candidat mais perd sa priorité d'affichage.
+     */
     public function getPendingParticipants(): Collection
     {
-        return $this->participants->filter(
+        $pending = $this->participants->filter(
             fn(RaidParticipant $p) => $p->getStatus() === RaidParticipantStatus::Pending
-        );
+        )->toArray();
+
+        usort($pending, function (RaidParticipant $a, RaidParticipant $b) {
+            $punishedA = $a->isGuildMember() && $a->getCharacter()->getMembership()?->isPunished();
+            $punishedB = $b->isGuildMember() && $b->getCharacter()->getMembership()?->isPunished();
+            if ($punishedA !== $punishedB) {
+                return $punishedA ? 1 : -1;
+            }
+            return $a->getJoinedAt() <=> $b->getJoinedAt();
+        });
+
+        return new ArrayCollection($pending);
     }
 
     /**

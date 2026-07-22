@@ -71,8 +71,12 @@ export default class extends Controller {
       ul.append(li)
     })
 
-    // Hors du conteneur : ne pas hériter d'un éventuel overflow-hidden d'un ancêtre
-    document.body.append(ul)
+    // Hors du conteneur : ne pas hériter d'un éventuel overflow-hidden d'un ancêtre.
+    // Si le select est dans une <dialog> (couche "top layer" + ::backdrop flouté),
+    // la liste doit être rattachée au <dialog> lui-même pour rester au-dessus du
+    // backdrop — un append sur document.body se retrouverait visuellement en dessous.
+    const host = this.element.closest('dialog') || document.body
+    host.append(ul)
   }
 
   _position () {

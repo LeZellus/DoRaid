@@ -3,6 +3,8 @@
 namespace App\Tests\Entity;
 
 use App\Entity\Character;
+use App\Entity\GuildMembership;
+use App\Entity\MemberPunishment;
 use App\Entity\Raid;
 use App\Entity\RaidParticipant;
 use App\Entity\RaidParticipantStatus;
@@ -138,6 +140,34 @@ class RaidTest extends EntityTestCase
         $this->assertSame($raid->getParticipants()->count(), $total);
     }
 
+    public function testGetPendingParticipantsSortsPunishedGuildMembersLast(): void
+    {
+        $raid = $this->makeRaid();
+
+        $punishedMembership = (new GuildMembership())->setGuild($raid->getGuild())->setStatus(\App\Entity\MemberStatus::Member);
+        $punishedMembership->getPunishments()->add(
+            (new MemberPunishment())->setExpiresAt(new \DateTimeImmutable('+1 week'))
+        );
+        $punishedChar = new Character();
+        $this->setProperty($punishedChar, 'membership', $punishedMembership);
+
+        $cleanMembership = (new GuildMembership())->setGuild($raid->getGuild())->setStatus(\App\Entity\MemberStatus::Member);
+        $cleanChar       = new Character();
+        $this->setProperty($cleanChar, 'membership', $cleanMembership);
+
+        // Le puni candidate en premier ; il doit malgré tout se retrouver après le membre sain.
+        $punishedParticipant = (new RaidParticipant())->setRaid($raid)->setCharacter($punishedChar);
+        $raid->getParticipants()->add($punishedParticipant);
+        $cleanParticipant = (new RaidParticipant())->setRaid($raid)->setCharacter($cleanChar);
+        $raid->getParticipants()->add($cleanParticipant);
+
+        $pending = array_values($raid->getPendingParticipants()->toArray());
+
+        $this->assertCount(2, $pending);
+        $this->assertSame($cleanParticipant, $pending[0]);
+        $this->assertSame($punishedParticipant, $pending[1]);
+    }
+
     // ─── getExpectedEndTime() ──────────────────────────────────────────────────
 
     public function testGetExpectedEndTimeReturnsNullWhenNoScheduledAt(): void
@@ -188,19 +218,20 @@ class RaidTest extends EntityTestCase
             ->setMaxParticipants($maxParticipants)
             ->setMinParticipants(1)
             ->setDuration($duration);
-        return (new Raid())->setRaidTemplate($template);
+        return (new Raid())->setRaidTemplate($template)->setGuild(new \App\Entity\Guild());
     }
 
     private function addAccepted(Raid $raid): RaidParticipant
     {
-        $p = (new RaidParticipant())->setStatus(RaidParticipantStatus::Accepted);
+        $p = (new RaidParticipant())->setStatus(RaidParticipantStatus::Accepted)
+            ->setRaid($raid)->setCharacter(new Character());
         $raid->getParticipants()->add($p);
         return $p;
     }
 
     private function addPending(Raid $raid): RaidParticipant
     {
-        $p = new RaidParticipant(); // default status is Pending
+        $p = (new RaidParticipant())->setRaid($raid)->setCharacter(new Character()); // default status is Pending
         $raid->getParticipants()->add($p);
         return $p;
     }

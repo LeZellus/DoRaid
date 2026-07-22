@@ -2,6 +2,7 @@
 
 namespace App\Tests\Functional;
 
+use App\Entity\MemberPunishment;
 use App\Entity\MemberStatus;
 
 class GuildControllerTest extends WebTestCaseBase
@@ -434,6 +435,198 @@ class GuildControllerTest extends WebTestCaseBase
 
         $this->client->loginUser($rando);
         $this->client->request('POST', '/guildes/membres/' . $memberMId . '/autoriser-raids', [
+            '_token' => 'bad-token',
+        ]);
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    // ─── Punitions ─────────────────────────────────────────────────────────────
+
+    public function testRaidManagerCanAddTemporaryPunishment(): void
+    {
+        $server     = $this->makeServer();
+        $owner      = $this->makeUser('pun-owner@test.com');
+        $ownerChar  = $this->makeCharacter($owner, $server);
+        $guild      = $this->makeGuild($owner, $server);
+        $this->makeMembership($guild, $ownerChar, MemberStatus::Leader);
+
+        $member     = $this->makeUser('pun-member@test.com');
+        $memberChar = $this->makeCharacter($member, $server);
+        $memberM    = $this->makeMembership($guild, $memberChar, MemberStatus::Member);
+        $this->flush();
+        $memberMId = $memberM->getId();
+        $this->em->clear();
+
+        $this->client->loginUser($owner);
+        $crawler = $this->client->request('GET', '/guildes/' . $guild->getSlug() . '/membres');
+        $token   = $crawler->filter('form[action$="/' . $memberMId . '/punitions/ajouter"] input[name="_token"]')->attr('value');
+
+        $this->client->request('POST', '/guildes/membres/' . $memberMId . '/punitions/ajouter', [
+            '_token'   => $token,
+            'reason'   => 'AFK pendant le raid',
+            'duration' => '1w',
+        ]);
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->em->clear();
+        $reloaded = $this->em->find(\App\Entity\GuildMembership::class, $memberMId);
+        $this->assertTrue($reloaded->isPunished());
+        $punishment = $reloaded->getActivePunishment();
+        $this->assertFalse($punishment->isPermanent());
+        $this->assertSame('AFK pendant le raid', $punishment->getReason());
+    }
+
+    public function testRaidManagerCanAddPermanentPunishment(): void
+    {
+        $server     = $this->makeServer();
+        $owner      = $this->makeUser('pun2-owner@test.com');
+        $ownerChar  = $this->makeCharacter($owner, $server);
+        $guild      = $this->makeGuild($owner, $server);
+        $this->makeMembership($guild, $ownerChar, MemberStatus::Leader);
+
+        $member     = $this->makeUser('pun2-member@test.com');
+        $memberChar = $this->makeCharacter($member, $server);
+        $memberM    = $this->makeMembership($guild, $memberChar, MemberStatus::Member);
+        $this->flush();
+        $memberMId = $memberM->getId();
+        $this->em->clear();
+
+        $this->client->loginUser($owner);
+        $crawler = $this->client->request('GET', '/guildes/' . $guild->getSlug() . '/membres');
+        $token   = $crawler->filter('form[action$="/' . $memberMId . '/punitions/ajouter"] input[name="_token"]')->attr('value');
+
+        $this->client->request('POST', '/guildes/membres/' . $memberMId . '/punitions/ajouter', [
+            '_token'   => $token,
+            'reason'   => 'Comportement toxique répété',
+            'duration' => 'inf',
+        ]);
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->em->clear();
+        $punishment = $this->em->find(\App\Entity\GuildMembership::class, $memberMId)->getActivePunishment();
+        $this->assertTrue($punishment->isPermanent());
+        $this->assertNull($punishment->getExpiresAt());
+    }
+
+    public function testAddingPunishmentWithInvalidDurationShowsErrorAndPersistsNothing(): void
+    {
+        $server     = $this->makeServer();
+        $owner      = $this->makeUser('pun3-owner@test.com');
+        $ownerChar  = $this->makeCharacter($owner, $server);
+        $guild      = $this->makeGuild($owner, $server);
+        $this->makeMembership($guild, $ownerChar, MemberStatus::Leader);
+
+        $member     = $this->makeUser('pun3-member@test.com');
+        $memberChar = $this->makeCharacter($member, $server);
+        $memberM    = $this->makeMembership($guild, $memberChar, MemberStatus::Member);
+        $this->flush();
+        $memberMId = $memberM->getId();
+        $this->em->clear();
+
+        $this->client->loginUser($owner);
+        $crawler = $this->client->request('GET', '/guildes/' . $guild->getSlug() . '/membres');
+        $token   = $crawler->filter('form[action$="/' . $memberMId . '/punitions/ajouter"] input[name="_token"]')->attr('value');
+
+        $this->client->request('POST', '/guildes/membres/' . $memberMId . '/punitions/ajouter', [
+            '_token'   => $token,
+            'reason'   => 'Motif renseigné',
+            'duration' => 'bogus',
+        ]);
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->client->followRedirect();
+        $this->assertStringContainsString('invalide', $this->client->getResponse()->getContent());
+        $this->em->clear();
+        $this->assertFalse($this->em->find(\App\Entity\GuildMembership::class, $memberMId)->isPunished());
+    }
+
+    public function testNonManagerCannotAddPunishment(): void
+    {
+        $server     = $this->makeServer();
+        $owner      = $this->makeUser('pun4-owner@test.com');
+        $ownerChar  = $this->makeCharacter($owner, $server);
+        $guild      = $this->makeGuild($owner, $server);
+        $this->makeMembership($guild, $ownerChar, MemberStatus::Leader);
+
+        $member     = $this->makeUser('pun4-member@test.com');
+        $memberChar = $this->makeCharacter($member, $server);
+        $memberM    = $this->makeMembership($guild, $memberChar, MemberStatus::Member);
+
+        $rando = $this->makeUser('pun4-rando@test.com');
+        $this->flush();
+        $memberMId = $memberM->getId();
+
+        $this->client->loginUser($rando);
+        $this->client->request('POST', '/guildes/membres/' . $memberMId . '/punitions/ajouter', [
+            '_token'   => 'bad-token',
+            'reason'   => 'Tentative non autorisée',
+            'duration' => '1w',
+        ]);
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    public function testRaidManagerCanLiftPunishment(): void
+    {
+        $server     = $this->makeServer();
+        $owner      = $this->makeUser('pun5-owner@test.com');
+        $ownerChar  = $this->makeCharacter($owner, $server);
+        $guild      = $this->makeGuild($owner, $server);
+        $this->makeMembership($guild, $ownerChar, MemberStatus::Leader);
+
+        $member     = $this->makeUser('pun5-member@test.com');
+        $memberChar = $this->makeCharacter($member, $server);
+        $memberM    = $this->makeMembership($guild, $memberChar, MemberStatus::Member);
+        $punishment = (new MemberPunishment())
+            ->setMembership($memberM)
+            ->setAuthor($owner)
+            ->setReason('À lever')
+            ->setExpiresAt(new \DateTimeImmutable('+1 week'));
+        $this->em->persist($punishment);
+        $this->flush();
+        $memberMId    = $memberM->getId();
+        $punishmentId = $punishment->getId();
+        $this->em->clear();
+
+        $this->client->loginUser($owner);
+        $crawler = $this->client->request('GET', '/guildes/' . $guild->getSlug() . '/membres');
+        $token   = $crawler->filter('form[action$="/' . $punishmentId . '/supprimer"] input[name="_token"]')->attr('value');
+
+        $this->client->request('POST', '/guildes/punitions/' . $punishmentId . '/supprimer', [
+            '_token' => $token,
+        ]);
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->em->clear();
+        $this->assertNull($this->em->find(MemberPunishment::class, $punishmentId));
+        $this->assertFalse($this->em->find(\App\Entity\GuildMembership::class, $memberMId)->isPunished());
+    }
+
+    public function testNonManagerCannotLiftPunishment(): void
+    {
+        $server     = $this->makeServer();
+        $owner      = $this->makeUser('pun6-owner@test.com');
+        $ownerChar  = $this->makeCharacter($owner, $server);
+        $guild      = $this->makeGuild($owner, $server);
+        $this->makeMembership($guild, $ownerChar, MemberStatus::Leader);
+
+        $member     = $this->makeUser('pun6-member@test.com');
+        $memberChar = $this->makeCharacter($member, $server);
+        $memberM    = $this->makeMembership($guild, $memberChar, MemberStatus::Member);
+        $punishment = (new MemberPunishment())
+            ->setMembership($memberM)
+            ->setAuthor($owner)
+            ->setReason('Ne doit pas être levée')
+            ->setExpiresAt(new \DateTimeImmutable('+1 week'));
+        $this->em->persist($punishment);
+
+        $rando = $this->makeUser('pun6-rando@test.com');
+        $this->flush();
+        $punishmentId = $punishment->getId();
+
+        $this->client->loginUser($rando);
+        $this->client->request('POST', '/guildes/punitions/' . $punishmentId . '/supprimer', [
             '_token' => 'bad-token',
         ]);
 

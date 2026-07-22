@@ -1,0 +1,95 @@
+{#
+  Paramètres :
+    membership      GuildMembership
+    characterName   string
+    canManage       bool  — peut ajouter une punition et la lever
+    isSelf          bool  — le personnage puni appartient à l'utilisateur courant (accès lecture seule)
+#}
+{% macro dialog(membership, characterName, canManage, isSelf) %}
+  {% set active = membership.activePunishment %}
+  {% if canManage or active %}
+    <div data-controller="modal" class="relative shrink-0">
+
+      {# ── Bouton icône ── #}
+      <button type="button"
+              data-action="modal#open"
+              title="Punitions de {{ characterName }}"
+              class="flex items-center gap-1 px-1.5 h-7 rounded-lg transition hover:bg-gray-700/40 shrink-0 {{ active ? (active.permanent ? 'text-red-400' : 'text-orange-400') : 'text-gray-600 hover:text-gray-400' }}">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l6.518 11.598c.75 1.334-.213 2.986-1.743 2.986H3.482c-1.53 0-2.493-1.652-1.743-2.986L8.257 3.1zM11 14a1 1 0 11-2 0 1 1 0 012 0zm-.25-6.75a.75.75 0 00-1.5 0v3.5a.75.75 0 001.5 0v-3.5z" clip-rule="evenodd"/>
+        </svg>
+      </button>
+
+      {# ── Dialog ── #}
+      <dialog data-modal-target="dialog"
+              data-action="click->modal#clickBackdrop"
+              class="member-notes-dialog bg-gray-900 border border-gray-700/50 rounded-2xl shadow-2xl p-0 text-white w-full max-w-md">
+
+        <div class="flex items-center justify-between px-5 py-4 border-b border-gray-800">
+          <h3 class="font-semibold text-white text-sm">Punitions — {{ characterName }}</h3>
+          <button type="button" data-action="modal#close"
+                  class="text-gray-500 hover:text-gray-300 transition text-xl leading-none cursor-pointer">✕</button>
+        </div>
+
+        <div class="px-5 py-4 space-y-4 max-h-80 overflow-y-auto">
+          {% if membership.punishments is empty %}
+            <p class="text-xs text-gray-600 italic text-center py-4">Aucune punition pour l'instant.</p>
+          {% else %}
+            {% for punishment in membership.punishments %}
+              <div class="flex items-start gap-3 text-xs">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-1.5 mb-1">
+                    {% if punishment.permanent %}
+                      <span class="text-red-400 font-semibold">En cours — durée illimitée</span>
+                    {% elseif punishment.active %}
+                      <span class="text-orange-400 font-semibold">En cours — jusqu'au {{ punishment.expiresAt|date('d/m/Y') }}</span>
+                    {% else %}
+                      <span class="text-gray-600">Terminée le {{ punishment.expiresAt|date('d/m/Y') }}</span>
+                    {% endif %}
+                  </div>
+                  <p class="text-gray-400 leading-relaxed">{{ punishment.reason }}</p>
+                  <div class="text-gray-700 mt-1">{{ punishment.author.username }} · {{ punishment.createdAt|date('d/m/Y') }}</div>
+                </div>
+                {% if canManage %}
+                  <form method="post" action="{{ path('app_guild_member_punishment_delete', {id: punishment.id}) }}"
+                        onsubmit="return confirm('Lever cette punition ?')">
+                    <input type="hidden" name="_token" value="{{ csrf_token('member_punishment_delete_' ~ punishment.id) }}">
+                    <button type="submit"
+                            class="text-gray-700 hover:text-red-400 transition mt-0.5 shrink-0 cursor-pointer"
+                            title="Lever">✕</button>
+                  </form>
+                {% endif %}
+              </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        {% if canManage %}
+          <div class="px-5 py-4 border-t border-gray-800 space-y-2">
+            <form method="post" action="{{ path('app_guild_member_punishment_add', {id: membership.id}) }}" class="space-y-2">
+              <input type="hidden" name="_token" value="{{ csrf_token('member_punishment_add_' ~ membership.id) }}">
+              <textarea name="reason" rows="2"
+                        placeholder="Motif de la punition…"
+                        class="w-full text-xs bg-gray-800/60 border border-gray-700/50 rounded-lg px-3 py-1.5 text-gray-300 placeholder-gray-600 resize-none focus:outline-none focus:border-orange-500/60"></textarea>
+              <div class="flex items-center gap-2">
+                <div class="flex-1 min-w-0 relative" data-controller="select">
+                  <select name="duration" class="hidden">
+                    <option value="1w">1 semaine</option>
+                    <option value="2w">2 semaines</option>
+                    <option value="1m">1 mois</option>
+                    <option value="inf">Durée illimitée</option>
+                  </select>
+                </div>
+                <button type="submit"
+                        class="text-xs text-orange-400 hover:text-orange-300 transition shrink-0 py-1.5 px-2 font-medium">
+                  Punir
+                </button>
+              </div>
+            </form>
+          </div>
+        {% endif %}
+
+      </dialog>
+    </div>
+  {% endif %}
+{% endmacro %}

@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 {% import 'components/_ui.html.twig' as ui %}
 {% import 'components/_member_notes.html.twig' as notes %}
+{% import 'components/_member_punishment.html.twig' as punishment %}
 {% import 'components/_character_row.html.twig' as cr %}
 {% import 'components/_guild_member_menu.html.twig' as gm %}
 
@@ -92,6 +93,7 @@
                                 {% if canCreateRaids %}
                                     {{ notes.dialog(m, m.character.name, true, isLeader) }}
                                 {% endif %}
+                                {{ punishment.dialog(m, m.character.name, canCreateRaids, app.user and m.character.user.id == app.user.id) }}
                                 {% if app.user and m.character.user.id == app.user.id and m.status.value != 'leader' %}
                                     <form method="post" action="{{ path('app_guild_leave', {id: m.id}) }}">
                                         <input type="hidden" name="_token" value="{{ csrf_token('leave_' ~ m.id) }}">

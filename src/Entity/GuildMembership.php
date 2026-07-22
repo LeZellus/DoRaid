@@ -33,6 +33,10 @@ class GuildMembership
     #[ORM\OrderBy(['createdAt' => 'ASC'])]
     private Collection $notes;
 
+    #[ORM\OneToMany(mappedBy: 'membership', targetEntity: MemberPunishment::class, cascade: ['remove'], orphanRemoval: true)]
+    #[ORM\OrderBy(['createdAt' => 'DESC'])]
+    private Collection $punishments;
+
     #[ORM\Column]
     private \DateTimeImmutable $requestedAt;
 
@@ -40,6 +44,7 @@ class GuildMembership
     {
         $this->requestedAt = new \DateTimeImmutable();
         $this->notes       = new ArrayCollection();
+        $this->punishments = new ArrayCollection();
     }
 
     public function getId(): ?int { return $this->id; }
@@ -67,6 +72,34 @@ class GuildMembership
 
     /** @return Collection<int, MemberNote> */
     public function getNotes(): Collection { return $this->notes; }
+
+    /** @return Collection<int, MemberPunishment> */
+    public function getPunishments(): Collection { return $this->punishments; }
+
+    /**
+     * Punition en cours la plus sévère : une punition à durée illimitée prime sur
+     * toute punition temporaire ; sinon celle dont la date de fin est la plus lointaine.
+     */
+    public function getActivePunishment(): ?MemberPunishment
+    {
+        $active = $this->punishments->filter(fn(MemberPunishment $p) => $p->isActive());
+        if ($active->isEmpty()) {
+            return null;
+        }
+
+        $latest = null;
+        foreach ($active as $punishment) {
+            if ($punishment->isPermanent()) {
+                return $punishment;
+            }
+            if ($latest === null || $punishment->getExpiresAt() > $latest->getExpiresAt()) {
+                $latest = $punishment;
+            }
+        }
+        return $latest;
+    }
+
+    public function isPunished(): bool { return $this->getActivePunishment() !== null; }
 
     public function getRequestedAt(): \DateTimeImmutable { return $this->requestedAt; }
 }
