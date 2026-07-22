@@ -13,9 +13,26 @@ class ChangelogController extends AbstractController
     {
         $entries = [
             [
+                'version' => '1.9.0',
+                'date'    => '22 juillet 2026',
+                'latest'  => true,
+                'changes' => [
+                    ['type' => 'new',  'text' => 'Répartiteur de loot Dofus — nouvel outil de simulation sur "Outils" calculant le score de loot espéré et l\'assignation optimale des groupes, en temps réel'],
+                    ['type' => 'new',  'text' => 'Images de salle (Gouffre du Gigalodon) ajoutées par les admins et affichées en vignettes cliquables sur le répartiteur de loot'],
+                    ['type' => 'new',  'text' => 'Rôles Portail (Éliotrope) et Vulnérabilité (Forgelance, Zobal, Huppermage, Pandawa, Ouginak) ajoutés à la composition optimale'],
+                    ['type' => 'new',  'text' => 'Système de punitions (temporaires ou permanentes) sur les membres de guilde — un membre puni passe après les autres dans la liste des candidatures en attente, sans être bloqué'],
+                    ['type' => 'new',  'text' => 'Notification Discord avec ping lorsque votre candidature à un raid est acceptée'],
+                    ['type' => 'new',  'text' => 'Modificateurs d\'initiative Shaké et Shaké haute fermentation pour le Gigalodon'],
+                    ['type' => 'impr', 'text' => 'Les organisateurs de raids peuvent désormais moduler l\'initiative d\'un groupe (plus uniquement le créateur du raid), s\'ils y participent'],
+                    ['type' => 'fix',  'text' => 'Connexion via Discord conservée plus longtemps (30 jours au lieu d\'une déconnexion prématurée et imprévisible)'],
+                    ['type' => 'fix',  'text' => 'Guildatons affichés à côté du pseudo dans la liste des intéressés, comme pour les participants confirmés'],
+                    ['type' => 'fix',  'text' => 'Menu déroulant d\'un sélecteur personnalisé qui pouvait se retrouver caché sous le fond flouté d\'une popup'],
+                ],
+            ],
+            [
                 'version' => '1.8.0',
                 'date'    => '7 juillet 2026',
-                'latest'  => true,
+                'latest'  => false,
                 'changes' => [
                     ['type' => 'new',  'text' => 'Composition optimale (simulation) par rôle de classe pour préparer un Gigalodon, directement dans "Voir les groupes"'],
                     ['type' => 'new',  'text' => 'Initiative et statut Dofus Cauchemar affichés sur "Mes personnages"'],
